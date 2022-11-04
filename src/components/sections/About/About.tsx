@@ -2,10 +2,10 @@ import React from "react";
 
 const About = () => {
   return (
-    <>
+    <div className="mb-8">
       <h2 className="title-section after:left-52">About Me</h2>
       
-      <div className="lg:grid grid-cols-12 md:gap-10 pt-4 md:pt-[30px] items-center hidden">
+      <div className="grid grid-cols-12 md:gap-10 pt-4 md:pt-[30px] items-center">
         <div className="col-span-12 space-y-2.5">
           <div className="lg:mr-16">
             <p className="text-[#44566c] dark:text-color-910 leading-7">
@@ -22,7 +22,7 @@ const About = () => {
           <div></div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

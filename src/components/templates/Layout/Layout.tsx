@@ -29,9 +29,8 @@ const Layout = (props: LayoutProps) => {
         <Navbar />
         <div className="container grid grid-cols-12 md:gap-10 justify-between lg:mt-[220px] m-auto relative">
           <Profile />
-          <div className="col-span-12 lg:col-span-8">
-            <Header />
-            <div className="lg:rounded-2xl bg-white dark:bg-[#111111]">
+          <div className="col-span-12 lg:col-span-8 md:mx-auto mx-6">
+            <div className="lg:rounded-2xl bg-white dark:bg-[#111111] rounded-lg md:px-0 px-4">
               <div className="pt-12 md:py-12 px-2 sm:px-5 md:px-10 lg:px-14">
                 {props.children}
               </div>
