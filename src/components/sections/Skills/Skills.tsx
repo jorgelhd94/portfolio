@@ -1,14 +1,14 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SkillButton from "../../atoms/SkillButton/SkillButton";
-import { faCat, faFire, faLaptopCode, faN, faWind } from "@fortawesome/free-solid-svg-icons";
-import { faBootstrap, faCss3, faHtml5, faJs, faNodeJs, faPython, faReact, faVuejs } from "@fortawesome/free-brands-svg-icons";
+import { faCat, faDatabase, faFire, faFish, faLaptopCode, faN, faWind } from "@fortawesome/free-solid-svg-icons";
+import { faBootstrap, faCss3, faGitAlt, faGithub, faHtml5, faJs, faNodeJs, faPython, faReact, faVuejs } from "@fortawesome/free-brands-svg-icons";
 
 const Skills = () => {
   return (
     <div className="container bg-slate-200 dark:bg-[#0D0D0D] pt-12 md:pb-12 px-2 sm:px-5 md:px-10 lg:px-14">
       <div className="flex items-center space-x-2 mb-10">
-        <FontAwesomeIcon icon={faLaptopCode} width={46} className="text-indigo-500"/>
+        <FontAwesomeIcon icon={faLaptopCode} width={46} className="text-indigo-600"/>
         <h4 className="text-4xl dark:text-white font-medium"> Technical Skills </h4>
       </div>
 
@@ -26,6 +26,11 @@ const Skills = () => {
         <SkillButton icon={faFire} name="Firebase"  url="https://firebase.google.com/" colorIcon="text-yellow-500"/>
         <SkillButton icon={faWind} name="TailwindCss"  url="https://tailwindcss.com/" colorIcon="text-cyan-500"/>
         <SkillButton icon={faBootstrap} name="Boostrap 3+"  url="https://getbootstrap.com/" colorIcon="text-purple-500"/>
+        <SkillButton icon={faGitAlt} name="Git"  url="https://git-scm.com/" colorIcon="text-red-500"/>
+        <SkillButton icon={faGithub} name="Github"  url="https://github.com/" colorIcon="text-black dark:text-white"/>
+        <SkillButton icon={faDatabase} name="MySQL"  url="https://www.mysql.com/" colorIcon="text-cyan-600"/>
+        <SkillButton icon={faDatabase} name="PostgreSQL"  url="https://www.postgresql.org/" colorIcon="text-blue-600"/>
+        <SkillButton icon={faDatabase} name="Sqlite"  url="https://www.sqlite.org/" colorIcon="text-sky-400"/>
       </div>
     </div>
   );
