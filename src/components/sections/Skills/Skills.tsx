@@ -1,7 +1,8 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCode, faGraduationCap, faLaptopCode } from "@fortawesome/free-solid-svg-icons";
-import EducationCard from "../../molecules/EducationCard/EducationCard";
+import SkillButton from "../../atoms/SkillButton/SkillButton";
+import { faLaptopCode } from "@fortawesome/free-solid-svg-icons";
+import { faHtml5, faJs } from "@fortawesome/free-brands-svg-icons";
 
 const Skills = () => {
   return (
@@ -12,8 +13,8 @@ const Skills = () => {
       </div>
 
       <div className="flex flex-row">
-        <EducationCard period="2009-2012" title="IT Technician" institution="Rafael Morales Polytecnic, Ciego de Avila"/>
-        <EducationCard period="2014-2019" title="Computer Engineer" institution="University of Ciego de Avila"/>
+        <SkillButton icon={faJs} name="Javascript (ES6+)"  url="https://developer.mozilla.org/es/docs/Web/JavaScript" colorIcon="text-yellow-400"/>
+        <SkillButton icon={faHtml5} name="HTML"  url="https://developer.mozilla.org/es/docs/Web/JavaScript" colorIcon="text-red-400"/>
       </div>
     </div>
   );
