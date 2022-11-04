@@ -3,6 +3,7 @@ import Navbar from "../../organisms/Navbar/Navbar";
 import Profile from "../../organisms/Profile/Profile";
 import Header from "../../organisms/Header/Header";
 import Head from "next/head";
+import Footer from "../../organisms/Footer/Footer";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -34,6 +35,7 @@ const Layout = (props: LayoutProps) => {
               <div className="pt-12 md:py-12 px-2 sm:px-5 md:px-10 lg:px-14">
                 {props.children}
               </div>
+              <Footer />
             </div>
           </div>
         </div>
