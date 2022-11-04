@@ -1,14 +1,14 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faGraduationCap, faLaptopCode } from "@fortawesome/free-solid-svg-icons";
 import EducationCard from "../../molecules/EducationCard/EducationCard";
 
-const Education = () => {
+const Skills = () => {
   return (
-    <div className="pt-6 md:pb-12 px-2 sm:px-5 md:px-10 lg:px-14">
+    <div className="container bg-color-810 dark:bg-[#0D0D0D] pt-12 md:pb-12 px-2 sm:px-5 md:px-10 lg:px-14">
       <div className="flex items-center space-x-2 mb-10">
-        <FontAwesomeIcon icon={faGraduationCap} width={46} className="text-indigo-500"/>
-        <h4 className="text-4xl dark:text-white font-medium"> Education </h4>
+        <FontAwesomeIcon icon={faLaptopCode} width={46} className="text-indigo-500"/>
+        <h4 className="text-4xl dark:text-white font-medium"> Technical Skills </h4>
       </div>
 
       <div className="flex flex-row">
@@ -19,4 +19,4 @@ const Education = () => {
   );
 };
 
-export default Education;
+export default Skills;
