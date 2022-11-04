@@ -5,7 +5,7 @@ import EducationCard from "../../molecules/EducationCard/EducationCard";
 
 const Education = () => {
   return (
-    <div className="pt-6 md:pb-12 px-2 sm:px-5 md:px-10 lg:px-14">
+    <div className="pt-6 md:pb-12 px-4 md:px-10 lg:px-14">
       <div className="flex items-center space-x-2 mb-10">
         <FontAwesomeIcon icon={faGraduationCap} width={46} className="text-indigo-500"/>
         <h4 className="text-4xl dark:text-white font-medium"> Education </h4>

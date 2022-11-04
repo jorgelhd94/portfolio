@@ -6,13 +6,13 @@ import { faBootstrap, faCss3, faGitAlt, faGithub, faHtml5, faJs, faNodeJs, faPyt
 
 const Skills = () => {
   return (
-    <div className="container bg-slate-200 dark:bg-[#0D0D0D] pt-12 md:pb-12 px-2 sm:px-5 md:px-10 lg:px-14">
+    <div className="container bg-slate-200 dark:bg-[#0D0D0D] pt-12 pb-8 md:pb-12 px-4 sm:px-5 md:px-10 lg:px-14">
       <div className="flex items-center space-x-2 mb-10">
         <FontAwesomeIcon icon={faLaptopCode} width={46} className="text-indigo-600"/>
         <h4 className="text-4xl dark:text-white font-medium"> Technical Skills </h4>
       </div>
 
-      <div className="flex flex-row justify-start flex-wrap">
+      <div className="flex flex-row md:justify-start justify-center flex-wrap">
         <SkillButton icon={faJs} name="Javascript (ES6+)"  url="https://developer.mozilla.org/es/docs/Web/JavaScript" colorIcon="text-yellow-400"/>
         <SkillButton icon={faJs} name="TypeScript"  url="https://www.typescriptlang.org/" colorIcon="text-blue-500"/>
         <SkillButton icon={faPython} name="Python"  url="https://www.python.org/" colorIcon="text-blue-400"/>
