@@ -11,26 +11,25 @@ type SkillButtonProps = {
 
 const SkillButton = (props: SkillButtonProps) => {
   const mainClass =
-    " flex text-slate-800 dark:text-slate-300 items-center px-3 py-3 cursor-pointer bg-gray-200 dark:bg-slate-800 rounded-xl mr-2";
+    " flex items-center px-3 py-3 cursor-pointer bg-white dark:bg-slate-800 rounded-xl mr-2 mt-2";
   let gradientClass =
-    " hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 hover:text-white transition-all";
+    " hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 hover:text-white transition-all ";
 
   return (
     <a
       href={props.url}
       target="_blank"
       rel="noopener noreferrer"
-      className={mainClass + gradientClass}
+      className={mainClass + gradientClass + props.colorIcon}
     >
       <span>
         <FontAwesomeIcon
           icon={props.icon}
           width={16}
-          className={props.colorIcon}
         />
       </span>
 
-      <p className="ml-2 text-sm">{props.name}</p>
+      <p className="ml-2 text-sm text-black dark:text-white">{props.name}</p>
     </a>
   );
 };
