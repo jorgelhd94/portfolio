@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import Avatar from "../../../../public/avatar.jpg";
+import Avatar from "../../../../public/logo.png";
 
 const ProfilePhoto = () => {
   return (

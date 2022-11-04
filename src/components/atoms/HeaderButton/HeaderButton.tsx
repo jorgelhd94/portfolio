@@ -11,9 +11,9 @@ type HeaderButtonProps = {
 
 const HeaderButton = (props: HeaderButtonProps) => {
   const mainClass =
-    "flex flex-col text-slate-800 dark:text-slate-300 items-center mx-2 px-6 py-4 cursor-pointer bg-gray-100 dark:bg-slate-800 rounded-xl";
+    "flex flex-col items-center mx-2 px-6 py-4 cursor-pointer bg-gray-100 dark:bg-slate-800 rounded-xl";
   let gradientClass =
-    " hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 hover:text-white transition-all";
+    " text-slate-800 dark:text-slate-300 hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 hover:text-white transition-all";
 
   if (props.active) {
     gradientClass =
