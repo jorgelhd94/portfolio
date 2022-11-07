@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 const About = () => {
   return (
@@ -7,18 +7,16 @@ const About = () => {
 
       <div className="grid grid-cols-12 md:gap-10 pt-4 md:pt-[30px] items-center">
         <div className="col-span-12 space-y-2.5">
-
           <div className="lg:mr-16">
             <p className="text-[#44566c] dark:text-color-910 leading-7">
-              I&apos;m Creative Director and UI/UX Designer from Sydney,
-              Australia, working in web development and print media. I enjoy
-              turning complex problems into simple, beautiful and intuitive
-              designs.
+              I’m a computer engineer with strong passion and interest for
+              programming, software develop and the world of technology at
+              general.
             </p>
             <p className="text-[#44566c] leading-7 mt-2.5 dark:text-color-910">
-              My aim is to bring across your message and identity in the most
-              creative way. I created web design for many famous brand
-              companies.
+              My aim is to create applications and websites that take your
+              business to the next level, using the best software development
+              tools on the market.
             </p>
           </div>
           <div></div>
