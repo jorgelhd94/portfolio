@@ -1,7 +1,6 @@
 import React from "react";
 import Navbar from "../../organisms/Navbar/Navbar";
 import Profile from "../../organisms/Profile/Profile";
-import Header from "../../organisms/Header/Header";
 import Head from "next/head";
 import Footer from "../../organisms/Footer/Footer";
 
@@ -31,7 +30,6 @@ const Layout = (props: LayoutProps) => {
         <div className="container grid grid-cols-12 md:gap-10 justify-between lg:mt-[220px] m-auto relative">
           <Profile />
           <div className="col-span-12 lg:col-span-8 md:mx-auto">
-            <Header/>
             <div className="lg:rounded-2xl bg-white dark:bg-[#111111]">
                 {props.children}
               <Footer />
