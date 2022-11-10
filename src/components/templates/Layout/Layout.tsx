@@ -9,7 +9,7 @@ type LayoutProps = {
 };
 
 const Layout = (props: LayoutProps) => {
-  const gradientLight = "bg-gradient-to-tl from-blue-400 to-gray-100";
+  const gradientLight = "bg-gradient-to-tl from-indigo-600  to-gray-200";
 
   const gradientDark =
     "dark:bg-gradient-to-b dark:from-gray-900 dark:to-gray-600 dark:bg-gradient-to-r";
