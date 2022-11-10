@@ -1,36 +1,152 @@
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import SkillButton from "../../atoms/SkillButton/SkillButton";
-import { faCat, faDatabase, faFire, faFish, faLaptopCode, faN, faWind } from "@fortawesome/free-solid-svg-icons";
-import { faBootstrap, faCss3, faGitAlt, faGithub, faHtml5, faJs, faNodeJs, faPython, faReact, faVuejs } from "@fortawesome/free-brands-svg-icons";
+import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import SkillButton from '../../atoms/Buttons/SkillButton/SkillButton';
+import {
+  faCat,
+  faDatabase,
+  faFire,
+  faFish,
+  faLaptopCode,
+  faN,
+  faWind,
+} from '@fortawesome/free-solid-svg-icons';
+import {
+  faBootstrap,
+  faCss3,
+  faGitAlt,
+  faGithub,
+  faHtml5,
+  faJs,
+  faNodeJs,
+  faPython,
+  faReact,
+  faVuejs,
+} from '@fortawesome/free-brands-svg-icons';
 
 const Skills = () => {
   return (
     <div className="container bg-slate-200 dark:bg-[#0D0D0D] pt-12 pb-8 md:pb-12 px-4 sm:px-5 md:px-10 lg:px-14">
       <div className="flex items-center space-x-2 mb-10">
-        <FontAwesomeIcon icon={faLaptopCode} width={46} className="text-indigo-600"/>
-        <h4 className="text-4xl dark:text-white font-medium"> Technical Skills </h4>
+        <FontAwesomeIcon
+          icon={faLaptopCode}
+          width={46}
+          className="text-indigo-600"
+        />
+        <h4 className="text-4xl dark:text-white font-medium">
+          {' '}
+          Technical Skills{' '}
+        </h4>
       </div>
 
-      <div className="flex flex-row md:justify-start justify-center flex-wrap">
-        <SkillButton icon={faJs} name="Javascript (ES6+)"  url="https://developer.mozilla.org/es/docs/Web/JavaScript" colorIcon="text-yellow-400"/>
-        <SkillButton icon={faJs} name="TypeScript"  url="https://www.typescriptlang.org/" colorIcon="text-blue-500"/>
-        <SkillButton icon={faPython} name="Python"  url="https://www.python.org/" colorIcon="text-blue-400"/>
-        <SkillButton icon={faHtml5} name="HTML5"  url="https://developer.mozilla.org/es/docs/Web/HTML" colorIcon="text-red-400"/>
-        <SkillButton icon={faCss3} name="CSS3"  url="https://developer.mozilla.org/es/docs/Web/CSS" colorIcon="text-sky-300"/>
-        <SkillButton icon={faNodeJs} name="NodeJS"  url="https://nodejs.org/en/" colorIcon="text-green-600"/>
-        <SkillButton icon={faCat} name="NestJS"  url="https://nestjs.com/" colorIcon="text-red-500"/>
-        <SkillButton icon={faReact} name="ReactJS"  url="https://reactjs.org/" colorIcon="text-blue-500"/>
-        <SkillButton icon={faN} name="NextJS"  url="https://nextjs.org/" colorIcon="text-black dark:text-white"/>
-        <SkillButton icon={faVuejs} name="VueJS"  url="https://vuejs.org/" colorIcon="text-green-600"/>
-        <SkillButton icon={faFire} name="Firebase"  url="https://firebase.google.com/" colorIcon="text-yellow-500"/>
-        <SkillButton icon={faWind} name="TailwindCss"  url="https://tailwindcss.com/" colorIcon="text-cyan-500"/>
-        <SkillButton icon={faBootstrap} name="Boostrap 3+"  url="https://getbootstrap.com/" colorIcon="text-purple-500"/>
-        <SkillButton icon={faGitAlt} name="Git"  url="https://git-scm.com/" colorIcon="text-red-500"/>
-        <SkillButton icon={faGithub} name="Github"  url="https://github.com/" colorIcon="text-black dark:text-white"/>
-        <SkillButton icon={faDatabase} name="MySQL"  url="https://www.mysql.com/" colorIcon="text-cyan-600"/>
-        <SkillButton icon={faDatabase} name="PostgreSQL"  url="https://www.postgresql.org/" colorIcon="text-blue-600"/>
-        <SkillButton icon={faDatabase} name="Sqlite"  url="https://www.sqlite.org/" colorIcon="text-sky-400"/>
+      <div className="flex flex-row  flex-wrap md:justify-around justify-center">
+        <SkillButton
+          icon={faJs}
+          name="Javascript (ES6+)"
+          url="https://developer.mozilla.org/es/docs/Web/JavaScript"
+          colorIcon="text-yellow-400"
+        />
+        <SkillButton
+          icon={faJs}
+          name="TypeScript"
+          url="https://www.typescriptlang.org/"
+          colorIcon="text-blue-500"
+        />
+        <SkillButton
+          icon={faPython}
+          name="Python"
+          url="https://www.python.org/"
+          colorIcon="text-blue-400"
+        />
+        <SkillButton
+          icon={faHtml5}
+          name="HTML5"
+          url="https://developer.mozilla.org/es/docs/Web/HTML"
+          colorIcon="text-red-400"
+        />
+        <SkillButton
+          icon={faCss3}
+          name="CSS3"
+          url="https://developer.mozilla.org/es/docs/Web/CSS"
+          colorIcon="text-sky-300"
+        />
+        <SkillButton
+          icon={faNodeJs}
+          name="NodeJS"
+          url="https://nodejs.org/en/"
+          colorIcon="text-green-600"
+        />
+        <SkillButton
+          icon={faCat}
+          name="NestJS"
+          url="https://nestjs.com/"
+          colorIcon="text-red-500"
+        />
+        <SkillButton
+          icon={faReact}
+          name="ReactJS"
+          url="https://reactjs.org/"
+          colorIcon="text-blue-500"
+        />
+        <SkillButton
+          icon={faN}
+          name="NextJS"
+          url="https://nextjs.org/"
+          colorIcon="text-black dark:text-white"
+        />
+        <SkillButton
+          icon={faVuejs}
+          name="VueJS"
+          url="https://vuejs.org/"
+          colorIcon="text-green-600"
+        />
+        <SkillButton
+          icon={faFire}
+          name="Firebase"
+          url="https://firebase.google.com/"
+          colorIcon="text-yellow-500"
+        />
+        <SkillButton
+          icon={faWind}
+          name="TailwindCss"
+          url="https://tailwindcss.com/"
+          colorIcon="text-cyan-500"
+        />
+        <SkillButton
+          icon={faBootstrap}
+          name="Boostrap 3+"
+          url="https://getbootstrap.com/"
+          colorIcon="text-purple-500"
+        />
+        <SkillButton
+          icon={faGitAlt}
+          name="Git"
+          url="https://git-scm.com/"
+          colorIcon="text-red-500"
+        />
+        <SkillButton
+          icon={faGithub}
+          name="Github"
+          url="https://github.com/"
+          colorIcon="text-black dark:text-white"
+        />
+        <SkillButton
+          icon={faDatabase}
+          name="MySQL"
+          url="https://www.mysql.com/"
+          colorIcon="text-cyan-600"
+        />
+        <SkillButton
+          icon={faDatabase}
+          name="PostgreSQL"
+          url="https://www.postgresql.org/"
+          colorIcon="text-blue-600"
+        />
+        <SkillButton
+          icon={faDatabase}
+          name="Sqlite"
+          url="https://www.sqlite.org/"
+          colorIcon="text-sky-400"
+        />
       </div>
     </div>
   );

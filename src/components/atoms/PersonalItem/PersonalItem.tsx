@@ -1,5 +1,5 @@
 import React from "react";
-import ContactButton from "../ContactButton/ContactButton";
+import ContactButton from "../Buttons/ContactButton/ContactButton";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 type PersonalItemProps = {

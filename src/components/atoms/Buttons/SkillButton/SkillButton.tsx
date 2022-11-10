@@ -1,6 +1,7 @@
 import React from "react";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import styles from "./SkillButton.module.css";
 
 type SkillButtonProps = {
   name: string;
@@ -11,16 +12,16 @@ type SkillButtonProps = {
 
 const SkillButton = (props: SkillButtonProps) => {
   const mainClass =
-    " flex items-center px-3 py-3 cursor-pointer bg-white dark:bg-slate-800 rounded-xl mr-2 mt-2";
+    " flex items-center px-3 py-3 cursor-pointer bg-white dark:bg-slate-800 rounded-xl mr-2 mt-2 hover:text-white";
   let gradientClass =
-    " hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 hover:text-white transition-all ";
+    " hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 transition-all ";
 
   return (
     <a
       href={props.url}
       target="_blank"
       rel="noopener noreferrer"
-      className={mainClass + gradientClass + props.colorIcon}
+      className={styles.text + mainClass + gradientClass + props.colorIcon}
     >
       <span>
         <FontAwesomeIcon
@@ -29,7 +30,7 @@ const SkillButton = (props: SkillButtonProps) => {
         />
       </span>
 
-      <p className="ml-2 text-sm text-black dark:text-white">{props.name}</p>
+      <p className="ml-2 text-sm dark:text-white">{props.name}</p>
     </a>
   );
 };

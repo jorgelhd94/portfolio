@@ -1,8 +1,8 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGraduationCap, faLanguage } from '@fortawesome/free-solid-svg-icons';
-import EducationCard from '../../molecules/EducationCard/EducationCard';
-import LanguageCard from '../../molecules/LanguageCard/LanguageCard';
+import EducationCard from '../../molecules/Cards/EducationCard/EducationCard';
+import LanguageCard from '../../molecules/Cards/LanguageCard/LanguageCard';
 import Spanish from '../../../../public/spanish.png';
 import English from '../../../../public/english.png';
 

@@ -1,5 +1,5 @@
 import React from "react";
-import ButtonCV from "../../atoms/ButtonCV/ButtonCV";
+import ButtonCV from "../../atoms/Buttons/ButtonCV/ButtonCV";
 import ProfilePhoto from "../../atoms/ProfilePhoto/ProfilePhoto";
 import ContactInfo from "../../molecules/PersonalInfo/PersonalInfo";
 import SocialLinks from "../../molecules/SocialLinks/SocialLinks";
