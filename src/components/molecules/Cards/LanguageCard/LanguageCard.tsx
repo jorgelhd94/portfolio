@@ -14,7 +14,7 @@ const LanguageCard = (props: LanguageType) => {
       <span className="text-tiny text-gray-lite dark:text-[#b7b7b7]">
         {props.level}
       </span>
-      <div className="flex justify-between pb-3">
+      <div className="flex justify-between pt-1 pb-2">
         <h3 className="text-xl dark:text-white">
           <span className="mr-2 align-middle">
             <Image src={props.icon} alt="Spanish" width={20} height={20} />
