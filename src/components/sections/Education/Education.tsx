@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGraduationCap, faLanguage } from '@fortawesome/free-solid-svg-icons';
 import EducationCard from '../../molecules/EducationCard/EducationCard';
 import LanguageCard from '../../molecules/LanguageCard/LanguageCard';
+import Spanish from '../../../../public/spanish.png';
+import English from '../../../../public/english.png';
 
 const Education = () => {
   return (
@@ -53,11 +55,13 @@ const Education = () => {
           level='Native'
           language='Spanish'
           percent={100}
+          icon={Spanish}
           />
           <LanguageCard
           level='B1 - B2'
           language='English'
           percent={60}
+          icon={English}
           />
         </div>
       </div>
