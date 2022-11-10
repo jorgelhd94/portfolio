@@ -42,3 +42,8 @@ body {
   content: var(--tw-content);
   left: 13rem;
 }
+
+.dark .dark\:text-color-910 {
+  --tw-text-opacity: 1;
+  color: rgb(166 166 166 / var(--tw-text-opacity));
+}

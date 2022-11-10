@@ -4,9 +4,12 @@ import ThemeToogle from '../../molecules/ThemeToogle/ThemeToogle';
 
 const Navbar = () => {
   return (
-    <div className='flex pt-[20px] px-8 lg:px-6 bg-white dark:bg-black md:bg-transparent dark:md:bg-transparent md:max-w-screen-xl lg:max-w-screen-2xl justify-between pb-5 mx-auto'>
-      <div className='w-full flex justify-between my-5'>
+    <div className="container grid grid-cols-2 m-auto pt-5 md:pt-[40px] pb-5 bg-transparent 
+                    dark:md:bg-transparent">
+      <div className='flex'>
         <Logo />
+      </div>
+      <div className='flex justify-end'>
         <ThemeToogle />
       </div>
     </div>

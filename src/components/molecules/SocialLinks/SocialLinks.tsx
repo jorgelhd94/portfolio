@@ -1,5 +1,5 @@
 import React from 'react'
-import SocialButton from '../../atoms/SocialButton/SocialButton'
+import SocialButton from '../../atoms/Buttons/SocialButton/SocialButton'
 import {faLinkedinIn, faGithubAlt, faFacebook} from '@fortawesome/free-brands-svg-icons'
 
 const SocialLinks = () => {

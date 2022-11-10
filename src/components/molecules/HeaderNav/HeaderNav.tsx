@@ -1,5 +1,5 @@
 import React from "react";
-import HeaderButton from "../../atoms/HeaderButton/HeaderButton";
+import HeaderButton from "../../atoms/Buttons/HeaderButton/HeaderButton";
 import { faUser, faCode, faBriefcase } from "@fortawesome/free-solid-svg-icons";
 
 const HeaderNav = () => {

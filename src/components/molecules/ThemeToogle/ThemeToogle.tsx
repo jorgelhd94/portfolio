@@ -25,7 +25,7 @@ const ThemeToogle = () => {
     <div className="flex items-center">
       <button
         onClick={() => changeTheme()}
-        className="focus:outline-none md:bg-white bg-gray-200 dark:bg-gray-500 w-12 h-12 rounded-full
+        className="focus:outline-none md:bg-white bg-gray-200 dark:bg-gray-500 w-10 h-10 rounded-full
                       hover:text-white hover:bg-gradient-to-r hover:from-indigo-500 hover:to-blue-500 flex items-center justify-center"
       >
         {theme === "light" ? (
