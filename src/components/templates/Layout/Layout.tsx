@@ -30,7 +30,7 @@ const Layout = (props: LayoutProps) => {
         <div className="container grid grid-cols-12 md:gap-10 justify-between lg:mt-[220px] m-auto relative">
           <Profile />
           <div className="col-span-12 lg:col-span-8 md:mx-auto">
-            <div className="lg:rounded-2xl bg-white dark:bg-[#111111]">
+            <div className="md:rounded-2xl bg-white dark:bg-[#111111]">
                 {props.children}
               <Footer />
             </div>

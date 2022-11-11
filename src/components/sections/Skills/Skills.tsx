@@ -32,11 +32,11 @@ const Skills = () => {
           className="text-indigo-600"
         />
         <h4 className="text-4xl dark:text-white font-medium">
-          Technical Skillsososo
+          Technical Skills
         </h4>
       </div>
 
-      <div className="flex flex-row  flex-wrap md:justify-around justify-center">
+      <div className="flex flex-row flex-wrap md:justify-start justify-center">
         <SkillButton
           icon={faJs}
           name="Javascript (ES6+)"

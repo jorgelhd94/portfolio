@@ -14,7 +14,7 @@ const About = () => {
               general.
             </p>
             <p className="text-[#44566c] leading-7 mt-2.5 dark:text-color-910">
-              My aim is to create applications and websites that take your
+              My goal is to create applications and websites that take your
               business to the next level, using the best software development
               tools on the market.
             </p>

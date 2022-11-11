@@ -17,7 +17,7 @@ const Works = () => {
         <h4 className="text-4xl dark:text-white font-medium">Works</h4>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-start">
         <WorkCard
           image={QrApp}
           title="Nice QR"
