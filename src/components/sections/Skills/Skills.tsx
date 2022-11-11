@@ -32,8 +32,7 @@ const Skills = () => {
           className="text-indigo-600"
         />
         <h4 className="text-4xl dark:text-white font-medium">
-          {' '}
-          Technical Skills{' '}
+          Technical Skillsososo
         </h4>
       </div>
 
