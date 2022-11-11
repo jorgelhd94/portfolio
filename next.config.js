@@ -13,6 +13,7 @@ if (isGithubActions) {
   basePath = `/${repo}`;
 }
 
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
