@@ -10,7 +10,7 @@ type ContactButtonProps = {
 
 const ContactButton = (props: ContactButtonProps) => {
   const mainClass =
-    " flex items-center px-3 py-3 cursor-pointer bg-gray-200 dark:bg-slate-800 rounded-xl";
+    " flex items-center px-3 py-3 cursor-pointer bg-gray-100 dark:bg-slate-800 rounded-xl shadow-md";
   let gradientClass =
     " hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 hover:text-white transition-all";
 

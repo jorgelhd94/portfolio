@@ -5,7 +5,6 @@ import {
   faCat,
   faDatabase,
   faFire,
-  faFish,
   faLaptopCode,
   faN,
   faWind,
