@@ -2,8 +2,8 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase } from '@fortawesome/free-solid-svg-icons';
 import WorkCard from '../../molecules/Cards/WorkCard/WorkCard';
-import TaskApp from '../../../../public/tasklist.jpg';
-import QrApp from '../../../../public/niceqr.jpg';
+import TaskApp from '../../../../public/tasklist.png';
+import QrApp from '../../../../public/qrcode.png';
 
 const Works = () => {
   return (

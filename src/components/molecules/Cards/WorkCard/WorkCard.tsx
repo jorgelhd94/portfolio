@@ -17,7 +17,7 @@ const WorkCard = (props: WorkTypes) => {
           <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             {props.title}
           </h5>
-          <Image src={props.image} alt="app" width={30} height={30}/>
+          <Image src={props.image} alt="app" width={40} height={20}/>
         </div>
         <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
           Here are the biggest enterprise technology acquisitions of 2021 so
