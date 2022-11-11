@@ -6,7 +6,7 @@ import SocialLinks from "../../molecules/SocialLinks/SocialLinks";
 
 const Profile = () => {
   return (
-    <div className="col-span-12 lg:col-span-4 lg:block">
+    <div className="col-span-12 lg:col-span-4 lg:block md:px-0 px-3">
       <div className="w-full mb-6 lg:mb-0 mx-auto sticky top-44 bg-white text-center dark:bg-[#111111] px-6 rounded-[20px] mt-[180px] md:mt-[220px] lg:mt-0">
         <ProfilePhoto />
 

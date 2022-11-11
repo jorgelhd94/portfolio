@@ -16,7 +16,7 @@ const WorkCard = (props: WorkTypes) => {
   return (
     <div
       className="max-w-sm bg-slate-200 rounded-lg border border-gray-200 shadow-md
-                  dark:bg-gray-800 dark:border-gray-700 mr-4"
+                  dark:bg-gray-800 dark:border-gray-700 mr-4 mb-4"
     >
       <div className="p-5">
         <div className="flex justify-between">

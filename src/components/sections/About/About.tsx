@@ -2,7 +2,7 @@ import React from 'react';
 
 const About = () => {
   return (
-    <div className="pt-12 md:pt-12 md:pb-8 px-2 sm:px-5 md:px-10 lg:px-14">
+    <div className="pt-12 md:pt-12 md:pb-8 px-5 md:px-10 lg:px-14">
       <h2 className="title-section after:left-52">About me</h2>
 
       <div className="grid grid-cols-12 md:gap-10 pt-4 md:pt-[30px] items-center">

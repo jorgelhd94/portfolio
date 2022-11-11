@@ -7,7 +7,7 @@ import QrApp from '../../../../public/qrcode.png';
 
 const Works = () => {
   return (
-    <div className="containe pt-12 pb-8 md:pb-12 px-4 sm:px-5 md:px-10 lg:px-14">
+    <div className="containe pt-12 pb-8 md:pb-12 px-5 md:px-10 lg:px-14">
       <div className="flex items-center space-x-3 mb-10">
         <FontAwesomeIcon
           icon={faBriefcase}
@@ -17,7 +17,7 @@ const Works = () => {
         <h4 className="text-4xl dark:text-white font-medium">Works</h4>
       </div>
 
-      <div className="flex justify-start">
+      <div className="flex flex-col md:flex-row justify-start items-center">
         <WorkCard
           image={QrApp}
           title="Nice QR"
