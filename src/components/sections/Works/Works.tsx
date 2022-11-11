@@ -18,8 +18,23 @@ const Works = () => {
       </div>
 
       <div className="flex justify-between">
-        <WorkCard image={QrApp} title="Nice QR" />
-        <WorkCard image={TaskApp} title="Simple Task List" />
+        <WorkCard
+          image={QrApp}
+          title="Nice QR"
+          urlApp="https://niceqr.netlify.app/"
+          urlGithub="https://github.com/jorgelhd94/niceqr"
+        >
+          <span>NiceQR is a Vue 3 app to generate beautiful qr codes.</span>
+        </WorkCard>
+
+        <WorkCard
+          image={TaskApp}
+          title="Simple Task List"
+          urlApp="https://tasklistce.netlify.app/"
+          urlGithub="https://github.com/jorgelhd94/task-list"
+        >
+          <span>Simple Task is a Vue 3 app to manage To-Do tasks.</span>
+        </WorkCard>
       </div>
     </div>
   );
