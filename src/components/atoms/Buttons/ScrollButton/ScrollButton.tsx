@@ -26,6 +26,7 @@ const ScrollButton = () => {
   return showButton ? (
     <div className="scrollToTop">
       <button
+      data-theme="winter"
         className="fixed bottom-5 right-7 z-50 btn btn-circle text-2xl"
         onClick={handleScrollToTop}
       >

@@ -1,25 +1,23 @@
-import React, { useState } from 'react';
-import LanguageButton from '../../atoms/Buttons/LanguageButton/LanguageButton';
-import Spanish from '../../../../public/spanish.png';
-import English from '../../../../public/english.png';
-import LanguageList from '../LanguageList/LanguageList';
-import { ILanguage } from '../../../interfaces/ILanguage';
-import { useRouter } from 'next/router';
-import nextI18nextConfig from '../../../../next-i18next.config';
+import { useState } from "react";
+import LanguageButton from "../../atoms/Buttons/LanguageButton/LanguageButton";
+import Spanish from "../../../assets/spanish.png";
+import English from "../../../assets/english.png";
+import LanguageList from "../LanguageList/LanguageList";
+import { Language } from "../../../interfaces/Language";
+import i18next from "i18next";
+import { useTranslation } from "react-i18next";
 
 const languages = [
-  { src: English.src, alt: 'English', code: 'en' },
-  { src: Spanish.src, alt: 'Español', code: 'es' },
+  { src: English, alt: "English", code: "en" },
+  { src: Spanish, alt: "Español", code: "es" },
 ];
 
 const LanguageToggle = () => {
-  const router = useRouter();
-  const lang = router.query.locale || nextI18nextConfig.i18n.defaultLocale;
+  const { i18n } = useTranslation();
+  const lang = i18next.resolvedLanguage || "es";
 
-  const getLanguageImageByCode = (
-    lang: string | string[],
-  ): ILanguage | null => {
-    if (typeof lang === 'string') {
+  const getLanguageImageByCode = (lang: string | string[]): Language | null => {
+    if (typeof lang === "string") {
       return (
         languages.find((language) => language.code === lang) || languages[0]
       );
@@ -28,7 +26,7 @@ const LanguageToggle = () => {
   };
 
   const [languageSelected, setLanguageSelected] = useState(
-    getLanguageImageByCode(lang),
+    getLanguageImageByCode(lang)
   );
 
   const [showList, setShowList] = useState(false);
@@ -40,6 +38,7 @@ const LanguageToggle = () => {
   const selectLanguage = (code: string) => {
     setLanguageSelected(getLanguageImageByCode(code));
     toggleShow();
+    i18n.changeLanguage(code)
   };
 
   return (

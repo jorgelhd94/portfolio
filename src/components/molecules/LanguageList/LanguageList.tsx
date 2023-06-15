@@ -1,9 +1,8 @@
-import React from 'react';
+import { Language } from '../../../interfaces/Language';
 import LanguageListItem from '../../atoms/LanguageListItem/LanguageListItem';
-import { ILanguage } from '../../../interfaces/ILanguage';
 
 type LanguageListProps = {
-  languages: ILanguage[];
+  languages: Language[];
   // eslint-disable-next-line no-unused-vars
   onClickItem: (code: string) => void;
 };
