@@ -10,6 +10,7 @@ const ThemeToggle = () => {
   return (
     <div>
       <button
+        data-theme="winter"
         className="btn btn-circle text-lg"
         data-set-theme="winter"
         data-act-class="hidden"

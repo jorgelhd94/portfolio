@@ -1,4 +1,3 @@
-import React from 'react';
 import ButtonCV from '../../atoms/Buttons/ButtonCV/ButtonCV';
 import ProfilePhoto from '../../atoms/ProfilePhoto/ProfilePhoto';
 import ContactInfo from '../../molecules/PersonalInfo/PersonalInfo';

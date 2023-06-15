@@ -1,5 +1,5 @@
 import Navbar from "../../organisms/Navbar/Navbar";
-// import Profile from '../../organisms/Profile/Profile';
+import Profile from '../../organisms/Profile/Profile';
 // import Footer from '../../organisms/Footer/Footer';
 import ScrollButton from "../../atoms/Buttons/ScrollButton/ScrollButton";
 
