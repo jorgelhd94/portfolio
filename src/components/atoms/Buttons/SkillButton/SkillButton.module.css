@@ -1,0 +1,6 @@
+.text:hover > p {
+  color: white;
+}
+.text > p {
+  color: black;
+}
