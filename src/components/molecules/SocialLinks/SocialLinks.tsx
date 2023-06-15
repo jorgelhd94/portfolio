@@ -1,4 +1,3 @@
-import React from 'react'
 import SocialButton from '../../atoms/Buttons/SocialButton/SocialButton'
 import {faLinkedinIn, faGithubAlt, faFacebook} from '@fortawesome/free-brands-svg-icons'
 

@@ -17,7 +17,7 @@ const Layout = (props: LayoutProps) => {
           <Navbar />
 
           <div className="lg:mt-[220px] flex gap-6 flex-col lg:flex-row">
-            {/* <Profile /> */}
+            <Profile />
             <div className="md:rounded-2xl bg-white dark:bg-[#111111]">
               {props.children}
               {/* <Footer /> */}

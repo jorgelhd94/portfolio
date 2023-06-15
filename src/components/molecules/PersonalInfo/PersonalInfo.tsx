@@ -1,14 +1,13 @@
-import React from 'react';
 import PersonalItem from '../../atoms/PersonalItem/PersonalItem';
 import {
   faEnvelope,
   faLocationDot,
   faMobileAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "react-i18next";
 
 const PersonalInfo = () => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <div className="p-7 rounded-2xl mt-7 bg-slate-200 dark:bg-[#1D1D1D]">
