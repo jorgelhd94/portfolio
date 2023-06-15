@@ -1,5 +1,5 @@
 import Logo from '../../atoms/Logo/Logo';
-// import ThemeToogle from '../../molecules/ThemeToogle/ThemeToogle';
+import ThemeToggle from '../../molecules/ThemeToggle/ThemeToggle';
 // import LanguageToggle from '../../molecules/LanguageToggle/LanguageToggle';
 
 const Navbar = () => {
@@ -8,7 +8,7 @@ const Navbar = () => {
       <Logo />
       <div className='flex items-center space-x-3'>
         {/* <LanguageToggle /> */}
-        {/* <ThemeToogle /> */}
+        <ThemeToggle />
       </div>
     </div>
   );
