@@ -1,13 +1,11 @@
-import React from 'react';
-import Image, { StaticImageData } from 'next/image';
-import styles from './LanguageCard.module.css';
-import DefaultLink from '../../../atoms/Links/DefaultLink/DefaultLink';
+import styles from "./LanguageCard.module.css";
+import DefaultLink from "../../../atoms/Links/DefaultLink/DefaultLink";
 
 type LanguageType = {
   level: string;
   language: string;
   percent: number;
-  icon: StaticImageData;
+  icon: string;
   progress?: boolean;
   certificate?: {
     url: string;
@@ -24,7 +22,7 @@ const LanguageCard = (props: LanguageType) => {
       <div className="flex justify-between pt-1 pb-2">
         <h3 className="text-xl dark:text-white">
           <span className="mr-2 align-middle">
-            <Image src={props.icon} alt="Spanish" width={20} height={20} />
+            <img src={props.icon} alt="Spanish" width={20} height={20} />
           </span>
           {props.language}
         </h3>
@@ -32,13 +30,13 @@ const LanguageCard = (props: LanguageType) => {
       </div>
       <div
         className={`relative p-1 w-full sm:w-1/2 bg-indigo-600 rounded ${
-          props.progress ? styles.shim : ''
+          props.progress ? styles.shim : ""
         }`}
-        style={{ width: props.percent + '%' }}
+        style={{ width: props.percent + "%" }}
       ></div>
 
       {props.certificate && (
-        <div className='pt-2'>
+        <div className="pt-2">
           <DefaultLink
             url={props.certificate.url}
             title={props.certificate.title}

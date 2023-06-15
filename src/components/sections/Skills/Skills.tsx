@@ -1,5 +1,5 @@
-import React from 'react';
-import SkillButton from '../../atoms/Buttons/SkillButton/SkillButton';
+
+import SkillButton from "../../atoms/Buttons/SkillButton/SkillButton";
 import {
   faCat,
   faDatabase,
@@ -7,7 +7,7 @@ import {
   faLaptopCode,
   faN,
   faWind,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 import {
   faBootstrap,
   faCss3,
@@ -19,16 +19,16 @@ import {
   faPython,
   faReact,
   faVuejs,
-} from '@fortawesome/free-brands-svg-icons';
-import TitleIcon from '../../molecules/TitleIcon/TitleIcon';
-import { useTranslation } from "next-i18next";
+} from "@fortawesome/free-brands-svg-icons";
+import TitleIcon from "../../molecules/TitleIcon/TitleIcon";
+import { useTranslation } from "react-i18next";
 
 const Skills = () => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   return (
     <div className="container bg-slate-200 dark:bg-[#0D0D0D] pt-12 pb-8 md:pb-12 px-4 sm:px-5 md:px-10 lg:px-14">
-      <TitleIcon title={t('tech_skills')} icon={faLaptopCode} />
+      <TitleIcon title={t("tech_skills")} icon={faLaptopCode} />
 
       <div className="flex flex-row flex-wrap justify-center">
         <SkillButton

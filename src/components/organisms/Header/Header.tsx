@@ -1,4 +1,4 @@
-import React from "react";
+
 import HeaderNav from "../../molecules/HeaderNav/HeaderNav";
 
 const Header = () => {

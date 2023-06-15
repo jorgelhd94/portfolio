@@ -1,11 +1,11 @@
-import React from 'react';
+
 import { faGraduationCap, faLanguage } from '@fortawesome/free-solid-svg-icons';
 import EducationCard from '../../molecules/Cards/EducationCard/EducationCard';
 import LanguageCard from '../../molecules/Cards/LanguageCard/LanguageCard';
 import Spanish from '../../../../public/spanish.png';
 import English from '../../../../public/english.png';
 import TitleIcon from '../../molecules/TitleIcon/TitleIcon';
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "react-i18next";
 
 const Education = () => {
   const { t } = useTranslation('common');
