@@ -1,6 +1,7 @@
 import { faBriefcase } from "@fortawesome/free-solid-svg-icons";
 import TitleIcon from "../../molecules/TitleIcon/TitleIcon";
 import { useTranslation } from "react-i18next";
+import { TypeAnimation } from "react-type-animation";
 
 const Works = () => {
   const { t } = useTranslation();
@@ -29,8 +30,24 @@ const Works = () => {
         </WorkCard> */}
         <div className="mockup-code">
           <pre className="flex items-end gap-1">
-            <code>{"Work in progress"}</code>
-            <span className="loading loading-dots loading-sm"></span>{" "}
+            <code>
+              <TypeAnimation
+                sequence={[
+                  "Work in progress...",
+                  1000,
+                  "Working with ReactJS...",
+                  1000,
+                  "Working with Typescript...",
+                  1000,
+                  "Working with NextJS...",
+                  1000,
+                ]}
+                wrapper="span"
+                speed={50}
+                style={{ fontSize: "1em", display: "inline-block" }}
+                repeat={Infinity}
+              />
+            </code>
           </pre>
         </div>
       </div>

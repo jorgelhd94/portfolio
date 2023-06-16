@@ -8,15 +8,15 @@ const Profile = () => {
   const { t } = useTranslation();
   return (
     <div className="md:px-0 px-3">
-      <div className="w-full mb-6 lg:mb-0 sticky top-44 bg-white text-center dark:bg-[#111111] px-6 rounded-[20px] mt-[180px] md:mt-[220px] lg:mt-0">
+      <div className="w-full mb-6 lg:mb-0 sticky top-44 bg-base-200 text-center  px-6 rounded-[20px] mt-[180px] md:mt-[220px] lg:mt-0">
         <ProfilePhoto />
 
         <div className="lg:w-80 pt-[100px] pb-8">
-          <h2 className="mt-6 mb-1 text-[26px] font-semibold dark:text-white">
+          <h2 className="mt-6 mb-1 text-[26px] font-semibold ">
             Jorge Luis Hernández
           </h2>
-          <h3 className="mb-4 text-[#7B7B7B] inline-block dark:bg-[#1D1D1D] px-5 py-1.5 rounded-lg dark:text-[#A6A6A6]">
-            {t("profession")}
+          <h3 className="card mb-4 bg-base-content text-base-100 inline-block shadow-xl">
+            <div className="card-body px-5 py-1.5">{t("profession")}</div>
           </h3>
 
           <SocialLinks />
