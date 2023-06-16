@@ -1,6 +1,6 @@
 import Navbar from "../../organisms/Navbar/Navbar";
 import Profile from '../../organisms/Profile/Profile';
-// import Footer from '../../organisms/Footer/Footer';
+import Footer from '../../organisms/Footer/Footer';
 import ScrollButton from "../../atoms/Buttons/ScrollButton/ScrollButton";
 
 type LayoutProps = {
@@ -20,7 +20,7 @@ const Layout = (props: LayoutProps) => {
             <Profile />
             <div className="md:rounded-2xl bg-white dark:bg-[#111111]">
               {props.children}
-              {/* <Footer /> */}
+              <Footer />
             </div>
           </div>
         </div>

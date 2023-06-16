@@ -6,7 +6,11 @@ import { themeChange } from "theme-change";
 const ThemeToggle = () => {
   useEffect(() => {
     themeChange(false);
+    if (!localStorage.getItem("theme")) {
+      localStorage.setItem("theme", "dracula");
+    }
   }, []);
+
   return (
     <div>
       <button
