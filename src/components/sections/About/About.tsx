@@ -2,7 +2,7 @@
 import { useTranslation } from "react-i18next";
 
 const About = () => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   return (
     <div className="pt-12 md:pt-12 md:pb-8 px-5 md:px-10 lg:px-14">
       <h2 className="title-section after:left-52">{t('about')}</h2>

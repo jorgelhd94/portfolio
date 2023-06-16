@@ -1,20 +1,17 @@
 
 import { faBriefcase } from '@fortawesome/free-solid-svg-icons';
-import WorkCard from '../../molecules/Cards/WorkCard/WorkCard';
-import TaskApp from '../../../../public/tasklist.png';
-import QrApp from '../../../../public/qrcode.png';
 import TitleIcon from '../../molecules/TitleIcon/TitleIcon';
 import { useTranslation } from "react-i18next";
 
 const Works = () => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <div className="pt-12 pb-8 md:pb-12 px-5 md:px-10 lg:px-14">
       <TitleIcon title={t('works')} icon={faBriefcase} />
 
       <div className="flex flex-col md:flex-row justify-center md:justify-start">
-        <WorkCard
+        {/* <WorkCard
           image={QrApp}
           title="Nice QR"
           urlApp="https://niceqr.netlify.app/"
@@ -30,7 +27,7 @@ const Works = () => {
           urlGithub="https://github.com/jorgelhd94/task-list"
         >
           <span>{t('simple_task')}</span>
-        </WorkCard>
+        </WorkCard> */}
       </div>
     </div>
   );

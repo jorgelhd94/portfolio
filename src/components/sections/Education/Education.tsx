@@ -2,13 +2,13 @@
 import { faGraduationCap, faLanguage } from '@fortawesome/free-solid-svg-icons';
 import EducationCard from '../../molecules/Cards/EducationCard/EducationCard';
 import LanguageCard from '../../molecules/Cards/LanguageCard/LanguageCard';
-import Spanish from '../../../../public/spanish.png';
-import English from '../../../../public/english.png';
+import Spanish from '../../../assets/spanish.png';
+import English from '../../../assets/english.png';
 import TitleIcon from '../../molecules/TitleIcon/TitleIcon';
 import { useTranslation } from "react-i18next";
 
 const Education = () => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const certificate = {
     url: 'https://www.efset.org/cert/QUGbGv',
     title: t('certificate'),

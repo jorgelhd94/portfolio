@@ -20,10 +20,8 @@ const LanguageCard = (props: LanguageType) => {
         {props.level}
       </span>
       <div className="flex justify-between pt-1 pb-2">
-        <h3 className="text-xl dark:text-white">
-          <span className="mr-2 align-middle">
-            <img src={props.icon} alt="Spanish" width={20} height={20} />
-          </span>
+        <h3 className="flex gap-2 text-xl dark:text-white">
+          <img src={props.icon} alt="Spanish" width={30} height={30} />
           {props.language}
         </h3>
         <h3 className="text-xl dark:text-white"> {props.percent}% </h3>

@@ -1,4 +1,3 @@
-
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./SkillButton.module.css";
@@ -12,8 +11,8 @@ type SkillButtonProps = {
 
 const SkillButton = (props: SkillButtonProps) => {
   const mainClass =
-    " flex items-center px-3 py-3 cursor-pointer bg-white dark:bg-slate-800 rounded-xl mr-2 mt-2 hover:text-white";
-  let gradientClass =
+    " flex items-center px-3 py-3 cursor-pointer bg-slate-800 rounded-xl mr-2 mt-2 hover:text-white";
+  const gradientClass =
     " hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 transition-all ";
 
   return (
@@ -24,13 +23,10 @@ const SkillButton = (props: SkillButtonProps) => {
       className={styles.text + mainClass + gradientClass + props.colorIcon}
     >
       <span>
-        <FontAwesomeIcon
-          icon={props.icon}
-          width={16}
-        />
+        <FontAwesomeIcon icon={props.icon} width={16} />
       </span>
 
-      <p className="ml-2 text-sm dark:text-white">{props.name}</p>
+      <p className="ml-2 text-sm text-white">{props.name}</p>
     </a>
   );
 };

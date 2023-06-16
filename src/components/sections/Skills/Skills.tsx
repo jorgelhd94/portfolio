@@ -1,4 +1,3 @@
-
 import SkillButton from "../../atoms/Buttons/SkillButton/SkillButton";
 import {
   faCat,
@@ -24,7 +23,7 @@ import TitleIcon from "../../molecules/TitleIcon/TitleIcon";
 import { useTranslation } from "react-i18next";
 
 const Skills = () => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
 
   return (
     <div className="container bg-slate-200 dark:bg-[#0D0D0D] pt-12 pb-8 md:pb-12 px-4 sm:px-5 md:px-10 lg:px-14">
