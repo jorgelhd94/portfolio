@@ -1,6 +1,5 @@
-
-import { faExternalLink } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExternalLink } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type DefaultLinkProps = {
   url: string;
@@ -13,7 +12,7 @@ const DefaultLink = (props: DefaultLinkProps) => {
       href={props.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2 text-sm text-slate-900 dark:text-slate-300  hover:text-indigo-600 dark:hover:text-indigo-300"
+      className="flex items-center gap-2 text-sm hover:text-indigo"
     >
       {props.title}
 

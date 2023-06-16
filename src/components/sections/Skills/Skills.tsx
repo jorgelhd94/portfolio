@@ -26,7 +26,7 @@ const Skills = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="container bg-slate-200 dark:bg-[#0D0D0D] pt-12 pb-8 md:pb-12 px-4 sm:px-5 md:px-10 lg:px-14">
+    <div className="container bg-base-300 pt-12 pb-8 md:pb-12 px-4 sm:px-5 md:px-10 lg:px-14">
       <TitleIcon title={t("tech_skills")} icon={faLaptopCode} />
 
       <div className="flex flex-row flex-wrap justify-center">

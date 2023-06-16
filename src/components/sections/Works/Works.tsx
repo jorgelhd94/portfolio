@@ -1,6 +1,5 @@
-
-import { faBriefcase } from '@fortawesome/free-solid-svg-icons';
-import TitleIcon from '../../molecules/TitleIcon/TitleIcon';
+import { faBriefcase } from "@fortawesome/free-solid-svg-icons";
+import TitleIcon from "../../molecules/TitleIcon/TitleIcon";
 import { useTranslation } from "react-i18next";
 
 const Works = () => {
@@ -8,7 +7,7 @@ const Works = () => {
 
   return (
     <div className="pt-12 pb-8 md:pb-12 px-5 md:px-10 lg:px-14">
-      <TitleIcon title={t('works')} icon={faBriefcase} />
+      <TitleIcon title={t("works")} icon={faBriefcase} />
 
       <div className="flex flex-col md:flex-row justify-center md:justify-start">
         {/* <WorkCard
@@ -28,6 +27,12 @@ const Works = () => {
         >
           <span>{t('simple_task')}</span>
         </WorkCard> */}
+        <div className="mockup-code">
+          <pre className="flex items-end gap-1">
+            <code>{"Work in progress"}</code>
+            <span className="loading loading-dots loading-sm"></span>{" "}
+          </pre>
+        </div>
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ const Education = () => {
       <div>
         <TitleIcon title={t('education')} icon={faGraduationCap} />
 
-        <div className="flex flex-col px-8 md:px-0">
+        <div className="flex flex-col gap-4 px-8 md:px-0">
           <EducationCard
             period="2009 - 2012"
             title={t('it_tech')}
@@ -39,7 +39,7 @@ const Education = () => {
       <div>
         <TitleIcon title={t('languages')} icon={faLanguage} />
 
-        <div className="flex flex-col px-8 md:px-0">
+        <div className="flex flex-col px-8 md:px-0 gap-4">
           <LanguageCard
             level={t('native')}
             language={t('spanish')}
