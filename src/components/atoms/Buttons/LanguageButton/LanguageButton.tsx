@@ -12,8 +12,8 @@ const LanguageButton = (props: LanguageButtonProps) => {
       <img
         src={props.image}
         alt={props.alt}
-        width={50}
-        height={50}
+        width={55}
+        height={55}
         className="cursor-pointer"
       />
     </div>
