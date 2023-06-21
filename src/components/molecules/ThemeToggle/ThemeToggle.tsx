@@ -7,23 +7,25 @@ const ThemeToggle = () => {
   const [isToggled, setToggle] = useState(false);
   const [themeName, setThemeName] = useState("dracula");
 
+  const handleThemeChange = (value: boolean) => {
+    setThemeName(value ? "winter" : "dracula");
+    setToggle(value);
+  };
+
   useEffect(() => {
     themeChange(false);
 
     const theme = localStorage.getItem("theme");
     if (!theme) {
       localStorage.setItem("theme", "dracula");
-      setThemeName("dracula");
-      setToggle(false);
+      handleThemeChange(false);
     } else {
-      setThemeName(theme === "winter" ? "dracula" : "winter");
-      setToggle(theme === "dracula");
+      handleThemeChange(theme === "dracula");
     }
   }, []);
 
   const onChangeTheme = (value: SetStateAction<boolean>) => {
-    setThemeName(!value ? "dracula" : "winter");
-    setToggle(value);
+    handleThemeChange(value as boolean);
   };
 
   return (
