@@ -15,7 +15,7 @@ const Profile = () => {
           <h2 className="mt-6 mb-1 text-[26px] font-semibold ">
             Jorge Luis Hernández
           </h2>
-          <h3 className="card mb-4 bg-base-content text-base-100 inline-block shadow-xl select-none">
+          <h3 className="card mb-4 bg-info-content text-white inline-block shadow-xl select-none">
             <div className="card-body px-5 py-1.5"> {'< ' + t("profession") + ' />'}</div>
           </h3>
 

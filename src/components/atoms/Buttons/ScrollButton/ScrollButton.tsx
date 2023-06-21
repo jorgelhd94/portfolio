@@ -27,7 +27,7 @@ const ScrollButton = () => {
     <div className="scrollToTop">
       <button
       data-theme="winter"
-        className="fixed bottom-5 right-7 z-50 btn btn-circle text-2xl"
+        className="fixed bottom-5 right-7 z-50 btn btn-circle border-2 border-slate-500 text-2xl"
         onClick={handleScrollToTop}
       >
         <FontAwesomeIcon
