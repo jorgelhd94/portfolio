@@ -9,9 +9,9 @@ type SocialButtonProps = {
 
 const SocialButton = (props: SocialButtonProps) => {
   const mainClass =
-    " flex text-white items-center px-3 py-2 cursor-pointer bg-info-content rounded-xl";
+    " flex items-center px-3 py-2 cursor-pointer bg-base-100 rounded-xl text-base-content shadow-md";
   const gradientClass =
-    " hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 transition-all";
+    " hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 hover:text-white transition-all";
 
   return (
     <a

@@ -46,7 +46,7 @@ const Skills = () => {
           icon={faPython}
           name="Python"
           url="https://www.python.org/"
-          colorIcon="text-sky-600"
+          colorIcon="text-green-600"
         />
         <SkillButton
           icon={faHtml5}
@@ -82,7 +82,7 @@ const Skills = () => {
           icon={faN}
           name="NextJS"
           url="https://nextjs.org/"
-          colorIcon="text-black dark:text-white"
+          colorIcon="text-base-content"
         />
         <SkillButton
           icon={faVuejs}
@@ -118,7 +118,7 @@ const Skills = () => {
           icon={faGithub}
           name="Github"
           url="https://github.com/"
-          colorIcon="text-black dark:text-white"
+          colorIcon="text-base-content"
         />
         <SkillButton
           icon={faDatabase}

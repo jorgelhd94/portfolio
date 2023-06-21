@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import LanguageButton from "../../atoms/Buttons/LanguageButton/LanguageButton";
 import Spanish from "../../../assets/spanish.png";
 import English from "../../../assets/english.png";
@@ -6,6 +6,7 @@ import LanguageList from "../LanguageList/LanguageList";
 import { Language } from "../../../interfaces/Language";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
+import useDetectOutsideClick from "../../../utils/useDetectClickOutside";
 
 const languages = [
   { src: English, alt: "English", code: "en" },
@@ -38,13 +39,20 @@ const LanguageToggle = () => {
   const selectLanguage = (code: string) => {
     setLanguageSelected(getLanguageImageByCode(code));
     toggleShow();
-    i18n.changeLanguage(code)
+    i18n.changeLanguage(code);
   };
+
+  const wrapperRef = useRef(null);
+
+  useDetectOutsideClick(wrapperRef, () => {
+    setShowList(false);
+  });
 
   return (
     <div className="relative">
       {languageSelected ? (
         <LanguageButton
+          ref={wrapperRef}
           image={languageSelected.src}
           alt={languageSelected.alt}
           onClick={toggleShow}
