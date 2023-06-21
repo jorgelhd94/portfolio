@@ -12,12 +12,12 @@ type PersonalItemProps = {
 const PersonalItem = (props: PersonalItemProps) => {
   return (
     <div className="flex px-2.5 py-4">
-      <ContactButton icon={props.icon} colorClass="bg-white" colorIcon={props.colorIcon} />
+      <ContactButton colorClass="bg-base-100" icon={props.icon} colorIcon={props.colorIcon} />
       <div className="text-left ml-2.5">
-        <p className="text-xs text-[#44566C] dark:text-[#A6A6A6]">
+        <p className="text-xs">
           {props.title}
         </p>
-        <p className="dark:text-white">{props.value}</p>
+        <p>{props.value}</p>
       </div>
     </div>
   );

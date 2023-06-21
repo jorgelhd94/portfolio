@@ -10,14 +10,14 @@ type ContactButtonProps = {
 
 const ContactButton = (props: ContactButtonProps) => {
   const mainClass =
-    " flex items-center px-3 py-3 cursor-pointer bg-gray-100 dark:bg-slate-800 rounded-xl shadow-md";
-  let gradientClass =
+    " flex items-center px-3 py-3 cursor-pointer rounded-xl shadow-md";
+  const gradientClass =
     " hover:bg-gradient-to-r hover:from-indigo-600 hover:to-blue-500 hover:text-white transition-all";
 
   return (
-    <span className={props.colorClass + ' ' + props.colorIcon + mainClass + gradientClass}>
+    <div className={props.colorClass + ' ' + props.colorIcon + mainClass + gradientClass}>
       <FontAwesomeIcon icon={props.icon} width={14} />
-    </span>
+    </div>
   );
 };
 
