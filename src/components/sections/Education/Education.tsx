@@ -16,7 +16,7 @@ const Education = () => {
 
   return (
     <div
-      className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 mt-[30px] pt-6 
+      className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 mt-[30px] py-6 
                  md:pb-8 px-5 md:px-10 lg:px-14"
     >
       <div>

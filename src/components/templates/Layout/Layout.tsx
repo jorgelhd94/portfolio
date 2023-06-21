@@ -16,7 +16,7 @@ const Layout = (props: LayoutProps) => {
 
           <div className="lg:mt-[220px] flex gap-6 flex-col lg:flex-row">
             <Profile />
-            <div className="card bg-base-200 shadow-xl">
+            <div className="card bg-base-200 shadow-xl max-md:rounded-none">
               <div className="card-body px-0 pb-2">
                 {props.children}
                 <Footer />
