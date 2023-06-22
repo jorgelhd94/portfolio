@@ -16,13 +16,13 @@ const Education = () => {
 
   return (
     <div
-      className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 mt-[30px] py-6 
+      className="grid grid-cols-1 md:grid-cols-2 gap-12 my-[30px] py-6 
                  md:pb-8 px-5 md:px-10 lg:px-14"
     >
       <div>
         <TitleIcon title={t('education')} icon={faGraduationCap} />
 
-        <div className="flex flex-col gap-4 px-8 md:px-0">
+        <div className="flex flex-col gap-4 px-4 md:px-0">
           <EducationCard
             period="2009 - 2012"
             title={t('it_tech')}
@@ -39,7 +39,7 @@ const Education = () => {
       <div>
         <TitleIcon title={t('languages')} icon={faLanguage} />
 
-        <div className="flex flex-col px-8 md:px-0 gap-4">
+        <div className="flex flex-col px-4 md:px-0 gap-4">
           <LanguageCard
             level={t('native')}
             language={t('spanish')}

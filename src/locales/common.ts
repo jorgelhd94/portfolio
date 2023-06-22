@@ -3,9 +3,7 @@ const localesI18n = {
     translation: {
       about: "About me",
       about_description_1:
-        "I am a computer engineer with a strong passion and great interest in programming, software development, and the technology world in general. As a full stack developer with experience in Javascript, Typescript, and Python, my goal is to help bring your business to the next level through the creation of high-quality software development tool-based applications and websites.",
-      about_description_2:
-        "My experience and skills allow me to develop robust and efficient solutions that meet your requirements and business objectives. I am committed to working efficiently and collaboratively to ensure the success of each project.",
+        "Computer engineer with a strong passion for programming, software development, and the technology industry. With experience in Javascript, Typescript, and Python, works as a full-stack developer  with the goal of helping businesses reach the next level through the creation of high-quality software development tool-based applications and websites.",
       profession: "Software Developer",
       phone: "Phone",
       email: "Email",
@@ -34,9 +32,7 @@ const localesI18n = {
     translation: {
       about: "Sobre mí",
       about_description_1:
-        "Soy Ingeniero Informático con una fuerte pasión y un gran interés por la programación, el desarrollo de software y el mundo de la tecnología en general. Como FullStack Developer con experiencia en Javascript, Typescript y Python, mi objetivo es ayudar a llevar su negocio al siguiente nivel mediante la creación de aplicaciones y sitios web con herramientas de desarrollo de software de alta calidad.",
-      about_description_2:
-        "Mi experiencia y habilidades me permiten desarrollar soluciones robustas y eficientes que cumplen con sus requisitos y objetivos empresariales. Estoy comprometido a trabajar de manera eficiente y colaborativa para garantizar el éxito de cada proyecto.",
+        "Ingeniero informático con una fuerte pasión por la programación, el desarrollo de software y la industria tecnológica. Con experiencia en Javascript, Typescript y Python, trabaja como desarrollador fullstack con el objetivo de ayudar a las empresas a alcanzar el siguiente nivel mediante la creación de aplicaciones y sitios web basados en herramientas de desarrollo de software de alta calidad.",
       profession: "Desarrollador de Software",
       phone: "Teléfono",
       email: "Correo electrónico",

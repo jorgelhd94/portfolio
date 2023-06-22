@@ -2,7 +2,6 @@ import PersonalItem from "../../atoms/PersonalItem/PersonalItem";
 import {
   faEnvelope,
   faLocationDot,
-  faMobileAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 
@@ -11,12 +10,12 @@ const PersonalInfo = () => {
 
   return (
     <div className="p-7 rounded-2xl mt-7 bg-base-300">
-      <PersonalItem
+      {/* <PersonalItem
         icon={faMobileAlt}
         title={t("phone")}
         value="+53 56163564"
         colorIcon="text-cyan-500"
-      />
+      /> */}
       <PersonalItem
         icon={faEnvelope}
         title={t("email")}
