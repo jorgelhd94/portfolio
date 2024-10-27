@@ -25,7 +25,7 @@ const PersonalInfo = () => {
       <PersonalItem
         icon={faLocationDot}
         title={t("location")}
-        value="Ciego de Ávila, Cuba"
+        value="Habana, Cuba"
         colorIcon="text-red-500"
       />
     </div>
