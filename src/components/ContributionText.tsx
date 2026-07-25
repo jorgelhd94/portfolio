@@ -16,8 +16,9 @@ import { useEffect, useRef } from 'react';
  *     nobody can see is a hole punched in the middle of a stroke.
  *
  * On mount the words play back the story of the graph: they start in GitHub's
- * empty-cell grey, fill with green column by column the way a year of commits
- * lands, then a wave sweeps across and hands them over to the final white.
+ * empty-cell grey, green lands in scattered bursts drifting left to right the
+ * way a year of commits accumulates, and then a wave sweeps across, collects
+ * both the active and the idle cells, and hands them over to the final white.
  *
  * Pointer interaction: cells are pushed away from the cursor and spring back,
  * and they brighten as it passes, as if the cursor left activity behind it.
@@ -35,6 +36,13 @@ const DEFAULT_PALETTE = ['#b3bccf', '#d5dced', '#e8ecf5', '#ffffff'];
 /** GitHub's own scale, borrowed for the intro only. */
 const EMPTY_COLOR = '#1b2027';
 const GREEN_RAMP = ['#0e4429', '#006d32', '#26a641', '#39d353'];
+
+/**
+ * Share of cells that light up during the green phase. The rest stay empty until
+ * the white wave collects them: a graph where every day is green is a green
+ * block, and the gaps between active days are what make it read as activity.
+ */
+const GREEN_DENSITY = 0.6;
 
 const BASE_FONT_SIZE = 100;
 const SUPERSAMPLE = 10;
@@ -88,7 +96,9 @@ interface Cell {
 	vx: number;
 	vy: number;
 	level: number;
-	/** When this cell turns green, and when it hands over to white. */
+	/** Whether this cell takes part in the green phase at all. */
+	contributes: boolean;
+	/** When this cell turns green (Infinity if it never does), and when it turns white. */
 	fillAt: number;
 	flipAt: number;
 }
@@ -293,8 +303,10 @@ const ContributionText = ({
 			if (!width || !rows) return;
 
 			const pitch = width / columns;
-			cellSize = pitch * 0.84;
-			cornerRadius = Math.max(1, cellSize * 0.24);
+			// Close to GitHub's own ratio. Any tighter and the squares stop reading as
+			// separate tiles and start reading as a solid mass.
+			cellSize = pitch * 0.78;
+			cornerRadius = Math.max(1, cellSize * 0.25);
 			cssWidth = width;
 			cssHeight = rows * pitch;
 
@@ -327,12 +339,16 @@ const ContributionText = ({
 						level = sample < 0.26 ? 0 : sample < 0.4 ? 1 : sample < 0.55 ? 2 : 3;
 					}
 
-					// Green arrives column by column, like weeks on the real graph. The
-					// handoff wave leans diagonal so it doesn't repeat the same motion.
-					// Both are derived from the grid, so a resize mid-intro stays in step.
+					// Green drifts left to right like weeks passing, but only half the
+					// timing comes from the column: the rest is scattered per cell, so
+					// commits land in bursts across the words instead of as a moving wall.
+					// The handoff wave leans diagonal so it doesn't repeat the same motion.
+					// Everything derives from grid position, so a resize mid-intro stays in step.
 					const acrossFill = columns > 1 ? col / (columns - 1) : 0;
-					const acrossFlip =
-						acrossFill * 0.78 + (rows > 1 ? row / (rows - 1) : 0) * 0.22;
+					const acrossFlip = acrossFill * 0.78 + (rows > 1 ? row / (rows - 1) : 0) * 0.22;
+
+					const contributes = hash2(col + 31, row + 17) < GREEN_DENSITY;
+					const scatter = hash2(col + 977, row + 613);
 
 					const homeX = col * pitch + inset;
 					const homeY = row * pitch + inset;
@@ -345,7 +361,10 @@ const ContributionText = ({
 						vx: 0,
 						vy: 0,
 						level,
-						fillAt: INTRO_DELAY + acrossFill * FILL_SWEEP + hash2(col + 977, row + 613) * 180,
+						contributes,
+						fillAt: contributes
+							? INTRO_DELAY + (acrossFill * 0.5 + scatter * 0.5) * FILL_SWEEP
+							: Infinity,
 						flipAt: FLIP_START + clamp01(acrossFlip) * FLIP_SWEEP,
 					});
 				}
@@ -375,26 +394,26 @@ const ContributionText = ({
 
 				let fill: string;
 
+				// Ordered so the handoff wins over the fill: cells that never went green
+				// carry fillAt = Infinity, and the wave still has to collect them.
 				if (settled) {
 					fill = palette[level] ?? palette[0];
-				} else if (elapsed < cell.fillAt) {
-					fill = EMPTY_COLOR;
-				} else if (elapsed < cell.flipAt) {
-					const progress = clamp01((elapsed - cell.fillAt) / CELL_FILL);
-					fill = css(mix(emptyRgb, greenRgb[level] ?? greenRgb[0], easeOutCubic(progress)));
-					size *= 1 + 0.18 * Math.sin(progress * Math.PI);
-				} else {
+				} else if (elapsed >= cell.flipAt) {
 					const progress = clamp01((elapsed - cell.flipAt) / CELL_FLIP);
 					// A crest of pure white rides the front of the wave, so the handoff
 					// reads as light passing through rather than a plain colour change.
 					const crest = Math.sin(progress * Math.PI);
-					const base = mix(
-						greenRgb[level] ?? greenRgb[0],
-						whiteRgb[level] ?? whiteRgb[0],
-						easeOutCubic(progress)
-					);
+					const from = cell.contributes ? (greenRgb[level] ?? greenRgb[0]) : emptyRgb;
+					const base = mix(from, whiteRgb[level] ?? whiteRgb[0], easeOutCubic(progress));
+
 					fill = css(mix(base, pureWhite, crest * 0.55));
 					size *= 1 + crest * 0.3;
+				} else if (elapsed >= cell.fillAt) {
+					const progress = clamp01((elapsed - cell.fillAt) / CELL_FILL);
+					fill = css(mix(emptyRgb, greenRgb[level] ?? greenRgb[0], easeOutCubic(progress)));
+					size *= 1 + 0.18 * Math.sin(progress * Math.PI);
+				} else {
+					fill = EMPTY_COLOR;
 				}
 
 				ctx.fillStyle = fill;
