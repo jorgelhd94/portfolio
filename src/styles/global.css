@@ -20,6 +20,10 @@
 	--color-mist-100: #e8ecf5;
 	--color-mist-300: #b3bccf;
 	--color-mist-500: #7c8699;
+
+	/* Wired to the family Astro self-hosts. Two names on purpose: aliasing a
+	   theme key to itself would be circular. */
+	--font-wordmark: var(--font-display);
 }
 
 :root {

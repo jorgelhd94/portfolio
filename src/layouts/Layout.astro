@@ -1,4 +1,6 @@
 ---
+import { Font } from 'astro:assets';
+
 import '../styles/global.css';
 
 interface Props {
@@ -10,7 +12,7 @@ const { title, description } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -19,6 +21,7 @@ const { title, description } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		{description && <meta name="description" content={description} />}
 		<title>{title}</title>
+		<Font cssVariable="--font-display" preload />
 	</head>
 	<body>
 		<slot />
