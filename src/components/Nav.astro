@@ -1,32 +1,26 @@
 ---
+import { navLinks, social } from '../data/site';
 import NavPill from './NavPill.tsx';
 import QuickMenu from './QuickMenu.tsx';
-
-const links = [
-	{ label: 'Home', href: '#top' },
-	{ label: 'About Me', href: '#about' },
-	{ label: 'Projects', href: '#projects' },
-	{ label: 'Stack', href: '#stack' },
-	{ label: 'Contact', href: '#contact' },
-];
-
-// TODO: swap in the real profiles.
-const social = [
-	{ label: 'GitHub', href: 'https://github.com', icon: 'github' as const },
-	{ label: 'LinkedIn', href: 'https://www.linkedin.com', icon: 'linkedin' as const },
-	{ label: 'Mail', href: 'mailto:jorgelhd94@gmail.com', icon: 'mail' as const },
-];
 ---
 
-<nav class="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-6">
-	<a
-		href="/"
-		class="font-wordmark text-[2.25rem] leading-none font-bold text-mist-100 transition-colors duration-300 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-azure-400"
-	>
-		Jorge Hernández
-	</a>
+{/* Equal-width rails on both sides. `justify-between` would centre the pill
+	between its neighbours rather than in the bar, so it would drift by half the
+	difference between the wordmark's width and the button's — and drift again
+	whenever either one changed. */}
+<nav class="mx-auto flex w-full max-w-6xl items-center gap-6 px-6 py-6">
+	<div class="flex flex-1 justify-start">
+		<a
+			href="/"
+			class="font-wordmark text-[2.25rem] leading-none font-bold whitespace-nowrap text-mist-100 transition-colors duration-300 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-azure-400"
+		>
+			Jorge H.
+		</a>
+	</div>
 
-	<NavPill client:load links={links} />
+	<NavPill client:load links={navLinks} />
 
-	<QuickMenu client:load links={links} social={social} />
+	<div class="flex flex-1 justify-end">
+		<QuickMenu client:load links={navLinks} social={social} />
+	</div>
 </nav>

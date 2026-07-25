@@ -3,6 +3,11 @@ import { type MouseEvent, useEffect, useLayoutEffect, useRef, useState } from 'r
 /**
  * Pill navigation lit from a source above the current item.
  *
+ * It arrives as a greeting and then widens into the navigation. The pill's width
+ * is driven from measured numbers for that stretch and handed back to the
+ * content once the transition ends, so nothing stays frozen at a stale size when
+ * a webfont lands or the labels change.
+ *
  * The light is three layers, because that is how light actually falls off: a
  * 1px near-white core on the bar's edge, a tight bloom rising off it, and a
  * wide, very faint haze. A single blurred colour — the usual way this effect is
@@ -27,6 +32,7 @@ interface NavLink {
 
 interface NavPillProps {
 	links: NavLink[];
+	greeting?: string;
 }
 
 interface Indicator {
@@ -40,41 +46,67 @@ const SPY_MARGIN = '-45% 0px -50% 0px';
 /** After a click, ignore the spy while the smooth scroll travels past sections. */
 const SPY_LOCK = 800;
 
+/** How long the greeting holds before the bar opens. */
+const GREETING_HOLD = 1600;
+
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-const NavPill = ({ links }: NavPillProps) => {
+const NavPill = ({ links, greeting = '👋 Welcome' }: NavPillProps) => {
 	const [active, setActive] = useState(0);
 	const [preview, setPreview] = useState<number | null>(null);
 	const [indicator, setIndicator] = useState<Indicator>({ x: 0, width: 0 });
-	const [ready, setReady] = useState(false);
+	const [widths, setWidths] = useState<{ greeting: number; full: number } | null>(null);
+	const [expanded, setExpanded] = useState(false);
+	/** Null once the transition is over, handing sizing back to the content. */
+	const [pinnedWidth, setPinnedWidth] = useState<number | null>(null);
 
+	const clipRef = useRef<HTMLDivElement | null>(null);
 	const listRef = useRef<HTMLUListElement | null>(null);
+	const greetingRef = useRef<HTMLSpanElement | null>(null);
 	const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 	const spyLockedUntil = useRef(0);
 
 	const target = preview ?? active;
+	const measured = widths !== null;
 
-	// Layout effect: measuring after paint would show the indicator in the wrong
-	// place for a frame.
+	// Layout effect: measuring after paint would show the bar at the wrong size
+	// for a frame, and it is painted before hydration runs.
+	useLayoutEffect(() => {
+		const list = listRef.current;
+		const greetingEl = greetingRef.current;
+		if (!list || !greetingEl) return;
+
+		const next = { greeting: greetingEl.offsetWidth, full: list.offsetWidth };
+		setWidths(next);
+
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			setExpanded(true);
+			return;
+		}
+
+		setPinnedWidth(next.greeting);
+
+		const timer = window.setTimeout(() => {
+			setExpanded(true);
+			setPinnedWidth(next.full);
+		}, GREETING_HOLD);
+
+		return () => window.clearTimeout(timer);
+	}, [links, greeting]);
+
 	useLayoutEffect(() => {
 		const measure = () => {
-			const list = listRef.current;
+			const clip = clipRef.current;
 			const item = itemRefs.current[target];
-			if (!list || !item) return;
+			if (!clip || !item) return;
 
-			// Measured against the list's own box rather than via offsetLeft, which
-			// silently resolves against the nearest positioned ancestor: adding
-			// `relative` to any wrapper in between would zero it out. `clientLeft` is
-			// the border width, converting the rect's border-box origin to the
-			// padding-box origin that `left: 0` uses on an absolute child.
-			const listRect = list.getBoundingClientRect();
+			// Measured against the clip's own box rather than via offsetLeft, which
+			// resolves against the nearest positioned ancestor and would silently
+			// zero out if any wrapper in between gained `position: relative`.
+			const clipRect = clip.getBoundingClientRect();
 			const itemRect = item.getBoundingClientRect();
 
-			setIndicator({
-				x: itemRect.left - listRect.left - list.clientLeft,
-				width: itemRect.width,
-			});
-			setReady(true);
+			setIndicator({ x: itemRect.left - clipRect.left, width: itemRect.width });
 		};
 
 		measure();
@@ -135,35 +167,96 @@ const NavPill = ({ links }: NavPillProps) => {
 	const rail = {
 		transform: `translateX(${indicator.x}px)`,
 		width: `${indicator.width}px`,
-		opacity: ready ? 1 : 0,
-		transitionProperty: ready ? 'transform, width, opacity' : 'none',
+		opacity: expanded ? 1 : 0,
+		transitionProperty: measured ? 'transform, width, opacity' : 'none',
 		transitionDuration: '480ms',
 		transitionTimingFunction: EASE,
+		transitionDelay: expanded ? '220ms, 220ms, 260ms' : '0ms',
 	};
 
 	return (
-		<ul
-			ref={listRef}
-			onPointerLeave={() => setPreview(null)}
-			onBlur={(event) => {
-				if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPreview(null);
+		<div
+			className="relative hidden lg:block"
+			style={{
+				// Hidden until the first measurement: the server cannot know either
+				// width, so the alternative is a frame of full-width greeting.
+				opacity: measured ? 1 : 0,
+				width: pinnedWidth === null ? undefined : `${pinnedWidth}px`,
+				transition: `width 620ms ${EASE}, opacity 200ms linear`,
 			}}
-			className="relative hidden items-center rounded-full border border-white/[0.06] bg-ink-950/40 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.045)] backdrop-blur-xl md:flex"
+			onTransitionEnd={(event) => {
+				if (event.propertyName === 'width' && expanded) setPinnedWidth(null);
+			}}
 		>
-			<span
-				aria-hidden="true"
-				style={{
-					...rail,
-					background:
-						'linear-gradient(180deg, rgba(178, 208, 255, 0.11), rgba(255, 255, 255, 0.035))',
-					boxShadow:
-						'inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 8px 22px -14px rgba(106, 169, 255, 0.7), 0 3px 10px -6px rgba(0, 0, 0, 0.7)',
+			<div
+				ref={clipRef}
+				onPointerLeave={() => setPreview(null)}
+				onBlur={(event) => {
+					if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPreview(null);
 				}}
-				className="pointer-events-none absolute inset-y-1.5 left-0 rounded-full"
-			/>
+				className="relative overflow-hidden rounded-full border border-white/[0.06] bg-ink-950/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.045)] backdrop-blur-xl"
+			>
+				<span
+					aria-hidden="true"
+					style={{
+						...rail,
+						background:
+							'linear-gradient(180deg, rgba(178, 208, 255, 0.11), rgba(255, 255, 255, 0.035))',
+						boxShadow:
+							'inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 8px 22px -14px rgba(106, 169, 255, 0.7), 0 3px 10px -6px rgba(0, 0, 0, 0.7)',
+					}}
+					className="pointer-events-none absolute inset-y-1.5 left-0 rounded-full"
+				/>
 
-			{/* Zero-height rail pinned to the top edge, so every layer hangs above the
-			    bar without adding to its box. */}
+				<ul
+					ref={listRef}
+					style={{
+						opacity: expanded ? 1 : 0,
+						transition: `opacity 420ms linear ${expanded ? '200ms' : '0ms'}`,
+					}}
+					className="flex w-max items-center p-1.5"
+				>
+					{links.map((link, index) => (
+						<li key={link.href}>
+							<a
+								ref={(node) => {
+									itemRefs.current[index] = node;
+								}}
+								href={link.href}
+								tabIndex={expanded ? undefined : -1}
+								aria-current={index === active ? 'page' : undefined}
+								onPointerEnter={() => setPreview(index)}
+								onFocus={() => setPreview(index)}
+								onClick={(event) => handleClick(event, index, link.href)}
+								className={`block rounded-full px-5 py-2 text-sm whitespace-nowrap transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azure-400 ${
+									index === target ? 'text-white' : 'text-mist-300 hover:text-mist-100'
+								}`}
+							>
+								{link.label}
+							</a>
+						</li>
+					))}
+				</ul>
+
+				<span
+					aria-hidden="true"
+					style={{
+						opacity: expanded ? 0 : 1,
+						transition: `opacity 260ms linear`,
+					}}
+					className="pointer-events-none absolute inset-0 flex items-center justify-center"
+				>
+					<span
+						ref={greetingRef}
+						className="w-max px-7 py-2 text-sm font-medium whitespace-nowrap text-mist-100"
+					>
+						{greeting}
+					</span>
+				</span>
+			</div>
+
+			{/* Zero-height rail pinned to the top edge, outside the clip so every
+			    layer hangs above the bar without being cut off by it. */}
 			<span aria-hidden="true" style={rail} className="pointer-events-none absolute top-0 left-0 h-0">
 				<span
 					className="absolute right-[-22%] bottom-0 left-[-22%] h-14 transition-opacity duration-500"
@@ -190,27 +283,7 @@ const NavPill = ({ links }: NavPillProps) => {
 					}}
 				/>
 			</span>
-
-			{links.map((link, index) => (
-				<li key={link.href}>
-					<a
-						ref={(node) => {
-							itemRefs.current[index] = node;
-						}}
-						href={link.href}
-						aria-current={index === active ? 'page' : undefined}
-						onPointerEnter={() => setPreview(index)}
-						onFocus={() => setPreview(index)}
-						onClick={(event) => handleClick(event, index, link.href)}
-						className={`block rounded-full px-5 py-2 text-sm whitespace-nowrap transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azure-400 ${
-							index === target ? 'text-white' : 'text-mist-300 hover:text-mist-100'
-						}`}
-					>
-						{link.label}
-					</a>
-				</li>
-			))}
-		</ul>
+		</div>
 	);
 };
 
