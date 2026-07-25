@@ -1,0 +1,134 @@
+---
+import HeaderBackground from './HeaderBackground.astro';
+
+const links = [
+	{ label: 'Sobre mí', href: '#sobre-mi' },
+	{ label: 'Proyectos', href: '#proyectos' },
+	{ label: 'Experiencia', href: '#experiencia' },
+	{ label: 'Contacto', href: '#contacto' },
+];
+---
+
+<header class="relative isolate flex min-h-dvh flex-col overflow-hidden">
+	<HeaderBackground />
+
+	<nav class="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-7">
+		<a href="/" class="text-sm font-semibold tracking-[0.25em] text-mist-100 uppercase">
+			Jorge H.
+		</a>
+
+		<ul class="hidden items-center gap-9 md:flex">
+			{
+				links.map((link) => (
+					<li>
+						<a
+							href={link.href}
+							class="text-sm text-mist-300 transition-colors duration-300 hover:text-mist-100"
+						>
+							{link.label}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+
+		<a
+			href="#contacto"
+			class="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm text-mist-100 backdrop-blur-sm transition-colors duration-300 hover:border-azure-400/40 hover:bg-azure-500/15"
+		>
+			Hablemos
+		</a>
+	</nav>
+
+	<div class="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 pb-28">
+		<p class="reveal text-sm tracking-[0.25em] text-azure-300 uppercase">
+			Desarrollador Full Stack
+		</p>
+
+		<h1
+			class="reveal mt-6 max-w-3xl bg-linear-to-br from-white to-mist-300 bg-clip-text text-5xl font-semibold tracking-tight text-transparent sm:text-6xl lg:text-7xl"
+		>
+			Jorge Hernández
+		</h1>
+
+		<p class="reveal mt-6 max-w-xl text-lg leading-relaxed text-mist-300">
+			Diseño y construyo interfaces web rápidas, accesibles y cuidadas hasta el último detalle.
+		</p>
+
+		<div class="reveal mt-10 flex flex-wrap items-center gap-4">
+			<a
+				href="#proyectos"
+				class="rounded-full bg-azure-500 px-7 py-3 text-sm font-medium text-white transition-colors duration-300 hover:bg-azure-400"
+			>
+				Ver proyectos
+			</a>
+			<a
+				href="#contacto"
+				class="rounded-full border border-white/10 px-7 py-3 text-sm font-medium text-mist-300 transition-colors duration-300 hover:border-white/25 hover:text-mist-100"
+			>
+				Contactar
+			</a>
+		</div>
+	</div>
+
+	<div class="pointer-events-none absolute inset-x-0 bottom-8 flex justify-center">
+		<span class="scroll-cue h-12 w-px bg-linear-to-b from-transparent via-mist-500 to-transparent"
+		></span>
+	</div>
+</header>
+
+<style>
+	/* Staggered entrance: content rises into place.
+	   `backwards` holds the initial state during the delay so nothing flashes first. */
+	.reveal {
+		animation: reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+	}
+
+	.reveal:nth-of-type(1) {
+		animation-delay: 0.15s;
+	}
+	.reveal:nth-of-type(2) {
+		animation-delay: 0.3s;
+	}
+	.reveal:nth-of-type(3) {
+		animation-delay: 0.45s;
+	}
+
+	div.reveal {
+		animation-delay: 0.6s;
+	}
+
+	@keyframes reveal {
+		from {
+			opacity: 0;
+			transform: translate3d(0, 1.5rem, 0);
+		}
+		to {
+			opacity: 1;
+			transform: translate3d(0, 0, 0);
+		}
+	}
+
+	.scroll-cue {
+		animation: scroll-cue 2.6s ease-in-out infinite;
+	}
+
+	@keyframes scroll-cue {
+		0%,
+		100% {
+			opacity: 0.25;
+			transform: scaleY(0.6);
+		}
+		50% {
+			opacity: 0.8;
+			transform: scaleY(1);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.reveal,
+		.scroll-cue {
+			animation: none;
+		}
+	}
+</style>

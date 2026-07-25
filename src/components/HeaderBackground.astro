@@ -1,0 +1,96 @@
+---
+import LightRays from './LightRays.tsx';
+
+/**
+ * Header background: WebGL light rays over graphite, with grain and vignette on top.
+ *
+ * The rays come from a shader (see LightRays.tsx). Grain and vignette stay in CSS and
+ * sit above the canvas to break up the gradient and blend the edges into the page.
+ */
+---
+
+<div class="bg" aria-hidden="true">
+	<div class="graphite"></div>
+	<div class="rays">
+		<LightRays
+			client:load
+			raysOrigin="top-right"
+			raysColor="#6aa9ff"
+			raysSpeed={0.9}
+			lightSpread={0.6}
+			rayLength={1.4}
+			fadeDistance={0.9}
+			saturation={1.25}
+			followMouse={true}
+			mouseInfluence={0.06}
+			noiseAmount={0.08}
+			distortion={0.05}
+		/>
+	</div>
+	<div class="grain"></div>
+	<div class="vignette"></div>
+</div>
+
+<style>
+	.bg {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		overflow: hidden;
+		background-color: var(--color-ink-950);
+	}
+
+	/* Graphite surface: diffuse light falling from above, a faint diagonal sheen
+	   (the mineral's shine) and a vertical fall-off into the page background.
+	   Without these the backdrop reads flat and muddy instead of matte. */
+	.graphite {
+		position: absolute;
+		inset: 0;
+		background:
+			radial-gradient(115% 75% at 50% -10%, rgba(150, 170, 205, 0.1), transparent 55%),
+			linear-gradient(
+				118deg,
+				rgba(255, 255, 255, 0.04) 0%,
+				transparent 35%,
+				transparent 65%,
+				rgba(255, 255, 255, 0.025) 100%
+			),
+			linear-gradient(
+				to bottom,
+				#161920 0%,
+				#14161c 30%,
+				#12151d 55%,
+				#0f1217 78%,
+				#0b0d12 92%,
+				var(--color-ink-950) 100%
+			);
+	}
+
+	.rays {
+		position: absolute;
+		inset: 0;
+	}
+
+	/* Grain: SVG fractal noise with luminance mapped onto the alpha channel, so it
+	   lands as translucent specks instead of a flat grey wash. */
+	.grain {
+		position: absolute;
+		inset: 0;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+		background-size: 180px 180px;
+		opacity: 0.15;
+		pointer-events: none;
+	}
+
+	/* Darkens the corners. The vertical ramp belongs to .graphite alone: two layers
+	   fading at once is what flattened it before, so this one only seals the very
+	   bottom edge, where it also has to dim the rays the graphite sits under. */
+	.vignette {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background:
+			radial-gradient(125% 85% at 25% 55%, transparent 40%, rgba(6, 7, 10, 0.6) 100%),
+			linear-gradient(to bottom, transparent 92%, var(--color-ink-950) 100%);
+	}
+</style>
