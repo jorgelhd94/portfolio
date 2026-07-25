@@ -1,45 +1,13 @@
 ---
 import ContributionText from './ContributionText.tsx';
 import HeaderBackground from './HeaderBackground.astro';
-
-const links = [
-	{ label: 'Sobre mí', href: '#sobre-mi' },
-	{ label: 'Proyectos', href: '#proyectos' },
-	{ label: 'Experiencia', href: '#experiencia' },
-	{ label: 'Contacto', href: '#contacto' },
-];
+import Nav from './Nav.astro';
 ---
 
-<header class="relative isolate flex min-h-dvh flex-col overflow-hidden">
+<header id="top" class="relative isolate flex min-h-dvh flex-col overflow-hidden">
 	<HeaderBackground />
 
-	<nav class="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-7">
-		<a href="/" class="text-sm font-semibold tracking-[0.25em] text-mist-100 uppercase">
-			Jorge H.
-		</a>
-
-		<ul class="hidden items-center gap-9 md:flex">
-			{
-				links.map((link) => (
-					<li>
-						<a
-							href={link.href}
-							class="text-sm text-mist-300 transition-colors duration-300 hover:text-mist-100"
-						>
-							{link.label}
-						</a>
-					</li>
-				))
-			}
-		</ul>
-
-		<a
-			href="#contacto"
-			class="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm text-mist-100 backdrop-blur-sm transition-colors duration-300 hover:border-azure-400/40 hover:bg-azure-500/15"
-		>
-			Hablemos
-		</a>
-	</nav>
+	<Nav />
 
 	<div class="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 pb-48">
 		<h1 class="sr-only">Software Engineer</h1>
