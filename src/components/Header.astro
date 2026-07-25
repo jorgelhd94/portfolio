@@ -10,7 +10,9 @@ import Nav from './Nav.astro';
 
 	<Nav />
 
-	<div class="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-6 pb-32">
+	<div
+		class="hero-exit mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-6 pb-32"
+	>
 		<h1 class="sr-only">Software Engineer</h1>
 
 		<div class="reveal w-full" style="--delay: 0.2s" aria-hidden="true">
@@ -60,13 +62,23 @@ import Nav from './Nav.astro';
 		</div>
 	</div>
 
+	{/* The hint is the control: it says the page continues and it takes you there,
+	so the affordance and the cue are the same object rather than a decoration
+	next to a scrollbar. */}
 	<div
-		class="reveal pointer-events-none absolute inset-x-0 bottom-12 flex flex-col items-center gap-4"
+		class="reveal pointer-events-none absolute inset-x-0 bottom-12 flex justify-center"
 		style="--delay: 1.2s"
-		aria-hidden="true"
 	>
-		<span class="text-[0.7rem] font-medium tracking-[0.3em] text-mist-500 uppercase">Scroll</span>
-		<span class="scroll-track"><span class="scroll-spark"></span></span>
+		<a
+			href="#about"
+			class="hint pointer-events-auto flex flex-col items-center gap-4 rounded-lg px-4 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-azure-400"
+		>
+			<span
+				class="text-[0.7rem] font-medium tracking-[0.3em] text-mist-500 uppercase transition-colors duration-300"
+				>Scroll</span
+			>
+			<span class="scroll-track"><span class="scroll-spark"></span></span>
+		</a>
 	</div>
 
 </header>
@@ -89,6 +101,64 @@ import Nav from './Nav.astro';
 			opacity: 1;
 			transform: translate3d(0, 0, 0);
 		}
+	}
+
+	/* Scroll handoff. Both are linked to the document's own scroll rather than to
+	   the element crossing the viewport: the ranges are then fixed distances from
+	   the top of the page and don't shift as sections are added below.
+
+	   The headline leaves before the header does, so the graphite is empty by the
+	   time About's warm ground arrives — the two sections never fight for the
+	   screen. The hint goes first, on a shorter range: it has done its job the
+	   moment the page starts moving.
+
+	   Longhands, not the `animation` shorthand: `animation-timeline` is a
+	   reset-only sub-property of it, so folding the two together produces a
+	   declaration no browser accepts. */
+	@supports (animation-timeline: scroll()) {
+		@media (prefers-reduced-motion: no-preference) {
+			.hero-exit {
+				animation-name: hero-exit;
+				animation-timing-function: linear;
+				animation-fill-mode: both;
+				animation-timeline: scroll(root block);
+				animation-range: 4vh 78vh;
+			}
+
+			.hint {
+				animation-name: hint-exit;
+				animation-timing-function: linear;
+				animation-fill-mode: both;
+				animation-timeline: scroll(root block);
+				animation-range: 0 22vh;
+			}
+		}
+	}
+
+	@keyframes hero-exit {
+		to {
+			opacity: 0;
+			transform: translate3d(0, -3.5rem, 0);
+		}
+	}
+
+	@keyframes hint-exit {
+		to {
+			opacity: 0;
+		}
+	}
+
+	.hint:hover span:first-child {
+		color: var(--color-mist-100);
+	}
+
+	.hint:hover .scroll-track {
+		background: linear-gradient(
+			to bottom,
+			rgba(179, 188, 207, 0.75),
+			rgba(179, 188, 207, 0.75) 60%,
+			transparent
+		);
 	}
 
 	/* Buttons that quote the headline's own moment: the wave with a white crest
@@ -201,6 +271,7 @@ import Nav from './Nav.astro';
 			rgba(124, 134, 153, 0.55) 60%,
 			transparent
 		);
+		transition: background 300ms ease;
 	}
 
 	.scroll-spark {

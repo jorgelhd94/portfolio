@@ -16,10 +16,33 @@
 	--color-azure-700: #16337a;
 	--color-azure-800: #0f2255;
 
-	/* Text */
+	/* Text on the cold half */
 	--color-mist-100: #e8ecf5;
 	--color-mist-300: #b3bccf;
 	--color-mist-500: #7c8699;
+
+	/* The page runs cold at the top and warms from About down: the header is the
+	   machine's reading of the work, everything below it is the person. These are
+	   the CV's clay and the portrait's wood, pulled down to a dark ground. */
+	--color-umber-950: #100d0c;
+	--color-umber-900: #191413;
+	--color-umber-800: #241d1a;
+	--color-umber-700: #332a25;
+
+	--color-clay-100: #f6e9e3;
+	--color-clay-200: #e9d3c6;
+	--color-clay-300: #d3ae98;
+	--color-clay-400: #bd8f76;
+	--color-clay-500: #a3735a;
+	--color-clay-600: #855942;
+	--color-clay-700: #5f3f31;
+	--color-clay-800: #3d2a20;
+
+	/* Text on the warm half. Same job as mist, carrying the ground's temperature:
+	   cool grey over umber reads as dirty rather than neutral. */
+	--color-sand-100: #f3eae4;
+	--color-sand-300: #c4b3a8;
+	--color-sand-500: #8c7c72;
 
 	/* Wired to the families Astro self-hosts. Separate names on purpose: aliasing
 	   a theme key to itself would be circular. Overriding --font-sans also moves
@@ -32,13 +55,15 @@
 	color-scheme: dark;
 }
 
+/* Cold at the root so overscrolling above the header reveals the header's own
+   ground; warm on the body, which is what shows under every section below it. */
 html {
 	background-color: var(--color-ink-950);
 	scroll-behavior: smooth;
 }
 
 body {
-	background-color: var(--color-ink-950);
+	background-color: var(--color-umber-950);
 	color: var(--color-mist-100);
 	font-family: var(--font-body);
 	-webkit-font-smoothing: antialiased;
