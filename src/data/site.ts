@@ -8,9 +8,9 @@ export const navLinks = [
 	{ label: 'Contact', href: '#contact', icon: 'message' as const },
 ];
 
-// TODO: swap in the real profiles.
+// TODO: swap in the real GitHub handle.
 export const github = 'https://github.com';
-export const linkedin = 'https://www.linkedin.com';
+export const linkedin = 'https://www.linkedin.com/in/jorgelhd94';
 export const email = 'jorgelhd94@gmail.com';
 
 export const social = [
