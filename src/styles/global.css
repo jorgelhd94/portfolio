@@ -21,8 +21,10 @@
 	--color-mist-300: #b3bccf;
 	--color-mist-500: #7c8699;
 
-	/* Wired to the family Astro self-hosts. Two names on purpose: aliasing a
-	   theme key to itself would be circular. */
+	/* Wired to the families Astro self-hosts. Separate names on purpose: aliasing
+	   a theme key to itself would be circular. Overriding --font-sans also moves
+	   the default body face, which Tailwind's preflight resolves through it. */
+	--font-sans: var(--font-body);
 	--font-wordmark: var(--font-display);
 }
 
@@ -38,6 +40,7 @@ html {
 body {
 	background-color: var(--color-ink-950);
 	color: var(--color-mist-100);
+	font-family: var(--font-body);
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
 }

@@ -24,7 +24,34 @@ import { useEffect, useRef } from 'react';
  * and they brighten as it passes, as if the cursor left activity behind it.
  */
 
-const FONT_STACK = '"Arial Black", "Helvetica Neue", Helvetica, Arial, sans-serif';
+/** Used only if the theme variable is missing; the real face is self-hosted. */
+const FALLBACK_STACK = '"Arial Black", "Helvetica Neue", Helvetica, Arial, sans-serif';
+
+/**
+ * Canvas needs a concrete family list, so the value is read back from the theme
+ * rather than restated here. Hardcoding a stack is how the letterforms ended up
+ * depending on whichever heavy face the visitor's OS happened to ship.
+ */
+const resolveFontStack = () => {
+	const value = getComputedStyle(document.documentElement).getPropertyValue('--font-body').trim();
+	return value || FALLBACK_STACK;
+};
+
+/**
+ * Assigning a malformed shorthand to `ctx.font` is a no-op: canvas keeps the
+ * previous value and reports nothing. The theme's family name is generated, so
+ * verify it took rather than silently rasterising in 10px sans-serif.
+ */
+const applyFont = (context: CanvasRenderingContext2D, stack: string) => {
+	const font = `900 ${BASE_FONT_SIZE}px ${stack}`;
+	context.font = font;
+
+	if (!context.font.includes(`${BASE_FONT_SIZE}px`)) {
+		context.font = `900 ${BASE_FONT_SIZE}px ${FALLBACK_STACK}`;
+	}
+
+	return context.font;
+};
 
 /**
  * A tight white ramp, dimmest to brightest. Kept narrow on purpose: wide enough
@@ -47,6 +74,19 @@ const GREEN_DENSITY = 0.6;
 const BASE_FONT_SIZE = 100;
 const SUPERSAMPLE = 10;
 const COVERAGE_THRESHOLD = 0.45;
+
+/**
+ * Cell pitch the grid aims for, and the floor on how few columns it will use.
+ *
+ * Each line is justified across the container, so the words' physical size is
+ * set by the width alone — the column count changes how finely they are
+ * resolved, not how big they are. Holding 96 columns on a phone means 3px
+ * cells: the grid stops reading as tiles and turns to fuzz. Resolving fewer
+ * columns keeps the cells close to the size they are on a desktop, and the
+ * floor is what stops the letterforms coarsening past being readable.
+ */
+const TARGET_PITCH = 11;
+const MIN_COLUMNS = 64;
 /** Cells per noise period: how wide the brightness patches run. */
 const NOISE_SCALE = 5.5;
 const REPEL_RADIUS = 92;
@@ -78,7 +118,7 @@ interface ContributionTextProps {
 	lines: string[];
 	/** Hanging punctuation: sits past the justified block, not inside it. */
 	trailingMark?: string;
-	/** Grid resolution across the width. Higher means finer letterforms. */
+	/** Upper bound on grid resolution. Narrow viewports resolve to fewer. */
 	columns?: number;
 	/** Blank rows between lines. */
 	lineGap?: number;
@@ -185,6 +225,8 @@ const ContributionText = ({
 		const pureWhite: Rgb = [255, 255, 255];
 
 		let disposed = false;
+		/** Resolved from the container width; the `columns` prop is only a ceiling. */
+		let activeColumns = columns;
 		let rows = 0;
 		let glyphMask: boolean[] = [];
 		let cells: Cell[] = [];
@@ -207,9 +249,9 @@ const ContributionText = ({
 			const probe = document.createElement('canvas').getContext('2d');
 			if (!probe) return;
 
-			probe.font = `900 ${BASE_FONT_SIZE}px ${FONT_STACK}`;
+			const font = applyFont(probe, resolveFontStack());
 
-			const maskWidth = columns * SUPERSAMPLE;
+			const maskWidth = activeColumns * SUPERSAMPLE;
 			const gap = lineGap * SUPERSAMPLE;
 
 			const raw = lines.map((line) => {
@@ -244,7 +286,7 @@ const ContributionText = ({
 			const maskHeight = Math.ceil(textHeight + gap * Math.max(0, lines.length - 1));
 
 			rows = Math.max(1, Math.ceil(maskHeight / SUPERSAMPLE));
-			glyphMask = new Array<boolean>(columns * rows).fill(false);
+			glyphMask = new Array<boolean>(activeColumns * rows).fill(false);
 
 			const mask = document.createElement('canvas');
 			mask.width = maskWidth;
@@ -255,7 +297,7 @@ const ContributionText = ({
 
 			maskCtx.fillStyle = '#fff';
 			maskCtx.textBaseline = 'alphabetic';
-			maskCtx.font = `900 ${BASE_FONT_SIZE}px ${FONT_STACK}`;
+			maskCtx.font = font;
 
 			let cursorY = 0;
 
@@ -282,7 +324,7 @@ const ContributionText = ({
 			const perCell = SUPERSAMPLE * SUPERSAMPLE;
 
 			for (let row = 0; row < rows; row++) {
-				for (let col = 0; col < columns; col++) {
+				for (let col = 0; col < activeColumns; col++) {
 					let covered = 0;
 
 					for (let y = 0; y < SUPERSAMPLE; y++) {
@@ -293,7 +335,7 @@ const ContributionText = ({
 						}
 					}
 
-					glyphMask[row * columns + col] = covered / perCell > COVERAGE_THRESHOLD;
+					glyphMask[row * activeColumns + col] = covered / perCell > COVERAGE_THRESHOLD;
 				}
 			}
 		};
@@ -302,7 +344,7 @@ const ContributionText = ({
 			const width = container.clientWidth;
 			if (!width || !rows) return;
 
-			const pitch = width / columns;
+			const pitch = width / activeColumns;
 			// Close to GitHub's own ratio. Any tighter and the squares stop reading as
 			// separate tiles and start reading as a solid mass.
 			cellSize = pitch * 0.78;
@@ -323,9 +365,9 @@ const ContributionText = ({
 			cells = [];
 
 			for (let row = 0; row < rows; row++) {
-				for (let col = 0; col < columns; col++) {
+				for (let col = 0; col < activeColumns; col++) {
 					// Cells outside the letters are never created: no grid, no panel.
-					if (!glyphMask[row * columns + col]) continue;
+					if (!glyphMask[row * activeColumns + col]) continue;
 
 					let level: number;
 
@@ -344,7 +386,7 @@ const ContributionText = ({
 					// commits land in bursts across the words instead of as a moving wall.
 					// The handoff wave leans diagonal so it doesn't repeat the same motion.
 					// Everything derives from grid position, so a resize mid-intro stays in step.
-					const acrossFill = columns > 1 ? col / (columns - 1) : 0;
+					const acrossFill = activeColumns > 1 ? col / (activeColumns - 1) : 0;
 					const acrossFlip = acrossFill * 0.78 + (rows > 1 ? row / (rows - 1) : 0) * 0.22;
 
 					const contributes = hash2(col + 31, row + 17) < GREEN_DENSITY;
@@ -513,7 +555,15 @@ const ContributionText = ({
 			wake();
 		};
 
+		/** Columns that put the cells nearest the target pitch, within the bounds. */
+		const pickColumns = () =>
+			Math.min(
+				columns,
+				Math.max(MIN_COLUMNS, Math.round((container.clientWidth || 1) / TARGET_PITCH))
+			);
+
 		const rebuild = () => {
+			activeColumns = pickColumns();
 			buildMask();
 			layout();
 			wake();
@@ -532,6 +582,13 @@ const ContributionText = ({
 		}
 
 		const observer = new ResizeObserver(() => {
+			// A width change that lands on a different column count needs the mask
+			// rasterised again; anything else only needs the cells repositioned.
+			if (pickColumns() !== activeColumns) {
+				rebuild();
+				return;
+			}
+
 			layout();
 			wake();
 		});
