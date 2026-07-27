@@ -5,12 +5,20 @@ import HeaderBackground from './HeaderBackground.astro';
 import Nav from '../components/nav/Nav.astro';
 ---
 
-<header id="top" class="relative isolate flex min-h-dvh flex-col overflow-hidden">
-	<HeaderBackground />
+{/* The stage is pinned and the wrapper supplies the scroll. Nothing here moves
+while you scroll through it: the page stays on one screen and the scroll drives
+the animation instead of the layout. */}
+<div class="hero-scroll" data-scroll-stage>
+	<header id="top" class="hero-stage isolate flex flex-col overflow-hidden">
+		<HeaderBackground />
 
-	<Nav />
+		<div class="nav-shell">
+			<Nav />
+		</div>
 
-	<div class="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-6 pb-32">
+		<div
+			class="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-6 pb-32"
+		>
 		<h1 class="sr-only">Software Engineer</h1>
 
 		<div class="reveal w-full" style="--delay: 0.2s" aria-hidden="true">
@@ -21,7 +29,7 @@ import Nav from '../components/nav/Nav.astro';
 		it lands as a band and leaves the viewport half empty; from md up the graph
 		fills the screen on its own and the scroll hint is enough. */}
 		<div
-			class="reveal mt-10 flex w-full max-w-[19rem] items-center gap-2.5 md:hidden"
+			class="actions reveal mt-10 flex w-full max-w-[19rem] items-center gap-2.5 md:hidden"
 			style="--delay: 0.7s"
 		>
 			<a href="#projects" class="wave-button wave-button-primary flex-1">
@@ -59,16 +67,81 @@ import Nav from '../components/nav/Nav.astro';
 		</div>
 	</div>
 
+	{/* The cue is the control: it says the page continues and it takes you there,
+	so the affordance and the signal are one object. */}
 	<div
-		class="reveal pointer-events-none absolute inset-x-0 bottom-12 flex flex-col items-center gap-4"
+		class="reveal pointer-events-none absolute inset-x-0 bottom-12 flex justify-center"
 		style="--delay: 1.2s"
-		aria-hidden="true"
 	>
-		<span class="text-[0.7rem] font-medium tracking-[0.3em] text-mist-500 uppercase">Scroll</span>
-		<span class="scroll-track"><span class="scroll-spark"></span></span>
+		<a
+			href="#learning"
+			aria-label="Scroll to what comes next"
+			class="hint pointer-events-auto flex flex-col items-center gap-4 rounded-lg px-5 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-400"
+		>
+			<span
+				class="hint-label text-[0.7rem] font-medium tracking-[0.3em] text-mist-500 uppercase transition-colors duration-300"
+				>Scroll</span
+			>
+			<span class="scroll-track"><span class="scroll-spark"></span></span>
+		</a>
 	</div>
 
-</header>
+	</header>
+</div>
+
+<script>
+	/**
+	 * Clears the pinned hero in place, uncovering the section already pinned
+	 * underneath it. Driven from the wrapper because the stage itself never
+	 * moves, and read on a frame rather than per scroll event.
+	 */
+	const stage = document.querySelector<HTMLElement>('[data-scroll-stage]');
+	const panel = stage?.querySelector<HTMLElement>('.hero-stage');
+
+	if (stage && panel && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		/**
+		 * Share of the stage spent on the words before the screen starts to go, and
+		 * how much of it the going takes.
+		 *
+		 * HOLD is coupled to the next section's overlap: the panel underneath is
+		 * pinned once its own top reaches the viewport, and clearing this one any
+		 * earlier than that shows it still travelling up. Shortening the overlap
+		 * without raising HOLD puts that back.
+		 */
+		const HOLD = 0.55;
+		const FADE = 0.43;
+
+		const ramp = (value: number, from: number, over: number) =>
+			Math.min(1, Math.max(0, (value - from) / over));
+
+		let frame = 0;
+
+		const update = () => {
+			frame = 0;
+
+			const rect = stage.getBoundingClientRect();
+			const travel = rect.height - window.innerHeight;
+			const progress = travel > 0 ? Math.min(1, Math.max(0, -rect.top / travel)) : 0;
+			const exit = ramp(progress, HOLD, FADE);
+
+			panel.style.setProperty('--cue', ramp(progress, 0, 0.14).toFixed(3));
+			panel.style.setProperty('--early', ramp(progress, 0.06, 0.34).toFixed(3));
+			panel.style.setProperty('--exit', exit.toFixed(3));
+
+			// Cleared, it is still a full-screen sticky panel sitting on top of the
+			// section underneath, and it would swallow every click meant for it.
+			panel.style.pointerEvents = exit >= 1 ? 'none' : '';
+		};
+
+		const request = () => {
+			if (!frame) frame = requestAnimationFrame(update);
+		};
+
+		update();
+		window.addEventListener('scroll', request, { passive: true });
+		window.addEventListener('resize', request);
+	}
+</script>
 
 <style>
 	/* Staggered entrance: content rises into place. `backwards` holds the initial
@@ -88,6 +161,52 @@ import Nav from '../components/nav/Nav.astro';
 			opacity: 1;
 			transform: translate3d(0, 0, 0);
 		}
+	}
+
+	/* Above the section that follows, which is already pinned underneath by the
+	   time the hero starts to fade. Uncovering it in place is what keeps the
+	   handoff from being something that slides past. */
+	.hero-scroll {
+		position: relative;
+		z-index: 1;
+		height: 200vh;
+	}
+
+	/* Everything on the screen goes together — background, wordmark, nav and all
+	   — so what is uncovered is the next section rather than a hero with pieces
+	   left behind on it. */
+	.hero-stage {
+		position: sticky;
+		top: 0;
+		height: 100dvh;
+		opacity: calc(1 - var(--exit, 0));
+	}
+
+	.hint:hover .hint-label {
+		color: var(--color-mist-100);
+	}
+
+	.hint:hover .scroll-track {
+		background: linear-gradient(
+			to bottom,
+			rgba(190, 175, 160, 0.75),
+			rgba(190, 175, 160, 0.75) 60%,
+			transparent
+		);
+	}
+
+	/* Everything on the hero leaves on one of two beats, both read from the same
+	   stage progress the words are. The cue goes as soon as the page moves, since
+	   by then it has said what it had to; the wordmark, the nav and the actions go
+	   with the words, so the screen is never a bare navigation bar over an empty
+	   panel waiting for the handoff. */
+	.hint {
+		opacity: calc(1 - var(--cue, 0));
+	}
+
+	.nav-shell,
+	.actions {
+		opacity: calc(1 - var(--early, 0));
 	}
 
 	/* The wave that hands the headline from green to white sweeps these on hover,

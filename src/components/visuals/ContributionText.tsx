@@ -8,7 +8,9 @@ import { useEffect, useRef } from 'react';
  * On mount the words play back the story of the graph — empty grey, then green
  * arriving in scattered bursts, then a wave that collects every cell and hands
  * it to the final white. Afterwards the cursor pushes cells aside and brightens
- * them as it passes.
+ * them as it passes, and scrolling past takes the words apart again: each cell
+ * lets go on its own bearing and at its own moment, so the words come apart
+ * where they stand instead of being wiped off.
  *
  * Three constraints hold the type legible, and breaking any of them is what
  * makes it read as static instead of as letters: glyphs scale uniformly and are
@@ -74,6 +76,29 @@ const TARGET_PITCH = 11;
 const MIN_COLUMNS = 64;
 /** Cells per noise period: how wide the brightness patches run. */
 const NOISE_SCALE = 5.5;
+/**
+ * How the words come apart as the header is scrolled past. The spread is how
+ * much of the travel is spent staggering; it has to stay under half, or the
+ * first cells are gone before the last have started and a two-line headline
+ * loses one word while the other is still whole.
+ */
+const DISSOLVE_SPREAD = 0.42;
+
+/** Share of a pinned stage's scroll the words take to come apart. */
+const DISSOLVE_WINDOW = 0.46;
+
+/**
+ * Room around the letters for cells to scatter into. The canvas is otherwise
+ * exactly the size of the words, and drifting cells are clipped at its edge —
+ * which leaves the scattered field ending in a perfect rectangle. Negative
+ * margins keep the extra area out of the layout.
+ */
+const BLEED = 150;
+
+/** Fallback range, as the container's top edge over the viewport height. */
+const DISSOLVE_START = 0.05;
+const DISSOLVE_END = -0.3;
+
 const REPEL_RADIUS = 92;
 const REPEL_STRENGTH = 2.4;
 const SPRING = 0.055;
@@ -126,6 +151,10 @@ interface Cell {
 	/** When this cell turns green (Infinity if it never does), and when it turns white. */
 	fillAt: number;
 	flipAt: number;
+	/** Where this cell goes as the words come apart, and how long it waits first. */
+	driftX: number;
+	driftY: number;
+	lift: number;
 }
 
 const toRgb = (hex: string): Rgb => {
@@ -201,6 +230,7 @@ const ContributionText = ({
 		if (!ctx) return;
 
 		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const stage = container.closest<HTMLElement>('[data-scroll-stage]');
 		const hasRoundRect = typeof ctx.roundRect === 'function';
 		const topLevel = palette.length - 1;
 
@@ -222,6 +252,7 @@ const ContributionText = ({
 		let frame: number | null = null;
 		let introStart: number | null = null;
 		let filterOverridden = false;
+		let dissolve = 0;
 
 		const pointer = { x: 0, y: 0, active: false };
 
@@ -332,14 +363,15 @@ const ContributionText = ({
 			// separate tiles and start reading as a solid mass.
 			cellSize = pitch * 0.78;
 			cornerRadius = Math.max(1, cellSize * 0.25);
-			cssWidth = width;
-			cssHeight = rows * pitch;
+			cssWidth = width + BLEED * 2;
+			cssHeight = rows * pitch + BLEED * 2;
 
 			const dpr = Math.min(window.devicePixelRatio || 1, 2);
 			canvas.width = Math.round(cssWidth * dpr);
 			canvas.height = Math.round(cssHeight * dpr);
 			canvas.style.width = `${cssWidth}px`;
 			canvas.style.height = `${cssHeight}px`;
+			canvas.style.margin = `${-BLEED}px`;
 			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
 			const inset = (pitch - cellSize) / 2;
@@ -373,8 +405,14 @@ const ContributionText = ({
 					const contributes = hash2(col + 31, row + 17) < GREEN_DENSITY;
 					const scatter = hash2(col + 977, row + 613);
 
-					const homeX = col * pitch + inset;
-					const homeY = row * pitch + inset;
+					const homeX = col * pitch + inset + BLEED;
+					const homeY = row * pitch + inset + BLEED;
+
+					// Every cell leaves on its own bearing and at its own moment. A shared
+					// direction with an ordered front is a curtain however it is timed:
+					// what makes this read as coming apart is that there is no front.
+					const bearing = hash2(col + 401, row + 89) * Math.PI * 2;
+					const reach = 26 + hash2(col + 137, row + 971) * 84;
 
 					cells.push({
 						homeX,
@@ -389,9 +427,40 @@ const ContributionText = ({
 							? INTRO_DELAY + (acrossFill * 0.5 + scatter * 0.5) * FILL_SWEEP
 							: Infinity,
 						flipAt: FLIP_START + clamp01(acrossFlip) * FLIP_SWEEP,
+						driftX: Math.cos(bearing) * reach,
+						driftY: Math.sin(bearing) * reach,
+						lift: hash2(col + 53, row + 29),
 					});
 				}
 			}
+		};
+
+		/**
+		 * How far the words have come apart: 0 in place, 1 gone.
+		 *
+		 * Inside a pinned stage the canvas never moves, so its own position says
+		 * nothing about how far the reader has come. The stage's wrapper is what
+		 * carries the scroll, and progress is read from that instead.
+		 */
+		const dissolveAt = () => {
+			if (prefersReducedMotion) return 0;
+
+			const viewport = window.innerHeight || 1;
+
+			if (stage) {
+				const rect = stage.getBoundingClientRect();
+				const travel = rect.height - viewport;
+
+				if (travel <= 0) return 0;
+
+				return clamp01(-rect.top / travel / DISSOLVE_WINDOW);
+			}
+
+			const rect = container.getBoundingClientRect();
+			const start = viewport * DISSOLVE_START;
+			const end = viewport * DISSOLVE_END;
+
+			return clamp01((start - rect.top) / (start - end));
 		};
 
 		const draw = (elapsed: number) => {
@@ -402,6 +471,22 @@ const ContributionText = ({
 			for (const cell of cells) {
 				let level = cell.level;
 				let size = cellSize;
+				let offsetX = 0;
+				let offsetY = 0;
+				let alpha = 1;
+
+				if (dissolve > 0) {
+					const gone = easeOutCubic(
+						clamp01((dissolve - cell.lift * DISSOLVE_SPREAD) / (1 - DISSOLVE_SPREAD))
+					);
+
+					if (gone >= 1) continue;
+
+					offsetX = cell.driftX * gone;
+					offsetY = cell.driftY * gone;
+					alpha = 1 - gone;
+					size *= 1 - gone * 0.45;
+				}
 
 				if (pointer.active) {
 					const dx = cell.x + cellSize / 2 - pointer.x;
@@ -440,15 +525,21 @@ const ContributionText = ({
 				}
 
 				ctx.fillStyle = fill;
+				ctx.globalAlpha = alpha;
+
+				const x = cell.x + offsetX;
+				const y = cell.y + offsetY;
 
 				if (hasRoundRect) {
 					ctx.beginPath();
-					ctx.roundRect(cell.x, cell.y, size, size, cornerRadius);
+					ctx.roundRect(x, y, size, size, cornerRadius);
 					ctx.fill();
 				} else {
-					ctx.fillRect(cell.x, cell.y, size, size);
+					ctx.fillRect(x, y, size, size);
 				}
 			}
+
+			ctx.globalAlpha = 1;
 		};
 
 		/** The spill follows the cells: absent while empty, green, then white. */
@@ -504,19 +595,22 @@ const ContributionText = ({
 			return moving;
 		};
 
-		// Stops once the intro is over and the springs settle: an idle hero costs
-		// nothing.
+		// Stops once the intro is over, the springs settle and the words are either
+		// fully in place or fully gone: an idle hero costs nothing.
 		const tick = (now: number) => {
 			if (introStart === null) introStart = now;
 
 			const elapsed = prefersReducedMotion ? Infinity : now - introStart;
 			const moving = step();
 
+			dissolve = dissolveAt();
 			updateGlow(elapsed);
 			draw(elapsed);
 
 			frame =
-				pointer.active || moving || elapsed < INTRO_END ? requestAnimationFrame(tick) : null;
+				pointer.active || moving || elapsed < INTRO_END || (dissolve > 0 && dissolve < 1)
+					? requestAnimationFrame(tick)
+					: null;
 		};
 
 		const wake = () => {
@@ -560,6 +654,9 @@ const ContributionText = ({
 		if (!prefersReducedMotion) {
 			canvas.addEventListener('pointermove', handlePointerMove);
 			canvas.addEventListener('pointerleave', handlePointerLeave);
+			// The loop parks itself once the words are gone, so scrolling has to be
+			// what starts it again — including on the way back up.
+			window.addEventListener('scroll', wake, { passive: true });
 		}
 
 		const observer = new ResizeObserver(() => {
@@ -580,6 +677,7 @@ const ContributionText = ({
 			observer.disconnect();
 			canvas.removeEventListener('pointermove', handlePointerMove);
 			canvas.removeEventListener('pointerleave', handlePointerLeave);
+			window.removeEventListener('scroll', wake);
 			if (frame !== null) cancelAnimationFrame(frame);
 		};
 	}, [lines, trailingMark, columns, lineGap, levels, palette]);
@@ -591,6 +689,7 @@ const ContributionText = ({
 				style={{
 					display: 'block',
 					width: '100%',
+					maxWidth: 'none',
 					// One composite for the whole canvas; per-cell shadowBlur would cost a
 					// blurred fill each. Neutral rather than tinted towards the rays: a warm
 					// spill creeps into the edges of the one element that stays white.

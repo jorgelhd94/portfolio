@@ -44,9 +44,13 @@ const ICONS: Record<string, string> = {
 };
 ---
 
+{/* Pulled up far enough that this panel is pinned well before the hero starts
+to clear off it. The overlap has to exceed the hero's remaining travel at that
+moment, or the reader watches this slide into place through the fading hero —
+which is the whole thing the pinning is there to avoid. */}
 <section
 	id="learning"
-	class="relative min-h-[240vh] md:min-h-[300vh]"
+	class="relative -mt-[150vh] min-h-[250vh] md:min-h-[280vh]"
 	data-start-year={START_YEAR}
 	data-min-years={MIN_YEARS}
 >
@@ -113,6 +117,12 @@ const ICONS: Record<string, string> = {
 </section>
 
 <style>
+	/* Opaque, because the hero fades off this panel rather than sliding away from
+	   it: whatever shows through during the handoff is this. */
+	.pin {
+		background: var(--color-ink-950);
+	}
+
 	/* Erasing the top and bottom of the group is what turns four circles into
 	   lines crossing the panel, and lets a ring sweep round without ever showing
 	   that it closes. Without this mask the same drawing is four targets. */
@@ -387,7 +397,10 @@ const ICONS: Record<string, string> = {
 				const timeline = gsap.timeline({
 					scrollTrigger: {
 						trigger: section,
-						start: 'top top',
+						// Part way into the handoff, so the panel is assembling while the
+						// hero is still clearing off it. Waiting for the hero to finish
+						// leaves a stretch of empty black between the two.
+						start: () => `top+=${window.innerHeight * 0.15} top`,
 						end: 'bottom bottom',
 						scrub: 0.7,
 					},
@@ -396,9 +409,12 @@ const ICONS: Record<string, string> = {
 				// The rings are deliberately not on this timeline. They are ambient,
 				// and scrubbing them would park the composition at whatever size the
 				// reader stopped at.
+				// Uncovered rather than arriving: no vertical travel, or the panel reads
+				// as something rising from below the fold instead of as what was behind
+				// the hero all along.
 				timeline
-					.from(statement, { opacity: 0, y: 28, duration: 1.4 }, 0)
-					.from(lead, { opacity: 0, y: 18, duration: 1.2 }, 0.6);
+					.from(statement, { opacity: 0, scale: 0.965, duration: 1.4 }, 0)
+					.from(lead, { opacity: 0, scale: 0.98, duration: 1.2 }, 0.6);
 
 				// One tween per year, each shorter than the gap before the next, so the
 				// reel rests on a number and then rolls. A single tween across the whole
