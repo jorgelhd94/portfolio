@@ -1,3 +1,8 @@
+---
+name: writing-comments
+description: How comments are written in this repository — who the reader is, what each kind of comment is for, and which patterns are banned. Read before writing or editing any comment, including ones added incidentally while fixing something.
+---
+
 # Writing Comments
 
 Adapted from the [Astro repository's skill of the same name](https://github.com/withastro/astro/blob/main/.agents/skills/writing-comments/SKILL.md)

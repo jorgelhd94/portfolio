@@ -41,6 +41,24 @@ which strips types without checking them, so a build passes over errors that
 Type errors on `.astro` files or on `astro:*` imports usually mean the generated
 types are stale — run `pnpm astro sync`.
 
+## Seeing the page
+
+This is a design-led repository: a passing build says nothing about whether the
+work looks right. Use `agent-browser` to look at it rather than describing it
+from the source.
+
+```bash
+agent-browser open http://localhost:4321/
+agent-browser wait 4000          # the hero intro runs ~3.4s
+agent-browser screenshot out.png
+agent-browser snapshot -i        # accessibility tree with refs, for interaction
+agent-browser close
+```
+
+The browser persists between commands, so these read as one session. It is
+headless unless you pass `--headed`. The first launch after installing sets up
+a profile and takes far longer than the rest.
+
 ## Structure
 
 ```
@@ -67,7 +85,7 @@ from it so they cannot drift.
 **English only in the source.** Identifiers, comments, commit messages and UI
 copy. Conversation with the user is in Spanish; the repository is not.
 
-**Comments** follow [`.agents/skills/writing-comments/SKILL.md`](.agents/skills/writing-comments/SKILL.md).
+**Comments** follow [`.claude/skills/writing-comments/SKILL.md`](.claude/skills/writing-comments/SKILL.md).
 Read it before writing any. The short version: a comment must state something
 the reader cannot recover from the code, must not narrate the change that
 produced it, and must not retell the design conversation.
