@@ -3,26 +3,18 @@ import { type MouseEvent, useEffect, useLayoutEffect, useRef, useState } from 'r
 /**
  * Pill navigation lit from a source above the current item.
  *
- * It arrives as a greeting and then widens into the navigation. The pill's width
- * is driven from measured numbers for that stretch and handed back to the
- * content once the transition ends, so nothing stays frozen at a stale size when
- * a webfont lands or the labels change.
+ * It arrives as a greeting and widens into the navigation. Width is driven from
+ * measured numbers for that stretch and handed back to the content once the
+ * transition ends, so nothing stays frozen at a stale size when a webfont lands.
  *
- * The light is three layers, because that is how light actually falls off: a
- * 1px near-white core on the bar's edge, a tight bloom rising off it, and a
- * wide, very faint haze. A single blurred colour — the usual way this effect is
- * done — reads as a smudge pasted over the design instead of a lamp behind it.
- * None of the layers use `filter: blur`; gradients are already smooth, and
+ * The lamp is three layers — a 1px core, a tight bloom, a wide haze — because a
+ * single blurred colour reads as a smudge over the design rather than a light
+ * behind it. None of them use `filter: blur`: gradients are already smooth and
  * blurring one turns it to mush.
  *
- * The selected pill is lit to match: a hairline along its top edge where the
- * light lands, a warm tint bled into the top of its gradient, and a shadow cast
- * below. No ring around it — a full border on something this small reads as an
- * outlined chip sitting flat on the bar.
- *
- * Everything is one page, so the links drive a scroll spy. Sections that do not
- * exist yet are simply not observed, and clicking one still moves the indicator
- * without stranding a dead hash in the address bar.
+ * The links drive a scroll spy over a single page. Sections that do not exist
+ * yet are not observed, and clicking one moves the indicator without stranding
+ * a dead hash in the address bar.
  */
 
 interface NavLink {
@@ -250,9 +242,8 @@ const NavPill = ({ links, greeting = 'Welcome' }: NavPillProps) => {
 						ref={greetingRef}
 						className="flex w-max items-center gap-2 px-7 py-2 text-sm font-medium whitespace-nowrap text-mist-100"
 					>
-						{/* Its own element so the rotation is the hand's alone: animating the
-						    whole greeting would swing the word with it. Pivot at the lower
-						    right, which is where a wrist is. */}
+						{/* Its own element so the rotation is the hand's alone, pivoting where
+					    a wrist would be. */}
 						<span className="inline-block origin-[70%_80%] animate-wave motion-reduce:animate-none">
 							👋
 						</span>

@@ -1,13 +1,12 @@
 ---
-import { navLinks, social } from '../data/site';
+import { navLinks, social } from '../../data/site';
 import NavPill from './NavPill.tsx';
 import QuickMenu from './QuickMenu.tsx';
 ---
 
-{/* Equal-width rails on both sides. `justify-between` would centre the pill
-	between its neighbours rather than in the bar, so it would drift by half the
-	difference between the wordmark's width and the button's — and drift again
-	whenever either one changed. */}
+{/* Equal-width rails on both sides. `justify-between` centres the pill between
+	its neighbours rather than in the bar, drifting by half the difference
+	between the wordmark's width and the button's. */}
 <nav class="mx-auto flex w-full max-w-6xl items-center gap-6 px-6 py-6">
 	<div class="flex flex-1 justify-start">
 		<a

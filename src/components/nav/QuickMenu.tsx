@@ -2,17 +2,13 @@ import { type MouseEvent, type ReactNode, useEffect, useRef, useState } from 're
 import { createPortal } from 'react-dom';
 
 /**
- * Quick menu: a trigger in the header that opens a floating dock at the bottom
- * of the viewport. It carries the navigation, the social links and the language
- * control, and below `md` it is the only navigation there is.
+ * A trigger in the header that opens a floating dock at the bottom of the
+ * viewport, carrying the navigation, the social links and the language control.
+ * Below `lg` it is the only navigation there is.
  *
- * The dock is portalled to `document.body`. Rendering it inside the header would
+ * The dock is portalled to `document.body`: rendering it inside the header would
  * leave it at the mercy of that element's `overflow: hidden` and stacking
- * context; a dialog should not be able to be clipped by whatever wraps it.
- *
- * Contents rise into place on a stagger. The order follows reading order rather
- * than the DOM, so the eye is led down the panel instead of watching it assemble
- * at random.
+ * context, and a dialog should not be clippable by whatever wraps it.
  */
 
 type PageIcon = 'home' | 'user' | 'folder' | 'layers' | 'message';
@@ -201,8 +197,8 @@ const QuickMenu = ({ links, social }: QuickMenuProps) => {
 		setOpen(false);
 	};
 
-	/** Rise into place, one after another. Closing collapses the stagger to zero
-	    so the panel leaves as a single piece instead of unravelling. */
+	/** Staggered entrance in reading order. Closing collapses the stagger to zero
+	    so the panel leaves as one piece instead of unravelling. */
 	const rise = (step: number) => {
 		if (reduceMotion) return undefined;
 

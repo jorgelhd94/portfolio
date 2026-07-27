@@ -31,10 +31,9 @@
 	--color-mist-300: #bcbcbc;
 	--color-mist-500: #868686;
 
-	/* The greeting's hand. It lives inside a React island, where Astro's scoped
-	   styles don't reach, so it is a theme animation rather than a component
-	   style. Pivots at the wrist, and rests far longer than it waves — a hand
-	   that never stops is a tic, not a greeting. */
+	/* The greeting's hand, defined here because it lives inside a React island
+	   where Astro's scoped styles do not reach. It rests far longer than it
+	   waves: a hand that never stops is a tic, not a greeting. */
 	--animate-wave: wave 3s ease-in-out infinite;
 
 	@keyframes wave {

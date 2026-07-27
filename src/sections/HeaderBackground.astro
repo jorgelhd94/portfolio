@@ -1,11 +1,9 @@
 ---
-import LightRays from './LightRays.tsx';
+import LightRays from '../components/visuals/LightRays.tsx';
 
 /**
- * Header background: WebGL light rays over graphite, with grain and vignette on top.
- *
- * The rays come from a shader (see LightRays.tsx). Grain and vignette stay in CSS and
- * sit above the canvas to break up the gradient and blend the edges into the page.
+ * WebGL light rays over graphite, with grain and vignette above the canvas to
+ * break up the gradient and blend the edges into the page.
  */
 ---
 
@@ -40,9 +38,8 @@ import LightRays from './LightRays.tsx';
 		background-color: var(--color-ink-950);
 	}
 
-	/* Graphite surface: diffuse light falling from above, a faint diagonal sheen
-	   (the mineral's shine) and a vertical fall-off into the page background.
-	   Without these the backdrop reads flat and muddy instead of matte. */
+	/* Diffuse light from above, a faint diagonal sheen, and a vertical fall-off
+	   into the page background. Without all three the backdrop reads flat. */
 	.graphite {
 		position: absolute;
 		inset: 0;
@@ -82,9 +79,9 @@ import LightRays from './LightRays.tsx';
 		pointer-events: none;
 	}
 
-	/* Darkens the corners. The vertical ramp belongs to .graphite alone: two layers
-	   fading at once is what flattened it before, so this one only seals the very
-	   bottom edge, where it also has to dim the rays the graphite sits under. */
+	/* Corners only. The vertical ramp belongs to .graphite alone — two layers
+	   fading over the same height cancel each other out and flatten it — so this
+	   one seals the bottom edge, where it also dims the rays. */
 	.vignette {
 		position: absolute;
 		inset: 0;

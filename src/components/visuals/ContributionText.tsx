@@ -1,37 +1,25 @@
 import { useEffect, useRef } from 'react';
 
 /**
- * Text built out of GitHub contribution cells: only the squares that fall inside
- * the letterforms are drawn, so the words sit straight on the page with no grid
- * or panel behind them.
+ * Text built out of GitHub contribution cells: only the squares falling inside
+ * the letterforms are drawn, so the words sit on the page with no grid or panel
+ * behind them.
  *
- * Legibility drives the three decisions that matter here:
+ * On mount the words play back the story of the graph — empty grey, then green
+ * arriving in scattered bursts, then a wave that collects every cell and hands
+ * it to the final white. Afterwards the cursor pushes cells aside and brightens
+ * them as it passes.
  *
- *   - Glyphs are scaled uniformly, never stretched to fit the box. Distorted
- *     letterforms are the fastest way to make display type unreadable.
- *   - Levels come from smooth 2D noise, not per-cell randomness. Neighbours end
- *     up in the same band, so brightness moves in patches the eye reads as one
- *     shape, instead of the television static you get from independent samples.
- *   - Every step of the ramp already clears the graphite behind it. A level
- *     nobody can see is a hole punched in the middle of a stroke.
- *
- * On mount the words play back the story of the graph: they start in GitHub's
- * empty-cell grey, green lands in scattered bursts drifting left to right the
- * way a year of commits accumulates, and then a wave sweeps across, collects
- * both the active and the idle cells, and hands them over to the final white.
- *
- * Pointer interaction: cells are pushed away from the cursor and spring back,
- * and they brighten as it passes, as if the cursor left activity behind it.
+ * Three constraints hold the type legible, and breaking any of them is what
+ * makes it read as static instead of as letters: glyphs scale uniformly and are
+ * never stretched to fit; levels come from smooth 2D noise so neighbours land
+ * in the same band; and every step of the ramp already clears the background.
  */
 
 /** Used only if the theme variable is missing; the real face is self-hosted. */
 const FALLBACK_STACK = '"Arial Black", "Helvetica Neue", Helvetica, Arial, sans-serif';
 
-/**
- * Canvas needs a concrete family list, so the value is read back from the theme
- * rather than restated here. Hardcoding a stack is how the letterforms ended up
- * depending on whichever heavy face the visitor's OS happened to ship.
- */
+/** Canvas needs a concrete family list, and the theme's generated name is it. */
 const resolveFontStack = () => {
 	const value = getComputedStyle(document.documentElement).getPropertyValue('--font-body').trim();
 	return value || FALLBACK_STACK;
@@ -54,9 +42,9 @@ const applyFont = (context: CanvasRenderingContext2D, stack: string) => {
 };
 
 /**
- * A tight white ramp, dimmest to brightest. Kept narrow on purpose: wide enough
- * that the noise still shows as texture and the pointer has somewhere to
- * brighten towards, narrow enough that every cell reads as white.
+ * Dimmest to brightest. Narrow enough that every step still reads as white, wide
+ * enough that the noise shows as texture and the pointer has somewhere to
+ * brighten towards.
  */
 const DEFAULT_PALETTE = ['#b9b9b9', '#d8d8d8', '#efefef', '#ffffff'];
 
@@ -65,9 +53,8 @@ const EMPTY_COLOR = '#1c1b1a';
 const GREEN_RAMP = ['#0e4429', '#006d32', '#26a641', '#39d353'];
 
 /**
- * Share of cells that light up during the green phase. The rest stay empty until
- * the white wave collects them: a graph where every day is green is a green
- * block, and the gaps between active days are what make it read as activity.
+ * Share of cells that light up during the green phase. The gaps are what make it
+ * read as activity: at 1 the words are a green block.
  */
 const GREEN_DENSITY = 0.6;
 
@@ -78,12 +65,10 @@ const COVERAGE_THRESHOLD = 0.45;
 /**
  * Cell pitch the grid aims for, and the floor on how few columns it will use.
  *
- * Each line is justified across the container, so the words' physical size is
- * set by the width alone — the column count changes how finely they are
- * resolved, not how big they are. Holding 96 columns on a phone means 3px
- * cells: the grid stops reading as tiles and turns to fuzz. Resolving fewer
- * columns keeps the cells close to the size they are on a desktop, and the
- * floor is what stops the letterforms coarsening past being readable.
+ * Lines are justified across the container, so width alone sets how big the
+ * words are: the column count governs how finely they are *resolved*. Holding
+ * 96 columns on a phone gives 3px cells, which read as fuzz rather than tiles,
+ * and the floor is what stops the letterforms coarsening past readable.
  */
 const TARGET_PITCH = 11;
 const MIN_COLUMNS = 64;
@@ -265,9 +250,8 @@ const ContributionText = ({
 				};
 			});
 
-			// Hanging punctuation: the lines justify to `measure` and the mark takes the
-			// remainder, so the words keep the alignment they had and the mark overhangs
-			// them. Folding it into a line instead would shrink that line's letters.
+			// The lines justify to `measure` and the mark takes the remainder, so it
+			// overhangs the block. Folding it into a line would shrink that line.
 			const markWidth = trailingMark ? probe.measureText(trailingMark).width : 0;
 			const lastWidth = raw[raw.length - 1]?.width ?? 1;
 			const measure = markWidth > 0 ? maskWidth / (1 + markWidth / lastWidth) : maskWidth;
@@ -309,8 +293,7 @@ const ContributionText = ({
 				maskCtx.scale(item.scale, item.scale);
 				maskCtx.fillText(item.line, 0, item.ascent);
 
-				// Drawn at the line's own advance width, so it keeps the spacing the font
-				// would give it, and lands beyond the justified block by construction.
+				// Drawn at the line's own advance width, so it keeps the font's spacing.
 				if (trailingMark && index === measured.length - 1) {
 					maskCtx.fillText(trailingMark, item.width, item.ascent);
 				}
@@ -381,11 +364,9 @@ const ContributionText = ({
 						level = sample < 0.26 ? 0 : sample < 0.4 ? 1 : sample < 0.55 ? 2 : 3;
 					}
 
-					// Green drifts left to right like weeks passing, but only half the
-					// timing comes from the column: the rest is scattered per cell, so
-					// commits land in bursts across the words instead of as a moving wall.
-					// The handoff wave leans diagonal so it doesn't repeat the same motion.
-					// Everything derives from grid position, so a resize mid-intro stays in step.
+					// Half the fill timing comes from the column and half is scattered per
+					// cell, so green lands in bursts rather than as a wall moving right.
+					// Both derive from grid position, so a resize mid-intro stays in step.
 					const acrossFill = activeColumns > 1 ? col / (activeColumns - 1) : 0;
 					const acrossFlip = acrossFill * 0.78 + (rows > 1 ? row / (rows - 1) : 0) * 0.22;
 
@@ -523,8 +504,8 @@ const ContributionText = ({
 			return moving;
 		};
 
-		// The loop stops once the intro is over and the grid settles, so an idle hero
-		// costs nothing.
+		// Stops once the intro is over and the springs settle: an idle hero costs
+		// nothing.
 		const tick = (now: number) => {
 			if (introStart === null) introStart = now;
 
@@ -610,11 +591,9 @@ const ContributionText = ({
 				style={{
 					display: 'block',
 					width: '100%',
-					// One GPU filter for the whole canvas, kept tight: enough spill to seat the
-					// words on the graphite, not enough to soften their edges. Kept neutral
-					// rather than tinted towards the rays: the headline is the one thing on
-					// the page that stays white, and a warm spill creeps into its edges.
-					// Per-cell shadowBlur would cost a blurred fill each; this is one composite.
+					// One composite for the whole canvas; per-cell shadowBlur would cost a
+					// blurred fill each. Neutral rather than tinted towards the rays: a warm
+					// spill creeps into the edges of the one element that stays white.
 					filter: RESTING_FILTER,
 				}}
 			/>

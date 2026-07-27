@@ -1,8 +1,8 @@
 ---
 import { github } from '../data/site';
-import ContributionText from './ContributionText.tsx';
+import ContributionText from '../components/visuals/ContributionText.tsx';
 import HeaderBackground from './HeaderBackground.astro';
-import Nav from './Nav.astro';
+import Nav from '../components/nav/Nav.astro';
 ---
 
 <header id="top" class="relative isolate flex min-h-dvh flex-col overflow-hidden">
@@ -17,10 +17,9 @@ import Nav from './Nav.astro';
 			<ContributionText client:load lines={['SOFTWARE', 'ENGINEER']} />
 		</div>
 
-		{/* Phones only. The headline scales to the container, so on a narrow screen
-		it lands as a small band and leaves the viewport half empty — there the
-		actions earn their place. From md up the graph fills the screen on its own
-		and the scroll hint is enough. */}
+		{/* Phones only. The headline scales to its container, so on a narrow screen
+		it lands as a band and leaves the viewport half empty; from md up the graph
+		fills the screen on its own and the scroll hint is enough. */}
 		<div
 			class="reveal mt-10 flex w-full max-w-[19rem] items-center gap-2.5 md:hidden"
 			style="--delay: 0.7s"
@@ -91,18 +90,13 @@ import Nav from './Nav.astro';
 		}
 	}
 
-	/* Buttons that quote the headline's own moment: the wave with a white crest
-	   that hands SOFTWARE ENGINEER from green to white sweeps across them on
-	   hover, left to right, same direction and same easing.
+	/* The wave that hands the headline from green to white sweeps these on hover,
+	   same direction and same easing.
 
-	   The label is rendered twice — light underneath, dark on top — and the dark
-	   copy is clipped by the same wave. So the text inverts exactly as the light
-	   reaches it, with no blend mode: `difference` over graphite
-	   gives muddy colour and wrecks subpixel antialiasing on small text.
-
-	   At rest the primary is marked by the lit hairline the nav's selected item
-	   wears, rather than by a heavier fill. Same grammar: the lit thing is the
-	   current thing. */
+	   The label is rendered twice — light underneath, dark on top — with the dark
+	   copy clipped by that same wave, so it inverts exactly as the light reaches
+	   it. `mix-blend-mode: difference` would do this in one element, but over
+	   graphite it gives muddy colour and wrecks subpixel antialiasing. */
 	.wave-button {
 		position: relative;
 		isolation: isolate;
@@ -185,10 +179,8 @@ import Nav from './Nav.astro';
 		clip-path: inset(0 0 0 0);
 	}
 
-	/* Scroll hint: a light travelling down a hairline, the same language as the
-	   lamp above the nav and the wave that hands the headline over to white. The
-	   track stays lit so there is something to read when the spark is off screen;
-	   a cue that vanishes between passes reads as a rendering glitch. */
+	/* The track stays lit so there is something to read while the spark is off
+	   screen; a cue that vanishes between passes reads as a rendering glitch. */
 	.scroll-track {
 		position: relative;
 		display: block;
