@@ -2,28 +2,17 @@
 /**
  * A statement held on screen while the disciplines assemble around it.
  *
- * The panel is pinned with `position: sticky` and the timeline is scrubbed by
- * ScrollTrigger against the tall section behind it. Splitting the two that way
- * keeps GSAP out of the layout — its own `pin` rewrites the DOM around the
- * element and fights the sticky nav — so scrolling only ever drives values.
- *
- * Behind it, four concentric rings turn on their own clocks while the scrub
- * opens the group outwards. Each is a bordered circle cut by a conic mask, and
- * the group is cut again by a vertical one — that second mask is what makes
- * them read as lines crossing the panel instead of as rings sitting in it.
+ * The panel is pinned with `position: sticky` and only the timeline is scrubbed
+ * by ScrollTrigger, which keeps GSAP out of the layout: its own `pin` rewrites
+ * the DOM around the element and fights the sticky nav.
  */
 
-/** Counted from the first professional year, never below what the CV claims. */
 const START_YEAR = 2020;
 const MIN_YEARS = 6;
 
 const years = Math.max(MIN_YEARS, new Date().getFullYear() - START_YEAR);
 
-/**
- * Positions are percentages of the pinned panel, and the array order is the
- * order they arrive in. Radii are deliberately uneven: a perfect ring reads as
- * a diagram, and the centre band is left clear for the statement.
- */
+/** Percentages of the pinned panel. Array order is the order they arrive in. */
 const skills = [
 	{ label: 'Backend', icon: 'backend', x: 20, y: 33 },
 	{ label: 'Scripting', icon: 'scripting', x: 73, y: 20 },
@@ -35,11 +24,7 @@ const skills = [
 	{ label: 'Infrastructure', icon: 'infrastructure', x: 53, y: 13 },
 ];
 
-/**
- * Drawn here rather than pulled from an icon set, so they carry the same weight
- * and corner radius as the ones in the quick menu. A 24-unit box, 1.6 stroke,
- * round joins: mixing in a library's set puts two hands on one page.
- */
+/** Drawn here to match the quick menu's set: 24-unit box, 1.6 stroke, round joins. */
 const ICONS: Record<string, string> = {
 	backend: `<path d="M4 6.6c0-1.5 3.6-2.6 8-2.6s8 1.1 8 2.6-3.6 2.6-8 2.6S4 8.1 4 6.6Z"/>
 		<path d="M20 6.6v10.8c0 1.5-3.6 2.6-8 2.6s-8-1.1-8-2.6V6.6"/><path d="M20 12c0 1.5-3.6 2.6-8 2.6S4 13.5 4 12"/>`,
@@ -89,15 +74,21 @@ const ICONS: Record<string, string> = {
 			</h2>
 
 			<p class="lead">
-				<span class="lead-text">More than</span>
-				<span class="count">
-					<span data-years>{years}</span>
-				</span>
-				<span class="lead-text">years building solutions</span>
+				More than <span class="count"
+					><span class="sr-only" data-years>{years}</span><span
+						class="count-window"
+						aria-hidden="true"
+						><span class="reel" data-reel style={`--i: ${years - 1}`}
+							>{Array.from({ length: years }, (_, index) => <span>{index + 1}</span>)}</span
+						></span
+					></span
+				> years building solutions
 			</p>
 		</div>
 
-		<ul class="tags mt-12 flex max-w-sm flex-wrap justify-center gap-2 md:mt-0 md:max-w-none">
+		<ul
+			class="tags mt-9 flex max-w-[21rem] flex-wrap justify-center gap-1.5 md:mt-0 md:max-w-none"
+		>
 			{
 				skills.map((skill) => (
 					<li class="tag" style={`--x: ${skill.x}%; --y: ${skill.y}%`}>
@@ -122,10 +113,9 @@ const ICONS: Record<string, string> = {
 </section>
 
 <style>
-	/* The mask that turns circles into lines. Erasing the top and bottom of the
-	   whole group leaves only the flanks of each ring on screen, which read as
-	   curves crossing the panel — and it means a ring can sweep round without
-	   ever showing that it closes. Without it the same drawing is four targets. */
+	/* Erasing the top and bottom of the group is what turns four circles into
+	   lines crossing the panel, and lets a ring sweep round without ever showing
+	   that it closes. Without this mask the same drawing is four targets. */
 	.rings {
 		position: absolute;
 		inset: 0;
@@ -133,8 +123,6 @@ const ICONS: Record<string, string> = {
 		mask: linear-gradient(transparent 0%, #000 19%, #000 80%, transparent 100%);
 	}
 
-	/* A square centred on the panel, so the rings stay circles whatever shape the
-	   viewport is. `max()` keeps it covering the taller dimension too. */
 	.rings-field {
 		position: absolute;
 		top: 50%;
@@ -146,11 +134,9 @@ const ICONS: Record<string, string> = {
 		place-items: center;
 	}
 
-	/* A real bordered circle cut down by a conic mask, rather than a gradient
-	   painted to look like one. The border stays an even hairline all the way
-	   round, and the mask is what decides how much of it exists and where it
-	   fades out. Every ring shares the grid's single cell, so they stay
-	   concentric without any positioning of their own. */
+	/* A bordered circle cut down by a conic mask, so the line stays an even
+	   hairline all the way round and the mask decides how much of it exists.
+	   Sharing one grid cell keeps them concentric without any positioning. */
 	.ring {
 		grid-area: 1 / 1;
 		width: var(--size);
@@ -199,34 +185,32 @@ const ICONS: Record<string, string> = {
 		color: var(--color-mist-100);
 	}
 
-	/* The number is the claim, so it is set as an object rather than as a bold
-	   word inside a sentence: display size, lit from behind by a warm pool. */
+	/* Leading carries the numeral without pushing the rows apart when it wraps. */
 	.lead {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: center;
-		gap: 0.55rem 0.85rem;
-		margin-top: 2rem;
-	}
-
-	.lead-text {
-		font-size: 0.7rem;
+		max-width: 24rem;
+		margin: 1.6rem auto 0;
+		font-size: 0.68rem;
 		font-weight: 500;
 		letter-spacing: 0.2em;
+		line-height: 2.6;
 		text-transform: uppercase;
 		color: var(--color-mist-500);
 	}
 
+	/* Centred on the label rather than sat on its baseline. The numeral is three
+	   times the size of the words beside it, so baseline alignment leaves it
+	   riding high above them. `line-height: 0` drops the strut, which makes this
+	   box exactly the height of the window and its midpoint the digit's own. */
 	.count {
 		position: relative;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0 0.28em;
-		font-size: 2.15rem;
+		display: inline-block;
+		margin: 0 0.28em;
+		font-size: 2.1rem;
 		font-weight: 800;
-		line-height: 1;
+		letter-spacing: 0;
+		line-height: 0;
+		vertical-align: middle;
+		translate: 0 -0.04em;
 		color: var(--color-mist-100);
 	}
 
@@ -238,21 +222,46 @@ const ICONS: Record<string, string> = {
 		background: radial-gradient(52% 52% at 50% 52%, rgba(237, 170, 122, 0.25), transparent 72%);
 	}
 
+	/* One year tall. Its own element because `.count` carries the glow, and
+	   clipping there would cut that off with it. */
+	.count-window {
+		display: inline-block;
+		height: 1.1em;
+		overflow: hidden;
+		vertical-align: top;
+	}
 
-	/* Solid rather than translucent: these sit over the rings, and a see-through
-	   chip lets a hairline run through the middle of the word. */
+	/* Offset in whole cells rather than a share of the reel's height: the height
+	   of an inline-block resolves by shrink-to-fit, and a percentage of it is not
+	   a number this can rely on. Resting on the last year is what a reader sees
+	   if the script never runs. */
+	.reel {
+		display: block;
+		width: max-content;
+		transform: translateY(calc(var(--i) * -1.1em));
+	}
+
+	.reel span {
+		display: block;
+		height: 1.1em;
+		line-height: 1.1;
+		text-align: center;
+	}
+
+	/* Solid, not translucent: these sit over the rings, and a see-through chip
+	   lets a hairline run through the middle of the word. */
 	.tag {
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		gap: 0.7rem;
+		gap: 0.5rem;
 		border-radius: 10px;
 		border: 1px solid rgba(255, 255, 255, 0.06);
 		background: var(--color-ink-900);
-		padding: 0.62rem 1rem;
-		font-size: 0.72rem;
+		padding: 0.5rem 0.72rem;
+		font-size: 0.62rem;
 		font-weight: 500;
-		letter-spacing: 0.14em;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
 		white-space: nowrap;
 		color: var(--color-mist-100);
@@ -261,8 +270,7 @@ const ICONS: Record<string, string> = {
 			0 14px 34px -20px rgba(0, 0, 0, 0.95);
 	}
 
-	/* The lit edge the nav's selected item wears, flashed as the tag lands and
-	   left burning low afterwards. */
+	/* The lit edge the nav's selected item wears, flashed as the tag lands. */
 	.tag::after {
 		content: '';
 		position: absolute;
@@ -275,15 +283,14 @@ const ICONS: Record<string, string> = {
 	}
 
 	.glyph {
-		width: 1.05rem;
-		height: 1.05rem;
+		width: 0.92rem;
+		height: 0.92rem;
 		flex: none;
 		color: var(--color-clay-300);
 	}
 
-	/* Phones keep the tags in flow under the statement. An orbit needs room to be
-	   an orbit: at 375px the same coordinates put half of them off screen and the
-	   rest on top of the words. */
+	/* An orbit needs room to be one: at 375px these coordinates put half the tags
+	   off screen and the rest on top of the words, so phones keep them in flow. */
 	@media (min-width: 768px) {
 		.tags {
 			position: absolute;
@@ -296,8 +303,22 @@ const ICONS: Record<string, string> = {
 			top: var(--y);
 			left: var(--x);
 			translate: -50% -50%;
+			gap: 0.7rem;
 			padding: 0.75rem 1.25rem;
 			font-size: 0.8rem;
+			letter-spacing: 0.14em;
+		}
+
+		.glyph {
+			width: 1.05rem;
+			height: 1.05rem;
+		}
+
+		.lead {
+			max-width: none;
+			font-size: 0.7rem;
+			line-height: 1;
+			margin-top: 2rem;
 		}
 	}
 
@@ -327,17 +348,30 @@ const ICONS: Record<string, string> = {
 		const statement = section.querySelector('.statement h2');
 		const lead = section.querySelector('.lead');
 		const tags = gsap.utils.toArray<HTMLElement>('.tag', section);
-
-		// The count is rendered at build time, so a page still being served two
-		// years later would understate it. The visitor's own clock is the only
-		// thing here that is never stale.
 		const years = section.querySelector<HTMLElement>('[data-years]');
+		const reel = section.querySelector<HTMLElement>('[data-reel]');
+
 		const startYear = Number(section.dataset.startYear);
 		const minYears = Number(section.dataset.minYears);
 
-		if (years && startYear && minYears) {
+		let total = Number(years?.textContent) || minYears;
+
+		// The count is rendered at build time, so a page still being served two
+		// years from now would understate it.
+		if (years && reel && startYear && minYears) {
 			const live = Math.max(minYears, new Date().getFullYear() - startYear);
-			if (live > Number(years.textContent)) years.textContent = String(live);
+
+			for (let year = total + 1; year <= live; year++) {
+				const cell = document.createElement('span');
+				cell.textContent = String(year);
+				reel.appendChild(cell);
+			}
+
+			if (live > total) {
+				total = live;
+				years.textContent = String(live);
+				reel.style.setProperty('--i', String(live - 1));
+			}
 		}
 
 		const media = gsap.matchMedia();
@@ -359,23 +393,41 @@ const ICONS: Record<string, string> = {
 					},
 				});
 
-				// The rings are not on this timeline. They are ambient, and scrubbing
-				// them would park the composition at whatever size the reader stopped
-				// at — the scroll is here to bring the disciplines in, nothing else.
+				// The rings are deliberately not on this timeline. They are ambient,
+				// and scrubbing them would park the composition at whatever size the
+				// reader stopped at.
 				timeline
 					.from(statement, { opacity: 0, y: 28, duration: 1.4 }, 0)
 					.from(lead, { opacity: 0, y: 18, duration: 1.2 }, 0.6);
 
+				// One tween per year, each shorter than the gap before the next, so the
+				// reel rests on a number and then rolls. A single tween across the whole
+				// range would drift without ever landing, and half a digit is not an
+				// answer. The index is written through a proxy so the tween never has to
+				// read a custom property back out of the DOM.
+				if (reel && total > 1) {
+					const roll = { index: 0 };
+					const write = () => reel.style.setProperty('--i', String(roll.index));
+					const step = 7.4 / (total - 1);
+
+					write();
+
+					for (let year = 1; year < total; year++) {
+						timeline.to(
+							roll,
+							{ index: year, duration: step * 0.42, ease: 'power3.out', onUpdate: write },
+							1.6 + (year - 1) * step
+						);
+					}
+				}
+
 				tags.forEach((tag, index) => {
-					// Each tag opens outward from the centre along its own radius, so the
-					// group reads as one system expanding rather than as eight elements
-					// fading in where they already were.
-					const drift = orbits ? radialOffset(tag) : { x: 0, y: 14 };
+					const drift = orbits ? radialOffset(tag) : { x: 0, y: 0 };
 					const at = 1.8 + index * 0.85;
 
 					// fromTo, not from: `from` animates towards whatever the element
-					// currently is, so anything that pre-hides these would make them
-					// animate from hidden to hidden. Both ends are stated here instead.
+					// currently is, so anything that pre-hides these would animate them
+					// from hidden to hidden.
 					timeline
 						.fromTo(
 							tag,
@@ -388,10 +440,9 @@ const ICONS: Record<string, string> = {
 			}
 		);
 
-		// Nothing is scrubbed when motion is reduced: the section is simply already
-		// assembled by the time it is reached.
 		media.add('(prefers-reduced-motion: reduce)', () => {
 			gsap.set(tags, { opacity: 1, scale: 1, '--lit': 0.3 });
+			reel?.style.setProperty('--i', String(total - 1));
 		});
 	}
 
