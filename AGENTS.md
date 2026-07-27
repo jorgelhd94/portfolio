@@ -43,21 +43,10 @@ types are stale — run `pnpm astro sync`.
 
 ## Seeing the page
 
-This is a design-led repository: a passing build says nothing about whether the
-work looks right. Use `agent-browser` to look at it rather than describing it
-from the source.
-
-```bash
-agent-browser open http://localhost:4321/
-agent-browser wait 4000          # the hero intro runs ~3.4s
-agent-browser screenshot out.png
-agent-browser snapshot -i        # accessibility tree with refs, for interaction
-agent-browser close
-```
-
-The browser persists between commands, so these read as one session. It is
-headless unless you pass `--headed`. The first launch after installing sets up
-a profile and takes far longer than the rest.
+Don't try. This is a design-led repository and a passing build says nothing
+about whether the work looks right, but browser automation is not the way to
+close that gap here — it is slow enough to be worse than useless. Build, state
+what changed and why, and let the person at the keyboard look.
 
 ## Structure
 
