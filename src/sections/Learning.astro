@@ -1,0 +1,407 @@
+---
+/**
+ * A statement held on screen while the disciplines assemble around it.
+ *
+ * The panel is pinned with `position: sticky` and the timeline is scrubbed by
+ * ScrollTrigger against the tall section behind it. Splitting the two that way
+ * keeps GSAP out of the layout — its own `pin` rewrites the DOM around the
+ * element and fights the sticky nav — so scrolling only ever drives values.
+ *
+ * Behind it, four concentric rings turn on their own clocks while the scrub
+ * opens the group outwards. Each is a bordered circle cut by a conic mask, and
+ * the group is cut again by a vertical one — that second mask is what makes
+ * them read as lines crossing the panel instead of as rings sitting in it.
+ */
+
+/** Counted from the first professional year, never below what the CV claims. */
+const START_YEAR = 2020;
+const MIN_YEARS = 6;
+
+const years = Math.max(MIN_YEARS, new Date().getFullYear() - START_YEAR);
+
+/**
+ * Positions are percentages of the pinned panel, and the array order is the
+ * order they arrive in. Radii are deliberately uneven: a perfect ring reads as
+ * a diagram, and the centre band is left clear for the statement.
+ */
+const skills = [
+	{ label: 'Backend', icon: 'backend', x: 20, y: 33 },
+	{ label: 'Scripting', icon: 'scripting', x: 73, y: 20 },
+	{ label: 'Frontend', icon: 'frontend', x: 85, y: 52 },
+	{ label: 'Testing', icon: 'testing', x: 66, y: 75 },
+	{ label: 'Git', icon: 'git', x: 38, y: 84 },
+	{ label: 'CI/CD', icon: 'pipeline', x: 24, y: 66 },
+	{ label: 'Deploy', icon: 'deploy', x: 13, y: 48 },
+	{ label: 'Infrastructure', icon: 'infrastructure', x: 53, y: 13 },
+];
+
+/**
+ * Drawn here rather than pulled from an icon set, so they carry the same weight
+ * and corner radius as the ones in the quick menu. A 24-unit box, 1.6 stroke,
+ * round joins: mixing in a library's set puts two hands on one page.
+ */
+const ICONS: Record<string, string> = {
+	backend: `<path d="M4 6.6c0-1.5 3.6-2.6 8-2.6s8 1.1 8 2.6-3.6 2.6-8 2.6S4 8.1 4 6.6Z"/>
+		<path d="M20 6.6v10.8c0 1.5-3.6 2.6-8 2.6s-8-1.1-8-2.6V6.6"/><path d="M20 12c0 1.5-3.6 2.6-8 2.6S4 13.5 4 12"/>`,
+	scripting: `<path d="m5.5 8.5 3.6 3.5-3.6 3.5"/><path d="M12.5 16h6"/>`,
+	frontend: `<path d="M3.5 7a2.5 2.5 0 0 1 2.5-2.5h12A2.5 2.5 0 0 1 20.5 7v10a2.5 2.5 0 0 1-2.5 2.5H6A2.5 2.5 0 0 1 3.5 17Z"/>
+		<path d="M3.5 9.5h17"/><path d="M6.6 7h.01"/><path d="M9.1 7h.01"/>`,
+	testing: `<path d="M9.6 3.8v5.4l-4.7 7.9a2 2 0 0 0 1.7 3h10.8a2 2 0 0 0 1.7-3l-4.7-7.9V3.8"/>
+		<path d="M8.4 3.8h7.2"/><path d="M7.4 14.4h9.2"/>`,
+	git: `<circle cx="6.6" cy="5.8" r="2.3"/><circle cx="6.6" cy="18.2" r="2.3"/><circle cx="17.4" cy="5.8" r="2.3"/>
+		<path d="M6.6 8.1v7.8"/><path d="M17.4 8.1v1.7a4.2 4.2 0 0 1-4.2 4.2h-2.9"/>`,
+	pipeline: `<path d="M20.2 9.6A8.5 8.5 0 0 0 6 6.6L3.8 8.8"/><path d="M3.8 4.6v4.2H8"/>
+		<path d="M3.8 14.4a8.5 8.5 0 0 0 14.2 3l2.2-2.2"/><path d="M20.2 19.4v-4.2H16"/>`,
+	deploy: `<path d="M12 16V4.6"/><path d="m7.8 8.8 4.2-4.2 4.2 4.2"/><path d="M4.6 19.4h14.8"/>`,
+	infrastructure: `<path d="M3.6 6.8a2.2 2.2 0 0 1 2.2-2.2h12.4a2.2 2.2 0 0 1 2.2 2.2v2a2.2 2.2 0 0 1-2.2 2.2H5.8a2.2 2.2 0 0 1-2.2-2.2Z"/>
+		<path d="M3.6 15.2a2.2 2.2 0 0 1 2.2-2.2h12.4a2.2 2.2 0 0 1 2.2 2.2v2a2.2 2.2 0 0 1-2.2 2.2H5.8a2.2 2.2 0 0 1-2.2-2.2Z"/>
+		<path d="M6.8 7.8h.01"/><path d="M6.8 16.2h.01"/>`,
+};
+---
+
+<section
+	id="learning"
+	class="relative min-h-[240vh] md:min-h-[300vh]"
+	data-start-year={START_YEAR}
+	data-min-years={MIN_YEARS}
+>
+	<div class="pin sticky top-0 flex h-dvh flex-col items-center justify-center overflow-clip px-6">
+		<div class="rings" aria-hidden="true">
+			<div class="rings-field">
+				<span class="ring" style="--size: 46%; --from: 0deg; --sweep: 92deg; --alpha: 1; --spin: 26s"
+				></span>
+				<span
+					class="ring ring-reverse"
+					style="--size: 61%; --from: 180deg; --sweep: 180deg; --alpha: 0.3; --spin: 37s"></span>
+				<span
+					class="ring ring-clay"
+					style="--size: 75%; --from: 275deg; --sweep: 115deg; --alpha: 0.62; --spin: 47s"></span>
+				<span
+					class="ring ring-reverse"
+					style="--size: 93%; --from: 100deg; --sweep: 74deg; --alpha: 0.55; --spin: 59s"></span>
+			</div>
+		</div>
+
+		<div class="statement relative z-10 text-center">
+			<h2>
+				<span class="headline">Never Stop</span>
+				<span class="headline">Learning</span>
+			</h2>
+
+			<p class="lead">
+				<span class="lead-text">More than</span>
+				<span class="count">
+					<span data-years>{years}</span>
+				</span>
+				<span class="lead-text">years building solutions</span>
+			</p>
+		</div>
+
+		<ul class="tags mt-12 flex max-w-sm flex-wrap justify-center gap-2 md:mt-0 md:max-w-none">
+			{
+				skills.map((skill) => (
+					<li class="tag" style={`--x: ${skill.x}%; --y: ${skill.y}%`}>
+						<svg
+							class="glyph"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.6"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<Fragment set:html={ICONS[skill.icon]} />
+						</svg>
+						{skill.label}
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	/* The mask that turns circles into lines. Erasing the top and bottom of the
+	   whole group leaves only the flanks of each ring on screen, which read as
+	   curves crossing the panel — and it means a ring can sweep round without
+	   ever showing that it closes. Without it the same drawing is four targets. */
+	.rings {
+		position: absolute;
+		inset: 0;
+		-webkit-mask: linear-gradient(transparent 0%, #000 19%, #000 80%, transparent 100%);
+		mask: linear-gradient(transparent 0%, #000 19%, #000 80%, transparent 100%);
+	}
+
+	/* A square centred on the panel, so the rings stay circles whatever shape the
+	   viewport is. `max()` keeps it covering the taller dimension too. */
+	.rings-field {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: max(100%, 92vh);
+		aspect-ratio: 1;
+		translate: -50% -50%;
+		display: grid;
+		place-items: center;
+	}
+
+	/* A real bordered circle cut down by a conic mask, rather than a gradient
+	   painted to look like one. The border stays an even hairline all the way
+	   round, and the mask is what decides how much of it exists and where it
+	   fades out. Every ring shares the grid's single cell, so they stay
+	   concentric without any positioning of their own. */
+	.ring {
+		grid-area: 1 / 1;
+		width: var(--size);
+		aspect-ratio: 1;
+		border: 1px solid rgba(255, 240, 226, 0.85);
+		border-radius: 50%;
+		-webkit-mask: conic-gradient(
+			from var(--from),
+			rgb(0 0 0 / var(--alpha)) 0deg,
+			transparent var(--sweep)
+		);
+		mask: conic-gradient(
+			from var(--from),
+			rgb(0 0 0 / var(--alpha)) 0deg,
+			transparent var(--sweep)
+		);
+		rotate: 0deg;
+		animation: orbit var(--spin) linear infinite;
+	}
+
+	.ring-reverse {
+		animation-direction: reverse;
+	}
+
+	.ring-clay {
+		border-color: rgba(237, 170, 122, 0.8);
+	}
+
+	@keyframes orbit {
+		to {
+			rotate: 360deg;
+		}
+	}
+
+	.statement h2 {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.headline {
+		font-size: clamp(2.2rem, 6.2vw, 4.3rem);
+		font-weight: 500;
+		letter-spacing: -0.035em;
+		line-height: 1.04;
+		color: var(--color-mist-100);
+	}
+
+	/* The number is the claim, so it is set as an object rather than as a bold
+	   word inside a sentence: display size, lit from behind by a warm pool. */
+	.lead {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 0.55rem 0.85rem;
+		margin-top: 2rem;
+	}
+
+	.lead-text {
+		font-size: 0.7rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--color-mist-500);
+	}
+
+	.count {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 0.28em;
+		font-size: 2.15rem;
+		font-weight: 800;
+		line-height: 1;
+		color: var(--color-mist-100);
+	}
+
+	.count::before {
+		content: '';
+		position: absolute;
+		inset: -55% -20%;
+		z-index: -1;
+		background: radial-gradient(52% 52% at 50% 52%, rgba(237, 170, 122, 0.25), transparent 72%);
+	}
+
+
+	/* Solid rather than translucent: these sit over the rings, and a see-through
+	   chip lets a hairline run through the middle of the word. */
+	.tag {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.7rem;
+		border-radius: 10px;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		background: var(--color-ink-900);
+		padding: 0.62rem 1rem;
+		font-size: 0.72rem;
+		font-weight: 500;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		white-space: nowrap;
+		color: var(--color-mist-100);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.045),
+			0 14px 34px -20px rgba(0, 0, 0, 0.95);
+	}
+
+	/* The lit edge the nav's selected item wears, flashed as the tag lands and
+	   left burning low afterwards. */
+	.tag::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 26%;
+		left: 26%;
+		height: 1px;
+		background: linear-gradient(90deg, transparent, rgba(255, 240, 226, 0.85), transparent);
+		opacity: var(--lit, 0);
+	}
+
+	.glyph {
+		width: 1.05rem;
+		height: 1.05rem;
+		flex: none;
+		color: var(--color-clay-300);
+	}
+
+	/* Phones keep the tags in flow under the statement. An orbit needs room to be
+	   an orbit: at 375px the same coordinates put half of them off screen and the
+	   rest on top of the words. */
+	@media (min-width: 768px) {
+		.tags {
+			position: absolute;
+			inset: 0;
+			display: block;
+		}
+
+		.tag {
+			position: absolute;
+			top: var(--y);
+			left: var(--x);
+			translate: -50% -50%;
+			padding: 0.75rem 1.25rem;
+			font-size: 0.8rem;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.tag {
+			padding: 0.82rem 1.4rem;
+			font-size: 0.86rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.ring {
+			animation: none;
+		}
+	}
+</style>
+
+<script>
+	import gsap from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+	gsap.registerPlugin(ScrollTrigger);
+
+	const section = document.querySelector<HTMLElement>('#learning');
+
+	if (section) {
+		const statement = section.querySelector('.statement h2');
+		const lead = section.querySelector('.lead');
+		const tags = gsap.utils.toArray<HTMLElement>('.tag', section);
+
+		// The count is rendered at build time, so a page still being served two
+		// years later would understate it. The visitor's own clock is the only
+		// thing here that is never stale.
+		const years = section.querySelector<HTMLElement>('[data-years]');
+		const startYear = Number(section.dataset.startYear);
+		const minYears = Number(section.dataset.minYears);
+
+		if (years && startYear && minYears) {
+			const live = Math.max(minYears, new Date().getFullYear() - startYear);
+			if (live > Number(years.textContent)) years.textContent = String(live);
+		}
+
+		const media = gsap.matchMedia();
+
+		media.add(
+			{
+				orbits: '(min-width: 768px) and (prefers-reduced-motion: no-preference)',
+				stacked: '(max-width: 767px) and (prefers-reduced-motion: no-preference)',
+			},
+			(context) => {
+				const { orbits } = context.conditions as { orbits: boolean };
+
+				const timeline = gsap.timeline({
+					scrollTrigger: {
+						trigger: section,
+						start: 'top top',
+						end: 'bottom bottom',
+						scrub: 0.7,
+					},
+				});
+
+				// The rings are not on this timeline. They are ambient, and scrubbing
+				// them would park the composition at whatever size the reader stopped
+				// at — the scroll is here to bring the disciplines in, nothing else.
+				timeline
+					.from(statement, { opacity: 0, y: 28, duration: 1.4 }, 0)
+					.from(lead, { opacity: 0, y: 18, duration: 1.2 }, 0.6);
+
+				tags.forEach((tag, index) => {
+					// Each tag opens outward from the centre along its own radius, so the
+					// group reads as one system expanding rather than as eight elements
+					// fading in where they already were.
+					const drift = orbits ? radialOffset(tag) : { x: 0, y: 14 };
+					const at = 1.8 + index * 0.85;
+
+					// fromTo, not from: `from` animates towards whatever the element
+					// currently is, so anything that pre-hides these would make them
+					// animate from hidden to hidden. Both ends are stated here instead.
+					timeline
+						.fromTo(
+							tag,
+							{ opacity: 0, scale: 0.5, x: drift.x, y: drift.y },
+							{ opacity: 1, scale: 1, x: 0, y: 0, duration: 1.1 },
+							at
+						)
+						.fromTo(tag, { '--lit': 1 }, { '--lit': 0.3, duration: 1.6 }, at + 0.3);
+				});
+			}
+		);
+
+		// Nothing is scrubbed when motion is reduced: the section is simply already
+		// assembled by the time it is reached.
+		media.add('(prefers-reduced-motion: reduce)', () => {
+			gsap.set(tags, { opacity: 1, scale: 1, '--lit': 0.3 });
+		});
+	}
+
+	/** How far to hold a tag inside its resting position, along its own radius. */
+	function radialOffset(tag: HTMLElement) {
+		const style = getComputedStyle(tag);
+		const x = parseFloat(style.getPropertyValue('--x')) - 50;
+		const y = parseFloat(style.getPropertyValue('--y')) - 50;
+		const length = Math.hypot(x, y) || 1;
+
+		return { x: (-x / length) * 26, y: (-y / length) * 26 };
+	}
+</script>
