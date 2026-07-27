@@ -16,7 +16,7 @@ import { type MouseEvent, useEffect, useLayoutEffect, useRef, useState } from 'r
  * blurring one turns it to mush.
  *
  * The selected pill is lit to match: a hairline along its top edge where the
- * light lands, a cool tint bled into the top of its gradient, and a shadow cast
+ * light lands, a warm tint bled into the top of its gradient, and a shadow cast
  * below. No ring around it — a full border on something this small reads as an
  * outlined chip sitting flat on the bar.
  *
@@ -51,7 +51,7 @@ const GREETING_HOLD = 1600;
 
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-const NavPill = ({ links, greeting = '👋 Welcome' }: NavPillProps) => {
+const NavPill = ({ links, greeting = 'Welcome' }: NavPillProps) => {
 	const [active, setActive] = useState(0);
 	const [preview, setPreview] = useState<number | null>(null);
 	const [indicator, setIndicator] = useState<Indicator>({ x: 0, width: 0 });
@@ -201,9 +201,9 @@ const NavPill = ({ links, greeting = '👋 Welcome' }: NavPillProps) => {
 					style={{
 						...rail,
 						background:
-							'linear-gradient(180deg, rgba(178, 208, 255, 0.11), rgba(255, 255, 255, 0.035))',
+							'linear-gradient(180deg, rgba(255, 214, 178, 0.11), rgba(255, 255, 255, 0.035))',
 						boxShadow:
-							'inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 8px 22px -14px rgba(106, 169, 255, 0.7), 0 3px 10px -6px rgba(0, 0, 0, 0.7)',
+							'inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 8px 22px -14px rgba(237, 170, 122, 0.7), 0 3px 10px -6px rgba(0, 0, 0, 0.7)',
 					}}
 					className="pointer-events-none absolute inset-y-1.5 left-0 rounded-full"
 				/>
@@ -228,7 +228,7 @@ const NavPill = ({ links, greeting = '👋 Welcome' }: NavPillProps) => {
 								onPointerEnter={() => setPreview(index)}
 								onFocus={() => setPreview(index)}
 								onClick={(event) => handleClick(event, index, link.href)}
-								className={`block rounded-full px-5 py-2 text-sm whitespace-nowrap transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azure-400 ${
+								className={`block rounded-full px-5 py-2 text-sm whitespace-nowrap transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-400 ${
 									index === target ? 'text-white' : 'text-mist-300 hover:text-mist-100'
 								}`}
 							>
@@ -248,8 +248,14 @@ const NavPill = ({ links, greeting = '👋 Welcome' }: NavPillProps) => {
 				>
 					<span
 						ref={greetingRef}
-						className="w-max px-7 py-2 text-sm font-medium whitespace-nowrap text-mist-100"
+						className="flex w-max items-center gap-2 px-7 py-2 text-sm font-medium whitespace-nowrap text-mist-100"
 					>
+						{/* Its own element so the rotation is the hand's alone: animating the
+						    whole greeting would swing the word with it. Pivot at the lower
+						    right, which is where a wrist is. */}
+						<span className="inline-block origin-[70%_80%] animate-wave motion-reduce:animate-none">
+							👋
+						</span>
 						{greeting}
 					</span>
 				</span>
@@ -262,7 +268,7 @@ const NavPill = ({ links, greeting = '👋 Welcome' }: NavPillProps) => {
 					className="absolute right-[-22%] bottom-0 left-[-22%] h-14 transition-opacity duration-500"
 					style={{
 						background:
-							'radial-gradient(50% 100% at 50% 100%, rgba(106, 169, 255, 0.1), transparent 70%)',
+							'radial-gradient(50% 100% at 50% 100%, rgba(237, 170, 122, 0.1), transparent 70%)',
 						opacity: lit ? 1 : 0.65,
 					}}
 				/>
@@ -270,7 +276,7 @@ const NavPill = ({ links, greeting = '👋 Welcome' }: NavPillProps) => {
 					className="absolute right-[-4%] bottom-0 left-[-4%] h-6 transition-opacity duration-500"
 					style={{
 						background:
-							'radial-gradient(46% 100% at 50% 100%, rgba(126, 182, 255, 0.5), rgba(126, 182, 255, 0.13) 42%, transparent 72%)',
+							'radial-gradient(46% 100% at 50% 100%, rgba(240, 186, 142, 0.5), rgba(240, 186, 142, 0.13) 42%, transparent 72%)',
 						opacity: lit ? 1 : 0.7,
 					}}
 				/>
@@ -278,7 +284,7 @@ const NavPill = ({ links, greeting = '👋 Welcome' }: NavPillProps) => {
 					className="absolute -top-px right-[26%] left-[26%] h-px transition-opacity duration-500"
 					style={{
 						background:
-							'linear-gradient(90deg, transparent, rgba(226, 238, 255, 0.95), transparent)',
+							'linear-gradient(90deg, transparent, rgba(255, 240, 226, 0.95), transparent)',
 						opacity: lit ? 1 : 0.7,
 					}}
 				/>

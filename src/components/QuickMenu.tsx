@@ -225,7 +225,7 @@ const QuickMenu = ({ links, social }: QuickMenuProps) => {
 				aria-expanded={open}
 				aria-label="Open menu"
 				title="Menu (⌘K)"
-				className="flex size-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-ink-950/50 text-mist-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl transition-colors duration-300 hover:border-white/20 hover:bg-ink-900/70 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azure-400"
+				className="flex size-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-ink-950/50 text-mist-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl transition-colors duration-300 hover:border-white/20 hover:bg-ink-900/70 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-400"
 			>
 				<svg viewBox="0 0 24 24" className="size-5" aria-hidden="true">
 					<path {...STROKE} strokeWidth={1.7} d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
@@ -269,7 +269,7 @@ const QuickMenu = ({ links, social }: QuickMenuProps) => {
 											type="button"
 											onClick={() => chooseLanguage(item.code)}
 											aria-pressed={language === item.code}
-											className={`rounded-lg px-3 py-1.5 text-xs tracking-wide transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-azure-400 ${
+											className={`rounded-lg px-3 py-1.5 text-xs tracking-wide transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-clay-400 ${
 												language === item.code
 													? 'bg-white/10 text-mist-100'
 													: 'text-mist-500 hover:text-mist-300'
@@ -284,7 +284,7 @@ const QuickMenu = ({ links, social }: QuickMenuProps) => {
 									type="button"
 									onClick={() => setOpen(false)}
 									aria-label="Close menu"
-									className="flex size-9 items-center justify-center rounded-xl text-mist-500 transition-colors duration-200 hover:bg-white/[0.06] hover:text-mist-100 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-azure-400"
+									className="flex size-9 items-center justify-center rounded-xl text-mist-500 transition-colors duration-200 hover:bg-white/[0.06] hover:text-mist-100 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-clay-400"
 								>
 									<svg viewBox="0 0 24 24" className="size-[18px]" aria-hidden="true">
 										<path {...STROKE} d="m6.5 6.5 11 11m0-11-11 11" />
@@ -309,9 +309,9 @@ const QuickMenu = ({ links, social }: QuickMenuProps) => {
 													href={link.href}
 													aria-current={isCurrent ? 'page' : undefined}
 													onClick={(event) => handleNavigate(event, link.href)}
-													className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-[0.95rem] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-azure-400 ${
+													className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-[0.95rem] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-clay-400 ${
 														isCurrent
-															? 'border-azure-400/30 bg-azure-500/[0.12] text-azure-200'
+															? 'border-clay-400/30 bg-clay-500/[0.12] text-clay-200'
 															: 'border-white/[0.06] bg-white/[0.03] text-mist-300 hover:border-white/[0.12] hover:bg-white/[0.06] hover:text-mist-100'
 													}`}
 												>
@@ -338,7 +338,7 @@ const QuickMenu = ({ links, social }: QuickMenuProps) => {
 												href={item.href}
 												target={item.href.startsWith('mailto:') ? undefined : '_blank'}
 												rel="noreferrer"
-												className="flex items-center gap-2.5 rounded-2xl border border-white/[0.06] bg-white/[0.03] py-2.5 pr-3 pl-4 text-sm text-mist-300 transition-colors duration-200 hover:border-white/[0.12] hover:bg-white/[0.06] hover:text-mist-100 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-azure-400"
+												className="flex items-center gap-2.5 rounded-2xl border border-white/[0.06] bg-white/[0.03] py-2.5 pr-3 pl-4 text-sm text-mist-300 transition-colors duration-200 hover:border-white/[0.12] hover:bg-white/[0.06] hover:text-mist-100 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-clay-400"
 											>
 												<svg viewBox="0 0 24 24" className="size-[17px] shrink-0" aria-hidden="true">
 													{SOCIAL_ICONS[item.icon]}

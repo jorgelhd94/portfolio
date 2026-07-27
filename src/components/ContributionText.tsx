@@ -58,10 +58,10 @@ const applyFont = (context: CanvasRenderingContext2D, stack: string) => {
  * that the noise still shows as texture and the pointer has somewhere to
  * brighten towards, narrow enough that every cell reads as white.
  */
-const DEFAULT_PALETTE = ['#b3bccf', '#d5dced', '#e8ecf5', '#ffffff'];
+const DEFAULT_PALETTE = ['#b9b9b9', '#d8d8d8', '#efefef', '#ffffff'];
 
 /** GitHub's own scale, borrowed for the intro only. */
-const EMPTY_COLOR = '#1b2027';
+const EMPTY_COLOR = '#1c1b1a';
 const GREEN_RAMP = ['#0e4429', '#006d32', '#26a641', '#39d353'];
 
 /**
@@ -110,7 +110,7 @@ const FLIP_START = INTRO_DELAY + FILL_SWEEP + CELL_FILL + INTRO_HOLD;
 const INTRO_END = FLIP_START + FLIP_SWEEP + CELL_FLIP;
 
 const GREEN_GLOW: Rgb = [57, 211, 83];
-const WHITE_GLOW: Rgb = [150, 190, 255];
+const WHITE_GLOW: Rgb = [236, 234, 232];
 
 type Rgb = [number, number, number];
 
@@ -470,7 +470,7 @@ const ContributionText = ({
 			}
 		};
 
-		/** The spill follows the cells: absent while empty, green, then blue. */
+		/** The spill follows the cells: absent while empty, green, then white. */
 		const updateGlow = (elapsed: number) => {
 			if (elapsed >= INTRO_END) {
 				if (filterOverridden) {
@@ -611,9 +611,9 @@ const ContributionText = ({
 					display: 'block',
 					width: '100%',
 					// One GPU filter for the whole canvas, kept tight: enough spill to seat the
-					// words on the graphite, not enough to soften their edges. The spill is
-					// tinted towards the blue of the rays behind it rather than neutral, so
-					// the words pick up the light of the backdrop instead of ignoring it.
+					// words on the graphite, not enough to soften their edges. Kept neutral
+					// rather than tinted towards the rays: the headline is the one thing on
+					// the page that stays white, and a warm spill creeps into its edges.
 					// Per-cell shadowBlur would cost a blurred fill each; this is one composite.
 					filter: RESTING_FILTER,
 				}}
