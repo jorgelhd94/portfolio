@@ -120,11 +120,22 @@ import QuickMenu from './QuickMenu.tsx';
 		/**
 		 * Whether the hero still owns the screen, and so still owns the navigation.
 		 *
-		 * The hero publishes its own departure as `--exit` on `.hero-stage`. The
-		 * rect is the fallback for reduced motion, where it is never pinned and
-		 * simply scrolls away — there, `--exit` is never written at all.
+		 * The hero publishes its own departure as `--exit` on `.hero-stage`, and
+		 * the rect covers reduced motion, where it is never pinned and simply
+		 * scrolls away — there, `--exit` is never written at all.
+		 *
+		 * Neither can be trusted alone at the top of the page. Both are written a
+		 * frame behind the scroll, and a jump rather than a drag — the wordmark
+		 * below, a Home key, a restored position — lands the reader back on the
+		 * hero while its last published word is still that it had gone. Showing
+		 * this bar there puts it over a hero that has not yet been told to come
+		 * back, and a hero on its way out holds no pointer events: its own menu
+		 * button would sit dead under a bar that should not be there. The reader's
+		 * position cannot lag, so it gets the first word.
 		 */
 		const heroHolds = () => {
+			if (window.scrollY < hero.offsetHeight) return true;
+
 			if (Number(hero.style.getPropertyValue('--exit')) >= 1) return false;
 
 			return hero.getBoundingClientRect().bottom > 0;
