@@ -84,9 +84,6 @@ const NOISE_SCALE = 5.5;
  */
 const DISSOLVE_SPREAD = 0.42;
 
-/** Share of a pinned stage's scroll the words take to come apart. */
-const DISSOLVE_WINDOW = 0.46;
-
 /**
  * Room around the letters for cells to scatter into. The canvas is otherwise
  * exactly the size of the words, and drifting cells are clipped at its edge —
@@ -230,7 +227,6 @@ const ContributionText = ({
 		if (!ctx) return;
 
 		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		const stage = container.closest<HTMLElement>('[data-scroll-stage]');
 		const hasRoundRect = typeof ctx.roundRect === 'function';
 		const topLevel = palette.length - 1;
 
@@ -438,25 +434,19 @@ const ContributionText = ({
 		/**
 		 * How far the words have come apart: 0 in place, 1 gone.
 		 *
-		 * Inside a pinned stage the canvas never moves, so its own position says
-		 * nothing about how far the reader has come. The stage's wrapper is what
-		 * carries the scroll, and progress is read from that instead.
+		 * Whoever owns the scroll can declare `--dissolve` on an ancestor and drive
+		 * this directly. Pinned, the canvas never moves, so its own position on
+		 * screen says nothing about how far the reader has come — the fallback below
+		 * only holds where the words scroll normally.
 		 */
 		const dissolveAt = () => {
 			if (prefersReducedMotion) return 0;
 
-			const viewport = window.innerHeight || 1;
-
-			if (stage) {
-				const rect = stage.getBoundingClientRect();
-				const travel = rect.height - viewport;
-
-				if (travel <= 0) return 0;
-
-				return clamp01(-rect.top / travel / DISSOLVE_WINDOW);
-			}
+			const declared = getComputedStyle(container).getPropertyValue('--dissolve');
+			if (declared) return clamp01(parseFloat(declared));
 
 			const rect = container.getBoundingClientRect();
+			const viewport = window.innerHeight || 1;
 			const start = viewport * DISSOLVE_START;
 			const end = viewport * DISSOLVE_END;
 

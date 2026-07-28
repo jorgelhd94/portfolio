@@ -22,6 +22,7 @@ const skills = [
 	{ label: 'CI/CD', icon: 'pipeline', x: 24, y: 66 },
 	{ label: 'Deploy', icon: 'deploy', x: 13, y: 48 },
 	{ label: 'Infrastructure', icon: 'infrastructure', x: 53, y: 13 },
+	{ label: 'AI', icon: 'ai', x: 36, y: 20 },
 ];
 
 /** Drawn here to match the quick menu's set: 24-unit box, 1.6 stroke, round joins. */
@@ -41,16 +42,20 @@ const ICONS: Record<string, string> = {
 	infrastructure: `<path d="M3.6 6.8a2.2 2.2 0 0 1 2.2-2.2h12.4a2.2 2.2 0 0 1 2.2 2.2v2a2.2 2.2 0 0 1-2.2 2.2H5.8a2.2 2.2 0 0 1-2.2-2.2Z"/>
 		<path d="M3.6 15.2a2.2 2.2 0 0 1 2.2-2.2h12.4a2.2 2.2 0 0 1 2.2 2.2v2a2.2 2.2 0 0 1-2.2 2.2H5.8a2.2 2.2 0 0 1-2.2-2.2Z"/>
 		<path d="M6.8 7.8h.01"/><path d="M6.8 16.2h.01"/>`,
+	// Few large lobes rather than many small ones: a bump narrower than the stroke
+	// is weight, not shape. The fold is an S down the middle, because a straight
+	// one reads as a seam joining two halves instead of as a brain.
+	ai: `<path d="M12 4.6c2.6-1 5.4.4 5.8 2.8 2.4 1 2.8 4.2 1 6 .6 3-2.2 5.4-5 4.8-1 1.4-3.2 1.4-4.2 0-2.8.6-5.4-1.8-4.8-4.8-1.8-1.8-1.4-5 1-6C6.2 5 9.4 3.6 12 4.6Z"/>
+		<path d="M12 4.9c1.4 2 .6 3.8-.6 5-1.2 1.2-.8 3 .6 3.8 1.4.8 1.2 3-.2 5"/>`,
 };
 ---
 
-{/* Pulled up far enough that this panel is pinned well before the hero starts
-to clear off it. The overlap has to exceed the hero's remaining travel at that
-moment, or the reader watches this slide into place through the fading hero —
-which is the whole thing the pinning is there to avoid. */}
+{/* The hero above is pinned without a spacer, so this keeps its own place in
+the scroll and its panel is pinned behind it from the start — already where it
+belongs by the time the hero clears off it, with no overlap to arrange. */}
 <section
 	id="learning"
-	class="relative -mt-[150vh] min-h-[250vh] md:min-h-[280vh]"
+	class="relative min-h-[300vh] md:min-h-[340vh]"
 	data-start-year={START_YEAR}
 	data-min-years={MIN_YEARS}
 >
@@ -397,10 +402,11 @@ which is the whole thing the pinning is there to avoid. */}
 				const timeline = gsap.timeline({
 					scrollTrigger: {
 						trigger: section,
-						// Part way into the handoff, so the panel is assembling while the
-						// hero is still clearing off it. Waiting for the hero to finish
-						// leaves a stretch of empty black between the two.
-						start: () => `top+=${window.innerHeight * 0.15} top`,
+						// Just before the hero begins to clear, so the statement is already
+						// standing by the time it is uncovered. Starting any later shows
+						// it fading in behind a half-opaque hero, which reads as the
+						// section being slow to arrive.
+						start: () => `top+=${window.innerHeight * 0.85} top`,
 						end: 'bottom bottom',
 						scrub: 0.7,
 					},
