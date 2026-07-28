@@ -3,9 +3,10 @@ import { type MouseEvent, useEffect, useLayoutEffect, useRef, useState } from 'r
 /**
  * Pill navigation lit from a source above the current item.
  *
- * It arrives as a greeting and widens into the navigation. Width is driven from
- * measured numbers for that stretch and handed back to the content once the
- * transition ends, so nothing stays frozen at a stale size when a webfont lands.
+ * Where it opens the page it arrives as a greeting and widens into the
+ * navigation. Width is driven from measured numbers for that stretch and handed
+ * back to the content once the transition ends, so nothing stays frozen at a
+ * stale size when a webfont lands.
  *
  * The lamp is three layers — a 1px core, a tight bloom, a wide haze — because a
  * single blurred colour reads as a smudge over the design rather than a light
@@ -25,6 +26,8 @@ interface NavLink {
 interface NavPillProps {
 	links: NavLink[];
 	greeting?: string;
+	/** The greeting the bar opens out of. A bar that is not an arrival skips it. */
+	entrance?: boolean;
 }
 
 interface Indicator {
@@ -43,7 +46,7 @@ const GREETING_HOLD = 1600;
 
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-const NavPill = ({ links, greeting = 'Welcome' }: NavPillProps) => {
+const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps) => {
 	const [active, setActive] = useState(0);
 	const [preview, setPreview] = useState<number | null>(null);
 	const [indicator, setIndicator] = useState<Indicator>({ x: 0, width: 0 });
@@ -66,12 +69,14 @@ const NavPill = ({ links, greeting = 'Welcome' }: NavPillProps) => {
 	useLayoutEffect(() => {
 		const list = listRef.current;
 		const greetingEl = greetingRef.current;
-		if (!list || !greetingEl) return;
+		if (!list) return;
 
-		const next = { greeting: greetingEl.offsetWidth, full: list.offsetWidth };
+		const next = { greeting: greetingEl?.offsetWidth ?? 0, full: list.offsetWidth };
 		setWidths(next);
 
-		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		// No greeting element means no entrance: there is nothing to open out of,
+		// so the bar stands at its full width from the start.
+		if (!greetingEl || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 			setExpanded(true);
 			return;
 		}
@@ -84,7 +89,7 @@ const NavPill = ({ links, greeting = 'Welcome' }: NavPillProps) => {
 		}, GREETING_HOLD);
 
 		return () => window.clearTimeout(timer);
-	}, [links, greeting]);
+	}, [links, greeting, entrance]);
 
 	useLayoutEffect(() => {
 		const measure = () => {
@@ -230,26 +235,28 @@ const NavPill = ({ links, greeting = 'Welcome' }: NavPillProps) => {
 					))}
 				</ul>
 
-				<span
-					aria-hidden="true"
-					style={{
-						opacity: expanded ? 0 : 1,
-						transition: `opacity 260ms linear`,
-					}}
-					className="pointer-events-none absolute inset-0 flex items-center justify-center"
-				>
+				{entrance && (
 					<span
-						ref={greetingRef}
-						className="flex w-max items-center gap-2 px-7 py-2 text-sm font-medium whitespace-nowrap text-mist-100"
+						aria-hidden="true"
+						style={{
+							opacity: expanded ? 0 : 1,
+							transition: `opacity 260ms linear`,
+						}}
+						className="pointer-events-none absolute inset-0 flex items-center justify-center"
 					>
-						{/* Its own element so the rotation is the hand's alone, pivoting where
-					    a wrist would be. */}
-						<span className="inline-block origin-[70%_80%] animate-wave motion-reduce:animate-none">
-							👋
+						<span
+							ref={greetingRef}
+							className="flex w-max items-center gap-2 px-7 py-2 text-sm font-medium whitespace-nowrap text-mist-100"
+						>
+							{/* Its own element so the rotation is the hand's alone, pivoting where
+						    a wrist would be. */}
+							<span className="inline-block origin-[70%_80%] animate-wave motion-reduce:animate-none">
+								👋
+							</span>
+							{greeting}
 						</span>
-						{greeting}
 					</span>
-				</span>
+				)}
 			</div>
 
 			{/* Zero-height rail pinned to the top edge, outside the clip so every

@@ -29,6 +29,11 @@ interface SocialLink {
 interface QuickMenuProps {
 	links: NavLink[];
 	social: SocialLink[];
+	/** ⌘K is one binding on `document`, so exactly one trigger on the page may
+	    claim it — a second would open both docks on top of each other. The one
+	    that gives it up keeps the glyph honestly: the dock is portalled to the
+	    body, so whichever instance the shortcut reaches covers the viewport. */
+	shortcut?: boolean;
 }
 
 const LANGUAGES = [
@@ -105,7 +110,7 @@ const SectionLabel = ({ children }: { children: ReactNode }) => (
 	</p>
 );
 
-const QuickMenu = ({ links, social }: QuickMenuProps) => {
+const QuickMenu = ({ links, social, shortcut = true }: QuickMenuProps) => {
 	const [open, setOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
 	const [language, setLanguage] = useState('en');
@@ -126,6 +131,8 @@ const QuickMenu = ({ links, social }: QuickMenuProps) => {
 	// The trigger wears a ⌘, so the shortcut it implies has to exist. A key glyph
 	// that opens nothing is a label for a control that isn't there.
 	useEffect(() => {
+		if (!shortcut) return;
+
 		const handleShortcut = (event: KeyboardEvent) => {
 			if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k') return;
 
@@ -136,7 +143,7 @@ const QuickMenu = ({ links, social }: QuickMenuProps) => {
 		document.addEventListener('keydown', handleShortcut);
 
 		return () => document.removeEventListener('keydown', handleShortcut);
-	}, []);
+	}, [shortcut]);
 
 	useEffect(() => {
 		if (!open) return;

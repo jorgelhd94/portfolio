@@ -1,0 +1,152 @@
+---
+/**
+ * The navigation the hero takes with it, handed back once the reader is past it.
+ *
+ * It answers a gesture rather than a position: scrolling up is how a reader asks
+ * to go back to something, and this is what they are asking for. Reading on is
+ * scrolling down, and reading on wants the whole screen.
+ */
+
+import { navLinks, social } from '../../data/site';
+import NavPill from './NavPill.tsx';
+import QuickMenu from './QuickMenu.tsx';
+---
+
+<div class="bar fixed inset-x-0 top-0 z-40" data-reveal-nav>
+	{/* Labelled because the hero carries the same links: two navigation landmarks
+	that read alike are worse than one. */}
+	<nav
+		aria-label="Page"
+		class="mx-auto flex w-full max-w-6xl items-center gap-6 px-6 py-3"
+	>
+		<div class="flex flex-1 justify-start">
+			<a
+				href="#top"
+				class="font-wordmark text-[1.65rem] leading-none font-bold whitespace-nowrap text-mist-100 transition-colors duration-300 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-400"
+			>
+				Jorge H.
+			</a>
+		</div>
+
+		{/* No greeting: this bar is a return, not an arrival. */}
+		<NavPill client:idle links={navLinks} entrance={false} />
+
+		<div class="flex flex-1 justify-end">
+			<QuickMenu client:idle links={navLinks} social={social} shortcut={false} />
+		</div>
+	</nav>
+</div>
+
+<style>
+	/* Off the top edge rather than faded in place: it is answering a gesture that
+	   has a direction, and it should come from where that gesture points.
+
+	   `visibility` is what keeps a hidden bar out of the tab order — a translated
+	   one is still focusable, and tabbing would scroll the page to a bar nobody
+	   asked for. It is delayed out so it does not cut the transition short, and
+	   it leaves layout intact, which the pill inside depends on: that measures
+	   its own width on mount and would read zero under `display: none`. */
+	.bar {
+		background: linear-gradient(180deg, rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.72));
+		backdrop-filter: blur(18px);
+		translate: 0 -100%;
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			translate 520ms cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 260ms linear,
+			visibility 0s linear 520ms;
+	}
+
+	.bar.is-shown {
+		translate: 0 0;
+		opacity: 1;
+		visibility: visible;
+		transition:
+			translate 520ms cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 200ms linear,
+			visibility 0s;
+	}
+
+	/* The lit edge the tags and the primary button wear, on the side this arrives
+	   from, so the bar is a lit thing rather than a panel with a border. */
+	.bar::after {
+		content: '';
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		height: 1px;
+		background: linear-gradient(90deg, transparent, rgba(255, 240, 226, 0.18), transparent);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.bar {
+			translate: 0 0;
+			transition:
+				opacity 200ms linear,
+				visibility 0s linear 200ms;
+		}
+
+		.bar.is-shown {
+			transition:
+				opacity 200ms linear,
+				visibility 0s;
+		}
+	}
+</style>
+
+<script>
+	const bar = document.querySelector<HTMLElement>('[data-reveal-nav]');
+	const hero = document.querySelector<HTMLElement>('.hero-stage');
+
+	if (bar && hero) {
+		/** Momentum and rubber-banding reverse a pixel or two at a time. Under this
+		    a scroll has no direction worth answering. */
+		const THRESHOLD = 10;
+
+		let anchor = window.scrollY;
+		let shown = false;
+		let frame = 0;
+
+		/**
+		 * Whether the hero still owns the screen, and so still owns the navigation.
+		 *
+		 * The hero publishes its own departure as `--exit` on `.hero-stage`. The
+		 * rect is the fallback for reduced motion, where it is never pinned and
+		 * simply scrolls away — there, `--exit` is never written at all.
+		 */
+		const heroHolds = () => {
+			if (Number(hero.style.getPropertyValue('--exit')) >= 1) return false;
+
+			return hero.getBoundingClientRect().bottom > 0;
+		};
+
+		/* The anchor only moves once a scroll clears the threshold, so a slow drag
+		   accumulates into one instead of being filtered away a pixel at a time. */
+		const settle = () => {
+			frame = 0;
+
+			const y = window.scrollY;
+			const travel = y - anchor;
+
+			if (Math.abs(travel) < THRESHOLD) return;
+
+			anchor = y;
+
+			const next = travel < 0 && !heroHolds();
+			if (next === shown) return;
+
+			shown = next;
+			bar.classList.toggle('is-shown', shown);
+		};
+
+		window.addEventListener(
+			'scroll',
+			() => {
+				if (!frame) frame = requestAnimationFrame(settle);
+			},
+			{ passive: true }
+		);
+	}
+</script>
