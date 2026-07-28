@@ -261,7 +261,10 @@ animation instead of the layout. */}
 		color: var(--color-mist-300);
 	}
 
-	.wave-button-primary .wave-face {
+	/* Both copies of the label carry .wave-face, so this must not reach the
+	   inverted one: it outweighs `.wave-face-inverted` and would paint the dark
+	   copy white — invisible over the white fill it is clipped to. */
+	.wave-button-primary .wave-face:not(.wave-face-inverted) {
 		color: #fff;
 	}
 
