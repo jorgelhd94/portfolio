@@ -1,0 +1,27 @@
+name: Check
+
+# So a build that cannot compile is caught on the branch rather than
+# discovered when the deploy fails with the commit already on master.
+on:
+  pull_request:
+  push:
+    branches-ignore: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm exec tsc --noEmit
+
+      - run: pnpm build
