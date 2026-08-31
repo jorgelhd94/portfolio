@@ -10,7 +10,13 @@ interface Props {
 	description?: string;
 }
 
-const { title, description } = Astro.props;
+const FALLBACK =
+	'Jorge Hernández — software engineer in Montevideo, building backend systems for fintech, e-commerce and enterprise clients.';
+
+const { title, description = FALLBACK } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const preview = new URL(withBase('/og.jpg'), Astro.site);
 ---
 
 <!doctype html>
@@ -21,8 +27,27 @@ const { title, description } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
 		<link rel="icon" href={withBase('/favicon.ico')} />
 		<meta name="generator" content={Astro.generator} />
-		{description && <meta name="description" content={description} />}
 		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Jorge Hernández" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		{/* Scrapers do not follow relative URLs, and several never fetch WebP. */}
+		<meta property="og:image" content={preview} />
+		<meta property="og:image:type" content="image/jpeg" />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content="Jorge Hernández — Software Engineer, Montevideo" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={preview} />
+
 		<Font cssVariable="--font-body" preload />
 		<Font cssVariable="--font-display" preload />
 	</head>
