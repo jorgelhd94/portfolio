@@ -1,0 +1,493 @@
+---
+import { Image } from 'astro:assets';
+
+import Layout from '../../layouts/Layout.astro';
+import TechIcon from '../../components/TechIcon.astro';
+import WaveButton from '../../components/WaveButton.astro';
+import { projects } from '../../data/projects';
+import { TECH } from '../../data/tech';
+import { withBase } from '../../lib/base';
+
+export function getStaticPaths() {
+	return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}
+
+const { project } = Astro.props;
+
+const shots = import.meta.glob<{ default: ImageMetadata }>(
+	'../../assets/projects/*.{avif,webp,png,jpg,jpeg}',
+	{ eager: true }
+);
+
+const shotFor = (slug: string) =>
+	Object.entries(shots).find(([path]) => path.split('/').pop()?.split('.')[0] === slug)?.[1]
+		.default;
+
+const shot = shotFor(project.slug);
+
+/* Both wrap, so the ends of the list lead round rather than to a dead end. */
+const at = projects.findIndex((item) => item.slug === project.slug);
+
+const hops = [
+	{ way: 'prev' as const, label: 'Previous', to: projects[(at - 1 + projects.length) % projects.length] },
+	{ way: 'next' as const, label: 'Next', to: projects[(at + 1) % projects.length] },
+];
+---
+
+<Layout title={`${project.name} — Jorge Hernández`}>
+	<main class="page relative overflow-hidden px-6 pt-10 pb-24 md:pt-14">
+		<div class="decor" aria-hidden="true">
+			<span class="bloom"></span>
+			<span class="grain"></span>
+			<span class="fade"></span>
+		</div>
+
+		<div class="relative mx-auto w-full max-w-4xl">
+			<a href={withBase('/#projects')} class="back">
+				<svg
+					viewBox="0 0 24 24"
+					class="size-4"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.8"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<path d="M19.5 12h-15m5.5 5.5L4.5 12 10 6.5" />
+				</svg>
+				All projects
+			</a>
+
+			{/* Ahead of the words: */}
+			{
+				shot && (
+					<div class="frame">
+						<span class="spill" aria-hidden="true" style={`--mx: ${project.spill.x}; --my: ${project.spill.y}`} />
+						<Image
+							src={shot}
+							alt={`${project.name} interface`}
+							widths={[600, 900, 1400]}
+							sizes="(min-width: 768px) 56rem, 92vw"
+							class="shot block h-auto w-full rounded-xl"
+							style={`view-transition-name: shot-${project.slug}`}
+						/>
+					</div>
+				)
+			}
+
+			<p class="meta">{project.kind}</p>
+			<h1 class="title">{project.name}</h1>
+			<p class="lead">{project.blurb}</p>
+
+			<div class="cta">
+				<WaveButton href={project.href} label={project.linkLabel} primary external>
+					<svg
+						slot="icon"
+						viewBox="0 0 24 24"
+						class="size-3.5"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<path d="M8 16 16 8m-6.5-.5H16.5v7" />
+					</svg>
+				</WaveButton>
+			</div>
+
+			{
+				project.ownedBy && (
+					<p class="notice">
+						<svg
+							viewBox="0 0 24 24"
+							class="notice-icon size-4 shrink-0"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.6"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<circle cx="12" cy="12" r="8.75" />
+							<path d="M12 11.2v5" />
+							<path d="M12 7.9h.01" />
+						</svg>
+
+						<span>
+							This project belongs to <strong>{project.ownedBy}</strong>. The live site is
+							theirs to change or retire, so this link may stop working.
+						</span>
+					</p>
+				)
+			}
+
+			<section>
+				<h2 class="rule">Built with</h2>
+
+				<ul class="flex flex-wrap items-center gap-2">
+					{
+						project.tech.map((tech) => (
+							<li class="chip">
+								<TechIcon name={tech} />
+								{TECH[tech].label}
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<nav aria-label="More work">
+				<h2 class="rule">More work</h2>
+
+				<div class="hops grid gap-3 md:grid-cols-2">
+					{
+						hops.map(({ way, label, to }) => (
+							<a class:list={['hop', `hop-${way}`]} href={withBase(`/projects/${to.slug}`)}>
+								<svg
+									viewBox="0 0 24 24"
+									class="hop-arrow size-4"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.8"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<path
+										d={
+											way === 'prev'
+												? 'M19.5 12h-15m5.5 5.5L4.5 12 10 6.5'
+												: 'M4.5 12h15m-5.5-5.5L19.5 12 14 17.5'
+										}
+									/>
+								</svg>
+
+								{shotFor(to.slug) && (
+									<Image
+										src={shotFor(to.slug)!}
+										alt=""
+										widths={[160, 320]}
+										sizes="5rem"
+										class="hop-shot h-12 w-20 shrink-0 rounded-[0.6rem] object-cover object-top"
+									/>
+								)}
+
+								<span class="hop-text flex min-w-0 flex-col gap-0.5">
+									<span class="hop-label">{label}</span>
+									<span class="hop-name">{to.name}</span>
+								</span>
+							</a>
+						))
+					}
+				</div>
+			</nav>
+		</div>
+	</main>
+</Layout>
+
+<style>
+	/* The same lit field the stack section stands in, so a project page reads as
+	   part of the site rather than a bare document served from it. */
+	.page {
+		background: linear-gradient(180deg, #0c0c0c 0%, #0a0a0a 60%, var(--color-ink-950) 100%);
+	}
+
+	.decor {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	.bloom {
+		position: absolute;
+		top: -10%;
+		left: 50%;
+		width: min(70rem, 140%);
+		height: 70%;
+		translate: -50% 0;
+		background: radial-gradient(
+			50% 50% at 50% 40%,
+			rgba(215, 165, 128, 0.1),
+			rgba(169, 113, 79, 0.04) 42%,
+			transparent 70%
+		);
+	}
+
+	.grain {
+		position: absolute;
+		inset: 0;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+		background-size: 180px 180px;
+		opacity: 0.06;
+	}
+
+	.fade {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, transparent 70%, var(--color-ink-950) 100%);
+	}
+
+	/* A control, not a stray line of grey text: it carries the same border and
+	   fill as the tiles and chips, and the arrow leads the way out. */
+	.back {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 9999px;
+		background: rgba(255, 255, 255, 0.03);
+		padding: 0.6rem 1.2rem 0.6rem 0.95rem;
+		font-size: 0.9rem;
+		color: var(--color-mist-300);
+		transition:
+			border-color 300ms,
+			background-color 300ms,
+			color 300ms;
+	}
+
+	.back:hover {
+		border-color: rgba(255, 255, 255, 0.22);
+		background: rgba(255, 255, 255, 0.07);
+		color: var(--color-mist-100);
+	}
+
+	.back:focus-visible {
+		outline: 2px solid var(--color-clay-400);
+		outline-offset: 2px;
+	}
+
+	.back svg {
+		transition: translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.back:hover svg {
+		translate: -3px 0;
+	}
+
+	/* The shot keeps the clay spill it had on the card, so the handover the view
+	   transition performs lands on the same lighting it left. */
+	.frame {
+		position: relative;
+		margin-top: 2.25rem;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 1.15rem;
+		background: var(--color-ink-900);
+		padding: 0.6rem;
+		box-shadow: 0 30px 70px -45px rgba(0, 0, 0, 0.95);
+	}
+
+	.spill {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: radial-gradient(
+			60% 60% at var(--mx) var(--my),
+			rgba(223, 174, 139, 0.16),
+			transparent 72%
+		);
+	}
+
+	/* Only the stacking it needs above the spill; size and shape ride on the tag,
+	   so a stylesheet that fails to load costs a corner radius, not the layout. */
+	.shot {
+		position: relative;
+	}
+
+	.meta {
+		margin-top: 3rem;
+		font-size: 0.8rem;
+		font-weight: 500;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--color-mist-300);
+	}
+
+	.title {
+		margin-top: 0.8rem;
+		font-size: clamp(2.2rem, 6vw, 3.6rem);
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1.05;
+	}
+
+	.lead {
+		margin-top: 1.4rem;
+		max-width: 44rem;
+		font-size: 1.15rem;
+		line-height: 1.7;
+		color: var(--color-mist-300);
+	}
+
+	/* Flex, so the button is a flex item sized to its label. As a block-level box
+	   `.wave-button` is `display: flex` and would run the width of the page. */
+	.cta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 2.25rem;
+	}
+
+	/* Sized up from the shared button's 0.8rem, which is set for the compact cards
+	   in the deck. Here it is the page's one action and sits under body copy. */
+	.cta :global(.wave-button) {
+		min-height: 2.9rem;
+		padding: 0 1.5rem;
+		font-size: 0.92rem;
+	}
+
+	/* Sits under the button it qualifies, quiet enough not to argue with it. Not a
+	   warning colour: nothing is wrong, the link simply is not mine to keep alive. */
+	.notice {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.7rem;
+		margin-top: 1.5rem;
+		max-width: 36rem;
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		border-radius: 0.9rem;
+		background: rgba(255, 255, 255, 0.02);
+		padding: 1rem 1.2rem;
+		font-size: 0.95rem;
+		line-height: 1.65;
+		color: var(--color-mist-500);
+	}
+
+	.notice strong {
+		font-weight: 500;
+		color: var(--color-mist-300);
+	}
+
+	/* Sized by the utility on the tag, like every other icon here: */
+	.notice-icon {
+		/* Nudged onto the first line's baseline rather than its box top. */
+		margin-top: 0.2rem;
+		color: var(--color-clay-400);
+	}
+
+	/* Ruled rather than merely spaced: below a screen of prose, a bare uppercase
+	   label does not read as the start of anything. */
+	.rule {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-top: 4rem;
+		margin-bottom: 1.25rem;
+		font-size: 0.78rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--color-mist-500);
+	}
+
+	.rule::after {
+		content: '';
+		flex: 1;
+		height: 1px;
+		background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
+	}
+
+	.chip {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 0.85rem;
+		background: rgba(255, 255, 255, 0.03);
+		padding: 0.6rem 1rem;
+		font-size: 0.95rem;
+		color: var(--color-mist-300);
+		transition:
+			border-color 300ms,
+			color 300ms;
+	}
+
+	.chip:hover {
+		border-color: rgba(255, 255, 255, 0.16);
+		color: var(--color-mist-100);
+	}
+
+	.chip :global(svg) {
+		width: 1.15rem;
+		height: 1.15rem;
+		transition: color 300ms;
+	}
+
+	.chip:hover :global(svg) {
+		color: var(--brand);
+	}
+
+	/* A way on rather than a dead end, in both directions; the ends of the list
+	   wrap round. The pair mirrors so each points the way it goes. */
+	.hop {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		border-radius: 1.15rem;
+		background: rgba(255, 255, 255, 0.025);
+		padding: 0.85rem 1.15rem;
+		transition:
+			border-color 300ms,
+			background-color 300ms;
+	}
+
+	/* Same markup both ways, read backwards on one of them. */
+	.hop-next {
+		flex-direction: row-reverse;
+		text-align: right;
+	}
+
+	.hop:hover {
+		border-color: rgba(255, 255, 255, 0.18);
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.hop:focus-visible {
+		outline: 2px solid var(--color-clay-400);
+		outline-offset: 2px;
+	}
+
+	.hop-label {
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--color-mist-500);
+	}
+
+	.hop-name {
+		font-size: 1.15rem;
+		font-weight: 500;
+		color: var(--color-mist-100);
+	}
+
+	.hop-arrow {
+		flex: none;
+		color: var(--color-mist-500);
+		transition:
+			translate 300ms cubic-bezier(0.22, 1, 0.36, 1),
+			color 300ms;
+	}
+
+	.hop:hover .hop-arrow {
+		color: var(--color-mist-100);
+	}
+
+	.hop-prev:hover .hop-arrow {
+		translate: -3px 0;
+	}
+
+	.hop-next:hover .hop-arrow {
+		translate: 3px 0;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.back:hover svg,
+		.hop:hover .hop-arrow {
+			translate: none;
+		}
+	}
+</style>

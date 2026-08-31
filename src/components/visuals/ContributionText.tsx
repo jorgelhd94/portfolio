@@ -88,7 +88,9 @@ const DISSOLVE_SPREAD = 0.42;
  * Room around the letters for cells to scatter into. The canvas is otherwise
  * exactly the size of the words, and drifting cells are clipped at its edge —
  * which leaves the scattered field ending in a perfect rectangle. Negative
- * margins keep the extra area out of the layout.
+ * margins keep the extra area out of the layout — but not out of hit-testing:
+ * the box reaches the nav above and the scroll hint below, so the canvas takes
+ * no pointer events and reads the pointer from window listeners instead.
  */
 const BLEED = 150;
 
@@ -611,11 +613,19 @@ const ContributionText = ({
 			const rect = canvas.getBoundingClientRect();
 			pointer.x = event.clientX - rect.left;
 			pointer.y = event.clientY - rect.top;
-			pointer.active = true;
-			wake();
+
+			const inside =
+				pointer.x >= 0 && pointer.x <= rect.width && pointer.y >= 0 && pointer.y <= rect.height;
+
+			// One extra wake on the way out lets the displaced cells drift home.
+			if (inside || pointer.active) wake();
+			pointer.active = inside;
 		};
 
-		const handlePointerLeave = () => {
+		/** A `pointerout` with no relatedTarget is the pointer leaving the window —
+		    the one exit the move handler never gets to see. */
+		const handlePointerOut = (event: PointerEvent) => {
+			if (event.relatedTarget !== null) return;
 			pointer.active = false;
 			wake();
 		};
@@ -642,8 +652,8 @@ const ContributionText = ({
 		});
 
 		if (!prefersReducedMotion) {
-			canvas.addEventListener('pointermove', handlePointerMove);
-			canvas.addEventListener('pointerleave', handlePointerLeave);
+			window.addEventListener('pointermove', handlePointerMove);
+			window.addEventListener('pointerout', handlePointerOut);
 			// The loop parks itself once the words are gone, so scrolling has to be
 			// what starts it again — including on the way back up.
 			window.addEventListener('scroll', wake, { passive: true });
@@ -665,8 +675,8 @@ const ContributionText = ({
 		return () => {
 			disposed = true;
 			observer.disconnect();
-			canvas.removeEventListener('pointermove', handlePointerMove);
-			canvas.removeEventListener('pointerleave', handlePointerLeave);
+			window.removeEventListener('pointermove', handlePointerMove);
+			window.removeEventListener('pointerout', handlePointerOut);
 			window.removeEventListener('scroll', wake);
 			if (frame !== null) cancelAnimationFrame(frame);
 		};
@@ -680,6 +690,9 @@ const ContributionText = ({
 					display: 'block',
 					width: '100%',
 					maxWidth: 'none',
+					// The bleed hangs this box over the nav and the scroll hint; letting
+					// it hit-test would lay an invisible sheet over both.
+					pointerEvents: 'none',
 					// One composite for the whole canvas; per-cell shadowBlur would cost a
 					// blurred fill each. Neutral rather than tinted towards the rays: a warm
 					// spill creeps into the edges of the one element that stays white.

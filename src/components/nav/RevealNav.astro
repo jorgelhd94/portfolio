@@ -1,12 +1,4 @@
 ---
-/**
- * The navigation the hero takes with it, handed back once the reader is past it.
- *
- * It answers a gesture rather than a position: scrolling up is how a reader asks
- * to go back to something, and this is what they are asking for. Reading on is
- * scrolling down, and reading on wants the whole screen.
- */
-
 import { navLinks, social } from '../../data/site';
 import NavPill from './NavPill.tsx';
 import QuickMenu from './QuickMenu.tsx';
@@ -28,11 +20,22 @@ import QuickMenu from './QuickMenu.tsx';
 			</a>
 		</div>
 
+		{/* Both islands in this bar hydrate on a timeout rather than on idle alone:
+		    the hero drives a WebGL loop for as long as it is on screen, so the page
+		    has no idle period to offer and a bare `client:idle` waits on a callback
+		    that never fires. The bar would slide in as markup with nothing behind
+		    it — a pill that does not light and a button that does not open. */}
+
 		{/* No greeting: this bar is a return, not an arrival. */}
-		<NavPill client:idle links={navLinks} entrance={false} />
+		<NavPill client:idle={{ timeout: 500 }} links={navLinks} entrance={false} />
 
 		<div class="flex flex-1 justify-end">
-			<QuickMenu client:idle links={navLinks} social={social} shortcut={false} />
+			<QuickMenu
+				client:idle={{ timeout: 500 }}
+				links={navLinks}
+				social={social}
+				shortcut={false}
+			/>
 		</div>
 	</nav>
 </div>

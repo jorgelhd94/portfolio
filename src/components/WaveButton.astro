@@ -1,0 +1,132 @@
+---
+interface Props {
+	href: string;
+	label: string;
+	/** Lit edge, white label and a seam of light along the top. One per group. */
+	primary?: boolean;
+	/** Opens in a new tab, for anything that leaves the site. */
+	external?: boolean;
+	/** Saves the file rather than navigating to it. */
+	download?: boolean;
+	class?: string;
+}
+
+const {
+	href,
+	label,
+	primary = false,
+	external = false,
+	download = false,
+	class: className = '',
+} = Astro.props;
+---
+
+<a
+	href={href}
+	target={external ? '_blank' : undefined}
+	rel={external ? 'noreferrer' : undefined}
+	download={download || undefined}
+	class:list={['wave-button', primary && 'wave-button-primary', className]}
+>
+	<span class="wave-fill" aria-hidden="true"></span>
+	<span class="wave-face">
+		<slot name="icon" />
+		{label}
+	</span>
+	<span class="wave-face wave-face-inverted" aria-hidden="true">
+		<slot name="icon" />
+		{label}
+	</span>
+</a>
+
+<style>
+	.wave-button {
+		position: relative;
+		isolation: isolate;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+		border-radius: 9999px;
+		border: 1px solid var(--edge, rgba(255, 255, 255, 0.1));
+		background: rgba(255, 255, 255, 0.035);
+		/* Height from min-height rather than vertical padding, so the icon-only
+		   variant can drop its padding and still line up with the labelled one. */
+		min-height: 2.6rem;
+		padding: 0 1.25rem;
+		font-size: 0.8rem;
+		font-weight: 500;
+		transition: border-color 320ms ease;
+	}
+
+	.wave-button:hover,
+	.wave-button:focus-visible {
+		border-color: rgba(255, 255, 255, 0.28);
+	}
+
+	.wave-button:focus-visible {
+		outline: 2px solid var(--color-clay-400);
+		outline-offset: 2px;
+	}
+
+	.wave-button-primary {
+		--edge: rgba(255, 255, 255, 0.2);
+	}
+
+	.wave-button-primary::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 24%;
+		left: 24%;
+		z-index: 1;
+		height: 1px;
+		background: linear-gradient(90deg, transparent, rgba(255, 240, 226, 0.9), transparent);
+	}
+
+	/* The crest rides the right edge, which is the leading edge as the clip opens. */
+	.wave-fill {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background: linear-gradient(90deg, #dcdcdc 0%, #efefef 78%, #ffffff 100%);
+		clip-path: inset(0 100% 0 0);
+		transition: clip-path 520ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.wave-face {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		white-space: nowrap;
+		color: var(--color-mist-300);
+	}
+
+	/* Both copies of the label carry .wave-face, so this must not reach the inverted one: */
+	.wave-button-primary .wave-face:not(.wave-face-inverted) {
+		color: #fff;
+	}
+
+	.wave-face-inverted {
+		position: absolute;
+		inset: 0;
+		color: var(--color-ink-950);
+		clip-path: inset(0 100% 0 0);
+		transition: clip-path 520ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.wave-button:hover .wave-fill,
+	.wave-button:hover .wave-face-inverted,
+	.wave-button:focus-visible .wave-fill,
+	.wave-button:focus-visible .wave-face-inverted {
+		clip-path: inset(0 0 0 0);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.wave-fill,
+		.wave-face-inverted {
+			transition-duration: 0s;
+		}
+	}
+</style>

@@ -1,0 +1,367 @@
+---
+import { Image } from 'astro:assets';
+
+import { projects } from '../data/projects';
+import { TECH } from '../data/tech';
+import { withBase } from '../lib/base';
+import TechIcon from '../components/TechIcon.astro';
+import WaveButton from '../components/WaveButton.astro';
+
+/* Shots keyed by slug, so adding one to `src/assets/projects/` is the whole
+   task — no import to remember here. */
+const shots = import.meta.glob<{ default: ImageMetadata }>(
+	'../assets/projects/*.{avif,webp,png,jpg,jpeg}',
+	{ eager: true }
+);
+
+const shotFor = (slug: string) =>
+	Object.entries(shots).find(([path]) => path.split('/').pop()?.split('.')[0] === slug)?.[1]
+		.default;
+---
+
+<section id="projects" class="section relative px-6 pt-6 pb-2 md:pt-8 md:pb-4">
+	<div class="mx-auto w-full max-w-6xl">
+		<header class="mb-10 text-center md:mb-14">
+			<h2 class="title">Built, shipped, running.</h2>
+			<p class="lead mx-auto mt-5 max-w-xl">
+				A few projects across product, tooling and infrastructure.
+			</p>
+		</header>
+
+		<div class="deck">
+			{
+				projects.map((project, index) => (
+					<article
+						class="card overflow-hidden rounded-3xl border border-white/[0.08]"
+						data-stack-card
+						style={`--i: ${index}; --mx: ${project.spill.x}; --my: ${project.spill.y}`}
+					>
+						<div class="media relative overflow-hidden">
+							<span class="spill" aria-hidden="true" />
+
+							{shotFor(project.slug) ? (
+								<Image
+									src={shotFor(project.slug)!}
+									alt={`${project.name} interface`}
+									widths={[480, 800, 1200]}
+									sizes="(min-width: 768px) 45vw, 92vw"
+									class="shot"
+									style={`view-transition-name: shot-${project.slug}`}
+								/>
+							) : (
+								<span class="mark font-wordmark" aria-hidden="true">
+									{project.name.charAt(0)}
+								</span>
+							)}
+
+							<span class="grain" aria-hidden="true" />
+
+							<a
+								class="stretch"
+								href={withBase(`/projects/${project.slug}`)}
+								tabindex="-1"
+								aria-hidden="true"
+							/>
+						</div>
+
+						<div class="body flex min-w-0 flex-col justify-center gap-4 p-6 md:gap-6 md:p-12">
+							<p class="meta border-b border-white/[0.07] pb-4 text-[0.72rem] font-medium tracking-[0.18em] text-mist-300 uppercase">
+								{project.kind}
+							</p>
+
+							<h3 class="name">{project.name}</h3>
+
+							<p class="blurb hidden text-base leading-relaxed text-mist-300 md:block">{project.blurb}</p>
+
+							<ul class="flex flex-wrap items-center gap-2">
+								{project.tech.map((tech) => (
+									<li class="chip flex size-10 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03] text-mist-300">
+										<TechIcon name={tech} />
+										{/* Not `title`: */}
+										<span class="tip">{TECH[tech].label}</span>
+									</li>
+								))}
+							</ul>
+
+							<div class="actions mt-1 flex flex-nowrap items-center gap-2.5">
+								<WaveButton href={withBase(`/projects/${project.slug}`)} label="Details" primary />
+
+								<WaveButton href={project.href} label={project.linkLabel} external>
+									<svg
+										slot="icon"
+										viewBox="0 0 24 24"
+										class="size-3.5"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.8"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										aria-hidden="true"
+									>
+										<path d="M8 16 16 8m-6.5-.5H16.5v7" />
+									</svg>
+								</WaveButton>
+							</div>
+						</div>
+					</article>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	/* Where the page lifts off its own graphite. */
+	.section {
+		background: linear-gradient(180deg, var(--color-ink-950) 0%, #0d0d0d 22%, #0d0d0d 100%);
+	}
+
+	.title {
+		font-size: clamp(2.1rem, 4.5vw, 3.3rem);
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1.08;
+	}
+
+	.lead {
+		color: var(--color-mist-500);
+		font-size: 1rem;
+	}
+
+	/* Where the first card pins, and how far below it each later card rests. */
+	.deck {
+		--base: 3.5rem;
+		--step: 0.7rem;
+	}
+
+	.card {
+		--stick: calc(var(--base) + var(--i) * var(--step));
+		position: sticky;
+		top: var(--stick);
+		display: grid;
+		/* The shot sets the band: */
+		grid-template-rows: minmax(9rem, auto) 1fr;
+		/* Content-sized on a phone. */
+		background: var(--color-ink-900);
+		/* Shrinking from the top edge is what holds each buried card's peek in
+		   place: with a centred origin the stair would drift as it scaled. */
+		transform-origin: 50% 0;
+	}
+
+	/* The gap in normal flow is the scroll it takes the next card to arrive;
+	   around a viewport per card keeps one handoff on screen at a time. */
+	.card + .card {
+		margin-top: 12vh;
+	}
+
+	/* The recede is a dim, not an opacity fade: the card must stay opaque or the
+	   pile behind it would show through the content. */
+	.card::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		border-radius: inherit;
+		background: var(--color-ink-950);
+		opacity: calc(var(--veil, 0) * 0.6);
+		pointer-events: none;
+	}
+
+	@media (min-width: 768px) {
+		.deck {
+			--base: 5.5rem;
+			--step: 0.85rem;
+		}
+
+		.card {
+			grid-template-rows: none;
+			grid-template-columns: 1.05fr 1fr;
+			align-items: stretch;
+			/* Sized to the shot rather than to the text: */
+			height: min(30rem, calc(100dvh - var(--stick) - 3.5rem));
+		}
+	}
+
+	/* Edge to edge on a phone. */
+	.shot {
+		position: relative;
+		z-index: 1;
+		display: block;
+		width: 100%;
+		height: auto;
+		/* A ceiling, not a frame: */
+		max-height: 13rem;
+		object-fit: cover;
+		object-position: top;
+	}
+
+	/* Contained, not cropped. */
+	@media (min-width: 768px) {
+		.shot {
+			position: absolute;
+			top: 50%;
+			left: 1.25rem;
+			width: calc(100% - 2.5rem);
+			translate: 0 -50%;
+			/* Released, so the box goes back to the capture's own ratio and there is
+			   nothing left for `cover` to trim. */
+			max-height: none;
+			border: 1px solid rgba(255, 255, 255, 0.09);
+			border-radius: 0.7rem;
+			box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.95);
+		}
+	}
+
+	.name {
+		font-size: clamp(1.55rem, 2.6vw, 2.35rem);
+		font-weight: 600;
+		letter-spacing: -0.015em;
+		line-height: 1.12;
+	}
+
+	.chip {
+		position: relative;
+		transition:
+			color 300ms,
+			border-color 300ms;
+	}
+
+	/* Above the veil, which sits at 2 and would otherwise wash the label out on a
+	   card that is only part-way receded. */
+	.tip {
+		position: absolute;
+		bottom: calc(100% + 0.45rem);
+		left: 50%;
+		z-index: 3;
+		translate: -50% 4px;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 0.6rem;
+		background: var(--color-ink-800);
+		box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.9);
+		padding: 0.3rem 0.55rem;
+		font-size: 0.7rem;
+		white-space: nowrap;
+		color: var(--color-mist-100);
+		opacity: 0;
+		pointer-events: none;
+		transition:
+			opacity 200ms linear,
+			translate 200ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.chip:hover .tip {
+		opacity: 1;
+		translate: -50% 0;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.tip {
+			translate: -50% 0;
+		}
+	}
+
+	.chip:hover {
+		color: var(--color-mist-100);
+		border-color: rgba(255, 255, 255, 0.18);
+	}
+
+	.chip :global(svg) {
+		width: 1.25rem;
+		height: 1.25rem;
+		transition: color 300ms;
+	}
+
+	/* Same reward as the stack tiles: the mark takes its brand colour under the
+	   pointer, so the two sections read as one system. */
+	.chip:hover :global(svg) {
+		color: var(--brand);
+	}
+
+	/* Side by side at every width. */
+	.stretch {
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+	}
+
+	.actions :global(.wave-button) {
+		min-width: 0;
+		padding: 0 0.7rem;
+	}
+
+	@media (min-width: 768px) {
+		.actions :global(.wave-button) {
+			padding: 0 1.25rem;
+		}
+	}
+
+	/* Placeholder art in the palette's terms: a neutral graphite surface with a
+	   clay light falling across it — never a clay surface. */
+	.media {
+		background:
+			radial-gradient(120% 90% at 30% 20%, rgba(190, 190, 190, 0.08), transparent 55%),
+			linear-gradient(140deg, #1d1d1d 0%, #161616 45%, #101010 100%);
+	}
+
+	.spill {
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(
+			70% 65% at var(--mx) var(--my),
+			rgba(223, 174, 139, 0.22),
+			rgba(199, 141, 104, 0.07) 45%,
+			transparent 75%
+		);
+	}
+
+	.mark {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: clamp(9rem, 24vw, 17rem);
+		line-height: 1;
+		color: rgba(255, 255, 255, 0.05);
+		user-select: none;
+	}
+
+	.grain {
+		position: absolute;
+		inset: 0;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+		background-size: 180px 180px;
+		opacity: 0.13;
+	}
+</style>
+
+<script>
+	import gsap from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+	gsap.registerPlugin(ScrollTrigger);
+
+	const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-stack-card]'));
+
+	gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+		cards.forEach((card, index) => {
+			const next = cards[index + 1];
+			if (!next) return;
+
+			gsap.to(card, {
+				scale: 0.94,
+				'--veil': 1,
+				ease: 'none',
+				scrollTrigger: {
+					trigger: next,
+					start: 'top bottom',
+					// Done receding exactly when the next card reaches its own resting
+					// top — read live because the stair gives every card a different one.
+					end: () => `top ${Math.round(parseFloat(getComputedStyle(next).top))}`,
+					scrub: true,
+					invalidateOnRefresh: true,
+				},
+			});
+		});
+	});
+</script>

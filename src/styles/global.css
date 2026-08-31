@@ -77,8 +77,23 @@ body {
 	text-rendering: optimizeLegibility;
 }
 
+/* Cross-document, so navigating to a project stays a real page load: Astro's
+   client router would swap the document under the ScrollTrigger pins, the stack
+   observer and the retracting bar's scroll listener, all of which bind once. */
+@view-transition {
+	navigation: auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	html {
 		scroll-behavior: auto;
+	}
+
+	/* `!important` is the documented way to beat the user agent's own transition
+	   animations, which are not authored styles. */
+	::view-transition-group(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		animation: none !important;
 	}
 }

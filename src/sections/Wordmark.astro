@@ -1,0 +1,53 @@
+---
+const SPAN = 100;
+
+/* As large as it can be while both words stay naturally *narrower* than `INK`. */
+const SIZE = 15.9;
+
+/* Both lines span this, so the pair is flush on both edges. */
+const INK = 99.2;
+const INSET = (SPAN - INK) / 2;
+---
+
+<section class="wordmark" aria-hidden="true">
+	<svg class="art" viewBox={`0 1.2 ${SPAN} 26.3`} preserveAspectRatio="xMidYMid meet">
+		<defs>
+			{/* Lit from above and falling away into the page, the same story the rest
+			    of the site tells with light. */}
+			<linearGradient id="wordmark-fade" x1="0" y1="0" x2="0" y2="1">
+				<stop offset="0" stop-color="#dfae8b" stop-opacity="0.26" />
+				<stop offset="0.58" stop-color="#c78d68" stop-opacity="0.145" />
+				<stop offset="1" stop-color="#a9714f" stop-opacity="0.055" />
+			</linearGradient>
+		</defs>
+
+		{/* `spacingAndGlyphs`, so the fitting is a horizontal stretch of the whole run
+		   rather than air pushed between the letters. */}
+		<text x={INSET} y="12.7" textLength={INK} lengthAdjust="spacingAndGlyphs" font-size={SIZE}>Software</text>
+		<text x={INSET} y="26" textLength={INK} lengthAdjust="spacingAndGlyphs" font-size={SIZE}>Engineer</text>
+	</svg>
+</section>
+
+<style>
+	/* Full bleed: the mark runs to both edges, so it reads as the page ending
+	   rather than as a last piece of content sitting inside the grid. */
+	/* No head and no foot: the section above already ends on its own padding, and
+	   the letters are meant to run out at the page's edge. */
+	.wordmark {
+		background: var(--color-ink-950);
+		user-select: none;
+	}
+
+	.art {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	.art text {
+		fill: url(#wordmark-fade);
+		font-family: var(--font-body);
+		font-weight: 900;
+		text-transform: uppercase;
+	}
+</style>
