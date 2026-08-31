@@ -6,6 +6,11 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
+  // A project page is served from a subpath, so every root-absolute href has
+  // to go through `withBase`.
+  site: 'https://jorgelhd94.github.io',
+  base: '/portfolio',
+
   integrations: [react()],
 
   fonts: [
