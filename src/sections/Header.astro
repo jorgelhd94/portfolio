@@ -8,7 +8,7 @@ import WaveButton from '../components/WaveButton.astro';
 
 {/* Pinned by ScrollTrigger, which holds it on screen while the scroll drives the
 animation instead of the layout. */}
-<header id="top" class="hero-stage isolate flex h-dvh flex-col overflow-hidden">
+<header id="top" class="hero-stage isolate flex h-lvh flex-col overflow-hidden">
 	<HeaderBackground />
 
 		<div class="nav-shell">
@@ -67,6 +67,11 @@ animation instead of the layout. */}
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 	gsap.registerPlugin(ScrollTrigger);
+
+	// A phone’s address bar retracts as the reader scrolls, which the browser
+	// reports as a resize. Left alone, every trigger on the page recalculates
+	// mid-scroll and the sections visibly jump.
+	ScrollTrigger.config({ ignoreMobileResize: true });
 
 	const panel = document.querySelector<HTMLElement>('.hero-stage');
 
