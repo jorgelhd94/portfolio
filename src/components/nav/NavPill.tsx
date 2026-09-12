@@ -1,7 +1,8 @@
-import { type MouseEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { type MouseEvent, useLayoutEffect, useRef, useState } from 'react';
 
 import type { NavLink } from '../../data/site';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useActiveSection } from '../../hooks/useActiveSection';
 import { preventMissingSection } from '../../lib/navigation';
 interface NavPillProps {
 	links: NavLink[];
@@ -15,12 +16,6 @@ interface Indicator {
 	width: number;
 }
 
-/** Only the section crossing this band of the viewport counts as current. */
-const SPY_MARGIN = '-45% 0px -50% 0px';
-
-/** After a click, ignore the spy while the smooth scroll travels past sections. */
-const SPY_LOCK = 800;
-
 /** How long the greeting holds before the bar opens. */
 const GREETING_HOLD = 1600;
 
@@ -28,7 +23,8 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps) => {
 	const reducedMotion = useReducedMotion();
-	const [active, setActive] = useState(0);
+	const current = useActiveSection(links);
+	const active = Math.max(0, links.findIndex((link) => link.href === current));
 	const [preview, setPreview] = useState<number | null>(null);
 	const [indicator, setIndicator] = useState<Indicator>({ x: 0, width: 0 });
 	const [widths, setWidths] = useState<{ greeting: number; full: number } | null>(null);
@@ -40,7 +36,6 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 	const listRef = useRef<HTMLUListElement | null>(null);
 	const greetingRef = useRef<HTMLSpanElement | null>(null);
 	const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-	const spyLockedUntil = useRef(0);
 
 	const target = preview ?? active;
 	const measured = widths !== null;
@@ -105,40 +100,8 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 		return () => { disposed = true; observer.disconnect(); };
 	}, [target, links]);
 
-	useEffect(() => {
-		const indexByElement = new Map<Element, number>();
-
-		links.forEach((link, index) => {
-			const element = document.getElementById(link.href.replace('#', ''));
-			if (element) indexByElement.set(element, index);
-		});
-
-		if (indexByElement.size === 0) return;
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				if (performance.now() < spyLockedUntil.current) return;
-
-				for (const entry of entries) {
-					if (!entry.isIntersecting) continue;
-
-					const index = indexByElement.get(entry.target);
-					if (index !== undefined) setActive(index);
-				}
-			},
-			{ rootMargin: SPY_MARGIN }
-		);
-
-		for (const element of indexByElement.keys()) observer.observe(element);
-
-		return () => observer.disconnect();
-	}, [links]);
-
-	const handleClick = (event: MouseEvent<HTMLAnchorElement>, index: number, href: string) => {
-		setActive(index);
+	const handleClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
 		setPreview(null);
-		spyLockedUntil.current = performance.now() + SPY_LOCK;
-
 		preventMissingSection(event, href);
 	};
 
@@ -207,7 +170,7 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 								aria-current={index === active ? 'location' : undefined}
 								onPointerEnter={() => setPreview(index)}
 								onFocus={() => setPreview(index)}
-								onClick={(event) => handleClick(event, index, link.href)}
+								onClick={(event) => handleClick(event, link.href)}
 								className={`block rounded-full px-5 py-2 text-sm whitespace-nowrap transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-400 ${
 									index === target ? 'text-white' : 'text-mist-300 hover:text-mist-100'
 								}`}
