@@ -1,6 +1,13 @@
 ---
-import { navLinks, social } from '../../data/site';
-import { withBase } from '../../lib/base';
+import { getNavLinks, getSocialLinks } from '../../data/site';
+import { getLocale, ui } from '../../i18n/ui';
+import { languageLinks } from '../../i18n/routes';
+const locale = getLocale(Astro.currentLocale);
+const t = ui[locale];
+const navLinks = getNavLinks(locale);
+const social = getSocialLinks(locale);
+const languages = languageLinks(Astro.url.pathname);
+import { localePath } from '../../i18n/routes';
 import NavPill from './NavPill.tsx';
 import QuickMenu from './QuickMenu.tsx';
 ---
@@ -11,16 +18,16 @@ import QuickMenu from './QuickMenu.tsx';
 <nav class="mx-auto flex w-full max-w-6xl items-center gap-6 px-6 py-6">
 	<div class="flex flex-1 justify-start">
 		<a
-			href={withBase('/')}
+			href={localePath(locale)}
 			class="font-wordmark text-[2.25rem] leading-none font-bold whitespace-nowrap text-mist-100 transition-colors duration-300 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-400"
 		>
 			Jorge H.
 		</a>
 	</div>
 
-	<NavPill client:load links={navLinks} />
+	<NavPill greeting={t.welcome} client:load links={navLinks} />
 
 	<div class="flex flex-1 justify-end">
-		<QuickMenu client:load links={navLinks} social={social} />
+		<QuickMenu locale={locale} languages={languages} client:load links={navLinks} social={social} />
 	</div>
 </nav>

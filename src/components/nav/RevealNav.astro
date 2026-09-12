@@ -1,5 +1,12 @@
 ---
-import { navLinks, social } from '../../data/site';
+import { getNavLinks, getSocialLinks } from '../../data/site';
+import { getLocale, ui } from '../../i18n/ui';
+import { languageLinks } from '../../i18n/routes';
+const locale = getLocale(Astro.currentLocale);
+const t = ui[locale];
+const navLinks = getNavLinks(locale);
+const social = getSocialLinks(locale);
+const languages = languageLinks(Astro.url.pathname);
 import NavPill from './NavPill.tsx';
 import QuickMenu from './QuickMenu.tsx';
 ---
@@ -8,7 +15,7 @@ import QuickMenu from './QuickMenu.tsx';
 	{/* Labelled because the hero carries the same links: two navigation landmarks
 	that read alike are worse than one. */}
 	<nav
-		aria-label="Page"
+		aria-label={t.pages}
 		class="mx-auto flex w-full max-w-6xl items-center gap-6 px-6 py-3"
 	>
 		<div class="flex flex-1 justify-start">
@@ -27,10 +34,10 @@ import QuickMenu from './QuickMenu.tsx';
 		    it — a pill that does not light and a button that does not open. */}
 
 		{/* No greeting: this bar is a return, not an arrival. */}
-		<NavPill client:idle={{ timeout: 500 }} links={navLinks} entrance={false} />
+		<NavPill greeting={t.welcome} client:idle={{ timeout: 500 }} links={navLinks} entrance={false} />
 
 		<div class="flex flex-1 justify-end">
-			<QuickMenu
+			<QuickMenu locale={locale} languages={languages}
 				client:idle={{ timeout: 500 }}
 				links={navLinks}
 				social={social}

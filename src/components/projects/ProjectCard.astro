@@ -1,10 +1,13 @@
 ---
+import { getLocale, ui } from '../../i18n/ui';
+const locale = getLocale(Astro.currentLocale);
+const t = ui[locale];
 import Grain from '../visuals/Grain.astro';
 import { Image } from 'astro:assets';
 import type { Project } from '../../data/projects';
 import { getProjectImage } from '../../data/projectImages';
 import { TECH } from '../../data/tech';
-import { withBase } from '../../lib/base';
+import { localePath } from '../../i18n/routes';
 import TechIcon from '../TechIcon.astro';
 import WaveButton from '../WaveButton.astro';
 
@@ -28,7 +31,7 @@ const shot = getProjectImage(project.slug);
 		{shot ? (
 			<Image
 				src={shot}
-				alt={`${project.name} interface`}
+				alt={`${project.name} — ${t.interface}`}
 				widths={[480, 800, 1200]}
 				sizes="(min-width: 768px) 45vw, 92vw"
 				class="shot"
@@ -44,7 +47,7 @@ const shot = getProjectImage(project.slug);
 
 		<a
 			class="stretch"
-			href={withBase(`/projects/${project.slug}`)}
+			href={localePath(locale, `/projects/${project.slug}`)}
 			tabindex="-1"
 			aria-hidden="true"
 		/>
@@ -69,7 +72,7 @@ const shot = getProjectImage(project.slug);
 		</ul>
 
 		<div class="actions mt-1 flex flex-nowrap items-center gap-2.5">
-			<WaveButton href={withBase(`/projects/${project.slug}`)} label="Details" primary />
+			<WaveButton href={localePath(locale, `/projects/${project.slug}`)} label={t.details} primary />
 
 			<WaveButton href={project.href} label={project.linkLabel} external>
 				<svg

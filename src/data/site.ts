@@ -1,3 +1,4 @@
+import { ui, type Locale } from '../i18n/ui';
 export type PageIcon = 'home' | 'user' | 'folder' | 'layers';
 export type SocialIcon = 'github' | 'linkedin' | 'mail';
 
@@ -29,3 +30,12 @@ export const social: SocialLink[] = [
 	{ label: 'LinkedIn', href: linkedin, icon: 'linkedin' },
 	{ label: 'Mail', href: `mailto:${email}`, icon: 'mail' },
 ];
+
+export function getNavLinks(locale: Locale): NavLink[] {
+	const labels = { '#top': ui[locale].home, '#projects': ui[locale].projects, '#stack': ui[locale].stack, '#about': ui[locale].about };
+	return navLinks.map((link) => ({ ...link, label: labels[link.href as keyof typeof labels] ?? link.label }));
+}
+
+export function getSocialLinks(locale: Locale): SocialLink[] {
+	return social.map((link) => ({ ...link, label: link.icon === 'mail' ? ui[locale].mail : link.label }));
+}

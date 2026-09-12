@@ -1,4 +1,7 @@
 ---
+import { getLocale, ui } from '../i18n/ui';
+const locale = getLocale(Astro.currentLocale);
+const t = ui[locale];
 import Grain from '../components/visuals/Grain.astro';
 import { PYRAMID, stack } from '../data/stack';
 import { TECH } from '../data/tech';
@@ -28,7 +31,7 @@ for (const size of PYRAMID) {
 
 	<div class="relative mx-auto w-full max-w-6xl">
 		<header class="mb-14 text-center md:mb-20">
-			<h2 class="title">What I build with.</h2>
+			<h2 class="title">{t.stackTitle}</h2>
 		</header>
 
 		<ul class="field" data-stack-field style={`--stagger: ${STAGGER}s`}>

@@ -1,4 +1,7 @@
 ---
+import { getLocale, ui } from '../i18n/ui';
+const locale = getLocale(Astro.currentLocale);
+const t = ui[locale];
 import { github } from '../data/site';
 import SocialIcon from '../components/SocialIcon.astro';
 import ContributionText from '../components/visuals/ContributionText.tsx';
@@ -19,10 +22,10 @@ animation instead of the layout. */}
 	<div
 		class="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-6 pb-32"
 	>
-		<h1 class="sr-only">Software Engineer</h1>
+		<h1 class="sr-only">{t.role}</h1>
 
 		<div class="reveal w-full" style="--delay: 0.2s" aria-hidden="true">
-			<ContributionText client:load lines={['SOFTWARE', 'ENGINEER']} />
+			<ContributionText client:load lines={[t.roleFirst.toUpperCase(), t.roleSecond.toUpperCase()]} />
 		</div>
 
 		{/* Phones only. The headline scales to its container, so on a narrow screen
@@ -32,7 +35,7 @@ animation instead of the layout. */}
 			class="actions reveal mt-10 flex w-full max-w-[19rem] items-center gap-2.5 md:hidden"
 			style="--delay: 0.7s"
 		>
-			<WaveButton href="#projects" label="View projects" primary class="flex-1" />
+			<WaveButton href="#projects" label={t.viewProjects} primary class="flex-1" />
 
 			<WaveButton href={github} label="GitHub" external class="flex-none">
 				<SocialIcon slot="icon" name="github" class="size-[17px]" />
@@ -48,12 +51,12 @@ animation instead of the layout. */}
 	>
 		<a
 			href="#learning"
-			aria-label="Scroll to what comes next"
+			aria-label={t.scrollNext}
 			class="hint pointer-events-auto flex flex-col items-center gap-4 rounded-lg px-5 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-400"
 		>
 			<span
 				class="hint-label text-[0.7rem] font-medium tracking-[0.3em] text-mist-500 uppercase transition-colors duration-300"
-				>Scroll</span
+				>{t.scroll}</span
 			>
 			<span class="scroll-track"><span class="scroll-spark"></span></span>
 		</a>

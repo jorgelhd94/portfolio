@@ -1,4 +1,7 @@
 ---
+import { getLocale, ui } from '../i18n/ui';
+const locale = getLocale(Astro.currentLocale);
+const t = ui[locale];
 const START_YEAR = 2020;
 const MIN_YEARS = 6;
 
@@ -9,12 +12,12 @@ const skills = [
 	{ label: 'Backend', icon: 'backend', x: 20, y: 33 },
 	{ label: 'Scripting', icon: 'scripting', x: 73, y: 20 },
 	{ label: 'Frontend', icon: 'frontend', x: 85, y: 52 },
-	{ label: 'Testing', icon: 'testing', x: 66, y: 75 },
+	{ label: t.testing, icon: 'testing', x: 66, y: 75 },
 	{ label: 'Git', icon: 'git', x: 38, y: 84 },
 	{ label: 'CI/CD', icon: 'pipeline', x: 24, y: 66 },
-	{ label: 'Deploy', icon: 'deploy', x: 13, y: 48 },
-	{ label: 'Infrastructure', icon: 'infrastructure', x: 53, y: 13 },
-	{ label: 'AI', icon: 'ai', x: 36, y: 20 },
+	{ label: t.deploy, icon: 'deploy', x: 13, y: 48 },
+	{ label: t.infrastructure, icon: 'infrastructure', x: 53, y: 13 },
+	{ label: t.ai, icon: 'ai', x: 36, y: 20 },
 ];
 
 /** Drawn here to match the quick menu's set: 24-unit box, 1.6 stroke, round joins. */
@@ -69,12 +72,12 @@ belongs by the time the hero clears off it, with no overlap to arrange. */}
 
 		<div class="statement relative z-10 text-center">
 			<h2>
-				<span class="headline">Never Stop</span>
-				<span class="headline">Learning</span>
+				<span class="headline">{t.learnFirst}</span>
+				<span class="headline">{t.learnSecond}</span>
 			</h2>
 
 			<p class="lead">
-				More than <span class="count"
+				{t.moreThan} <span class="count"
 					><span class="sr-only" data-years>{years}</span><span
 						class="count-window"
 						aria-hidden="true"
@@ -82,7 +85,7 @@ belongs by the time the hero clears off it, with no overlap to arrange. */}
 							>{Array.from({ length: years }, (_, index) => <span>{index + 1}</span>)}</span
 						></span
 					></span
-				> years building solutions
+				> {t.years}
 			</p>
 		</div>
 

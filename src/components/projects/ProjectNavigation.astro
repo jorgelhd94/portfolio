@@ -1,29 +1,33 @@
 ---
+import { getLocale, ui } from '../../i18n/ui';
+const locale = getLocale(Astro.currentLocale);
+const t = ui[locale];
 import { Image } from 'astro:assets';
-import { projects, type Project } from '../../data/projects';
+import { getProjects, type Project } from '../../data/projects';
 import { getProjectImage } from '../../data/projectImages';
-import { withBase } from '../../lib/base';
+import { localePath } from '../../i18n/routes';
 
 interface Props { project: Project }
 
 const { project } = Astro.props;
+const projects = getProjects(locale);
 const index = projects.findIndex((item) => item.slug === project.slug);
 const neighbors = [
-	{ direction: 'prev', label: 'Previous', offset: -1 },
-	{ direction: 'next', label: 'Next', offset: 1 },
+	{ direction: 'prev', label: t.previous, offset: -1 },
+	{ direction: 'next', label: t.next, offset: 1 },
 ].map(({ direction, label, offset }) => {
 	const neighbor = projects[(index + offset + projects.length) % projects.length];
 	return { direction, label, project: neighbor, image: getProjectImage(neighbor.slug) };
 });
 ---
 
-<nav aria-label="More work">
-	<h2 class="rule">More work</h2>
+<nav aria-label={t.moreWork}>
+	<h2 class="rule">{t.moreWork}</h2>
 
 	<div class="hops flex flex-col gap-3 md:flex-row md:justify-between">
 		{
 			neighbors.map(({ direction, label, project: neighbor, image }) => (
-				<a class:list={['hop', `hop-${direction}`]} href={withBase(`/projects/${neighbor.slug}`)}>
+				<a class:list={['hop', `hop-${direction}`]} href={localePath(locale, `/projects/${neighbor.slug}`)}>
 					<svg
 						viewBox="0 0 24 24"
 						class="hop-arrow size-4"
@@ -70,27 +74,27 @@ const neighbors = [
 		gap: 1rem;
 		margin-top: 4rem;
 		margin-bottom: 1.25rem;
-		font-size: 0.78rem;
+		font-size: 0.875rem;
 		font-weight: 500;
 		letter-spacing: 0.2em;
 		text-transform: uppercase;
-		color: var(--color-mist-500);
+		color: var(--color-mist-300);
 	}
 
 	.rule::after {
 		content: '';
 		flex: 1;
 		height: 1px;
-		background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
+		background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent);
 	}
 
 	.hop {
 		display: flex;
 		align-items: center;
 		gap: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.07);
+		border: 1px solid rgba(255, 255, 255, 0.14);
 		border-radius: 1.15rem;
-		background: rgba(255, 255, 255, 0.025);
+		background: rgba(255, 255, 255, 0.055);
 		padding: 0.85rem 1.15rem;
 		transition:
 			border-color 300ms,
@@ -105,7 +109,7 @@ const neighbors = [
 
 	.hop:hover {
 		border-color: rgba(255, 255, 255, 0.18);
-		background: rgba(255, 255, 255, 0.05);
+		background: rgba(255, 255, 255, 0.085);
 	}
 
 	.hop:focus-visible {
@@ -114,11 +118,11 @@ const neighbors = [
 	}
 
 	.hop-label {
-		font-size: 0.75rem;
+		font-size: 0.8125rem;
 		font-weight: 500;
 		letter-spacing: 0.16em;
 		text-transform: uppercase;
-		color: var(--color-mist-500);
+		color: var(--color-mist-300);
 	}
 
 	.hop-name {
@@ -129,7 +133,7 @@ const neighbors = [
 
 	.hop-arrow {
 		flex: none;
-		color: var(--color-mist-500);
+		color: var(--color-mist-300);
 		transition:
 			translate 300ms cubic-bezier(0.22, 1, 0.36, 1),
 			color 300ms;

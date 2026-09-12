@@ -1,14 +1,18 @@
 ---
-import { projects } from '../data/projects';
+import { getLocale, ui } from '../i18n/ui';
+const locale = getLocale(Astro.currentLocale);
+const t = ui[locale];
+import { getProjects } from '../data/projects';
+const projects = getProjects(locale);
 import ProjectCard from '../components/projects/ProjectCard.astro';
 ---
 
 <section id="projects" class="section relative px-6 pt-6 pb-2 md:pt-8 md:pb-4">
 	<div class="mx-auto w-full max-w-6xl">
 		<header class="mb-10 text-center md:mb-14">
-			<h2 class="title">Built, shipped, running.</h2>
+			<h2 class="title">{t.projectsTitle}</h2>
 			<p class="lead mx-auto mt-5 max-w-xl">
-				A few projects across product, tooling and infrastructure.
+				{t.projectsLead}
 			</p>
 		</header>
 

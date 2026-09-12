@@ -1,3 +1,4 @@
+import { ui, type Locale } from '../../i18n/ui';
 import { type MouseEvent, type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { NavLink, SocialLink } from '../../data/site';
@@ -8,6 +9,8 @@ import { useActiveSection } from '../../hooks/useActiveSection';
 import { useMenuDialog } from './useMenuDialog';
 
 interface QuickMenuProps {
+	locale: Locale;
+	languages: Record<Locale, string>;
 	links: NavLink[];
 	social: SocialLink[];
 	// Only one bar opens via the shortcut; either menu can close via it.
@@ -17,10 +20,7 @@ interface QuickMenuProps {
 const LANGUAGES = [
 	{ code: 'en', label: 'EN' },
 	{ code: 'es', label: 'ES' },
-];
-
-const LANGUAGE_KEY = 'portfolio:language';
-const LANGUAGE_CHANGE = 'portfolio:language-change';
+] as const;
 
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
@@ -30,10 +30,10 @@ const SectionLabel = ({ children }: { children: ReactNode }) => (
 	</p>
 );
 
-const QuickMenu = ({ links, social, shortcut = true }: QuickMenuProps) => {
+const QuickMenu = ({ links, social, locale, languages, shortcut = true }: QuickMenuProps) => {
 	const [open, setOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
-	const [language, setLanguage] = useState('en');
+	const t = ui[locale];
 	const reduceMotion = useReducedMotion();
 	const current = useActiveSection(links);
 
@@ -41,26 +41,6 @@ const QuickMenu = ({ links, social, shortcut = true }: QuickMenuProps) => {
 
 	useEffect(() => {
 		setMounted(true);
-
-		const syncLanguage = (event?: Event) => {
-			if (event instanceof CustomEvent) {
-				setLanguage(event.detail);
-				return;
-			}
-			try {
-				const stored = window.localStorage.getItem(LANGUAGE_KEY);
-				setLanguage(LANGUAGES.find(({ code }) => code === stored)?.code ?? 'en');
-			} catch {
-				// Storage may be disabled by the browser. The menu still works.
-			}
-		};
-		syncLanguage();
-		window.addEventListener('storage', syncLanguage);
-		window.addEventListener(LANGUAGE_CHANGE, syncLanguage);
-		return () => {
-			window.removeEventListener('storage', syncLanguage);
-			window.removeEventListener(LANGUAGE_CHANGE, syncLanguage);
-		};
 	}, []);
 
 	useEffect(() => {
@@ -78,15 +58,8 @@ const QuickMenu = ({ links, social, shortcut = true }: QuickMenuProps) => {
 		return () => document.removeEventListener('keydown', handleShortcut);
 	}, [shortcut, open]);
 
-	const chooseLanguage = (code: string) => {
-		window.dispatchEvent(new CustomEvent(LANGUAGE_CHANGE, { detail: code }));
-		// Remembered only. There are no translated routes yet, so switching cannot
-		// navigate anywhere; wiring Astro i18n is what makes this do something.
-		try {
-			window.localStorage.setItem(LANGUAGE_KEY, code);
-		} catch {
-			// Keep the selection for this visit when storage is unavailable.
-		}
+	const chooseLanguage = (code: Locale) => {
+		window.location.assign(languages[code] + window.location.search + window.location.hash);
 	};
 
 	const handleNavigate = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -115,8 +88,8 @@ const QuickMenu = ({ links, social, shortcut = true }: QuickMenuProps) => {
 				onClick={() => setOpen(true)}
 				aria-haspopup="dialog"
 				aria-expanded={open}
-				aria-label="Open menu"
-				title="Menu (⌘K)"
+				aria-label={t.openMenu}
+				title={`${t.menu} (⌘K)`}
 				className="flex size-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-ink-950/50 text-mist-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl transition-colors duration-300 hover:border-white/20 hover:bg-ink-900/70 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-400"
 			>
 				<svg viewBox="0 0 24 24" className="size-5" aria-hidden="true">
@@ -129,7 +102,7 @@ const QuickMenu = ({ links, social, shortcut = true }: QuickMenuProps) => {
 					<dialog
 						ref={dialogRef}
 						onCancel={(event) => { event.preventDefault(); setOpen(false); }}
-						aria-label="Quick menu"
+						aria-label={t.quickMenu}
 						className={`m-0 h-full max-h-none w-full max-w-none border-0 bg-transparent p-0 text-inherit backdrop:bg-transparent fixed inset-0 z-50 transition-opacity duration-300 motion-reduce:transition-none ${
 							visible ? 'opacity-100' : 'pointer-events-none opacity-0'
 						}`}
@@ -151,7 +124,7 @@ const QuickMenu = ({ links, social, shortcut = true }: QuickMenuProps) => {
 							<div style={rise(0)} className="flex items-center justify-between gap-3 px-1 pb-3">
 								<div
 									role="group"
-									aria-label="Language"
+									aria-label={t.language}
 									className="flex items-center gap-0.5 rounded-xl bg-ink-950/60 p-1"
 								>
 									{LANGUAGES.map((item) => (
@@ -159,9 +132,9 @@ const QuickMenu = ({ links, social, shortcut = true }: QuickMenuProps) => {
 											key={item.code}
 											type="button"
 											onClick={() => chooseLanguage(item.code)}
-											aria-pressed={language === item.code}
+											aria-pressed={locale === item.code}
 											className={`rounded-lg px-3 py-1.5 text-xs tracking-wide transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-clay-400 ${
-												language === item.code
+												locale === item.code
 													? 'bg-white/10 text-mist-100'
 													: 'text-mist-500 hover:text-mist-300'
 											}`}
@@ -174,7 +147,7 @@ const QuickMenu = ({ links, social, shortcut = true }: QuickMenuProps) => {
 								<button
 									type="button"
 									onClick={() => setOpen(false)}
-									aria-label="Close menu"
+									aria-label={t.closeMenu}
 									className="flex size-9 items-center justify-center rounded-xl text-mist-500 transition-colors duration-200 hover:bg-white/[0.06] hover:text-mist-100 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-clay-400"
 								>
 									<svg viewBox="0 0 24 24" className="size-[18px]" aria-hidden="true">
@@ -185,9 +158,9 @@ const QuickMenu = ({ links, social, shortcut = true }: QuickMenuProps) => {
 
 							<div className="mx-1 h-px bg-white/[0.07]" />
 
-							<nav aria-label="Site" className="pt-4">
+							<nav aria-label={t.site} className="pt-4">
 								<div style={rise(1)}>
-									<SectionLabel>Pages</SectionLabel>
+									<SectionLabel>{t.pages}</SectionLabel>
 								</div>
 
 								<ul className="grid grid-cols-2 gap-2">
@@ -219,7 +192,7 @@ const QuickMenu = ({ links, social, shortcut = true }: QuickMenuProps) => {
 
 							<div className="pt-6">
 								<div style={rise(2 + links.length)}>
-									<SectionLabel>Connect</SectionLabel>
+									<SectionLabel>{t.connect}</SectionLabel>
 								</div>
 
 								<ul className="flex flex-wrap gap-2">

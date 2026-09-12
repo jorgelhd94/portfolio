@@ -1,4 +1,7 @@
 ---
+import { getLocale, ui } from '../i18n/ui';
+const locale = getLocale(Astro.currentLocale);
+const t = ui[locale];
 const SPAN = 100;
 
 /* As large as it can be while both words stay naturally *narrower* than `INK`. */
@@ -23,8 +26,8 @@ const INSET = (SPAN - INK) / 2;
 
 		{/* `spacingAndGlyphs`, so the fitting is a horizontal stretch of the whole run
 		   rather than air pushed between the letters. */}
-		<text x={INSET} y="12.7" textLength={INK} lengthAdjust="spacingAndGlyphs" font-size={SIZE}>Software</text>
-		<text x={INSET} y="26" textLength={INK} lengthAdjust="spacingAndGlyphs" font-size={SIZE}>Engineer</text>
+		<text x={INSET} y="12.7" textLength={INK} lengthAdjust="spacingAndGlyphs" font-size={SIZE}>{t.roleFirst}</text>
+		<text x={INSET} y="26" textLength={INK} lengthAdjust="spacingAndGlyphs" font-size={SIZE}>{t.roleSecond}</text>
 	</svg>
 </section>
 

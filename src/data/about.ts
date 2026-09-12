@@ -1,3 +1,4 @@
+import type { Locale } from '../i18n/ui';
 import { withBase } from '../lib/base';
 
 /** Served straight out of `public/`, no processing. */
@@ -21,3 +22,11 @@ export const languages: Language[] = [
 	{ name: 'Spanish', level: 'Native' },
 	{ name: 'English', level: 'Intermediate' },
 ];
+
+export function getAbout(locale: Locale) {
+	return locale === 'es' ? {
+		headline: 'Ingeniero de software en Montevideo. Desarrollo sistemas fiables.',
+		education: { degree: 'Ingeniería Informática', school: 'Universidad de Ciego de Ávila' },
+		languages: [{ name: 'Español', level: 'Nativo' }, { name: 'Inglés', level: 'Intermedio' }],
+	} : { headline, education, languages };
+}

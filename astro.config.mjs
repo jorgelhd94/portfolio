@@ -11,6 +11,7 @@ export default defineConfig({
   // to go through `withBase`.
   site: 'https://jorgelhd94.github.io',
   base: '/portfolio',
+  i18n: { defaultLocale: 'en', locales: ['en', 'es'], routing: { prefixDefaultLocale: false } },
 
   integrations: [react(), sitemap()],
 

@@ -1,0 +1,19 @@
+---
+import { getLocale, ui } from '../../i18n/ui';
+import { languageLinks } from '../../i18n/routes';
+const locale = getLocale(Astro.currentLocale);
+const links = languageLinks(Astro.url.pathname);
+---
+<nav aria-label={ui[locale].language} class="flex gap-1 rounded-xl border border-white/10 p-1" data-language-switcher>
+	{(['en', 'es'] as const).map((code) => (
+		<a href={links[code]} lang={code} hreflang={code} aria-current={locale === code ? 'page' : undefined}
+			class:list={['rounded-lg px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-clay-400', locale === code ? 'bg-white/10 text-mist-100' : 'text-mist-500 hover:text-mist-100']}>
+			{code.toUpperCase()}
+		</a>
+	))}
+</nav>
+<script>
+	for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-language-switcher] a')) {
+		link.addEventListener('click', () => { link.search = window.location.search; link.hash = window.location.hash; });
+	}
+</script>

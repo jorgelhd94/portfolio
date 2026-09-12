@@ -1,6 +1,6 @@
 # Jorge Hernández — Portfolio
 
-A static Astro site with React islands for navigation, a canvas headline and WebGL lighting. English copy, a dark graphite theme, and a `/portfolio/` deployment base.
+A static Astro site with React islands for navigation, a canvas headline and WebGL lighting. English and Spanish copy, a dark graphite theme, and a `/portfolio/` deployment base.
 
 ## Run locally
 
@@ -21,6 +21,7 @@ Restart after installing dependencies. If CSS appears stale, use `pnpm build` fo
 pnpm check
 pnpm test
 pnpm build
+node --test tests/i18n-build.mjs
 ```
 
 `check` runs Astro diagnostics and TypeScript, including unused declarations. A build alone does not check types. Tests cover canvas cleanup, idle rendering, reduced motion and navigation guards; they do not verify appearance or browser focus behavior.
@@ -52,4 +53,4 @@ Navigation uses full page loads and native cross-document view transitions. Ther
 - Edit biography data in `src/data/about.ts`. The CV is served from `public/`.
 - Pass site-root paths through `withBase` so links and assets work under `/portfolio/`.
 
-The headline's contribution pattern is generated locally. The language selector only remembers a preference; translated routes are not implemented. Layout and palette constraints are documented in `AGENTS.md`.
+The headline's contribution pattern is generated locally. Astro i18n keeps English at `/portfolio/` and Spanish at `/portfolio/es/`. Both locales share templates; UI translations live in `src/i18n/ui.ts`, and Spanish project copy in `src/data/projects.es.ts`. The language selector navigates to the equivalent page, preserving the fragment. The URL determines the language, including after reload. The CV download is the same original PDF in both languages. Layout and palette constraints are documented in `AGENTS.md`.
