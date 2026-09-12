@@ -1,0 +1,18 @@
+---
+import { socialIcons } from '../data/socialIcons';
+import type { SocialIcon } from '../data/site';
+
+interface Props {
+	name: SocialIcon;
+	class?: string;
+}
+
+const { name, class: className = 'size-4' } = Astro.props;
+const outlined = name === 'mail';
+---
+
+<svg viewBox="0 0 24 24" class={className} aria-hidden="true">
+	<path d={socialIcons[name]} fill={outlined ? 'none' : 'currentColor'}
+		stroke={outlined ? 'currentColor' : undefined} stroke-width={outlined ? 1.7 : undefined}
+		stroke-linecap="round" stroke-linejoin="round" />
+</svg>

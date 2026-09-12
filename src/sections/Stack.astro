@@ -1,4 +1,5 @@
 ---
+import Grain from '../components/visuals/Grain.astro';
 import { PYRAMID, stack } from '../data/stack';
 import { TECH } from '../data/tech';
 import TechIcon from '../components/TechIcon.astro';
@@ -21,7 +22,7 @@ for (const size of PYRAMID) {
 	<div class="decor" aria-hidden="true">
 		<span class="bloom"></span>
 		<span class="sheen"></span>
-		<span class="grain"></span>
+		<Grain opacity={0.06} />
 		<span class="fade"></span>
 	</div>
 
@@ -80,7 +81,7 @@ for (const size of PYRAMID) {
 			rgba(169, 113, 79, 0.04) 42%,
 			transparent 70%
 		);
-		animation: drift 23s ease-in-out infinite alternate;
+		translate: -50% 0;
 	}
 
 	/* A cool counter-light along the top edge. Warm alone over graphite goes
@@ -106,13 +107,7 @@ for (const size of PYRAMID) {
 		}
 	}
 
-	.grain {
-		position: absolute;
-		inset: 0;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-		background-size: 180px 180px;
-		opacity: 0.06;
-	}
+
 
 	/* The foot only. Sealing the head too would paint the page's dark back over
 	   the tone this section shares with Projects, which is the seam itself. */
@@ -216,14 +211,18 @@ for (const size of PYRAMID) {
 
 	/* Runs once, when the field first reaches the viewport. No fill mode: the
 	   frames open and close on the resting values, so there is nothing to hold. */
-	.field.is-lit .tile {
-		animation: lit 0.9s ease-out;
-		animation-delay: calc(var(--i) * var(--stagger));
-	}
+	@media (prefers-reduced-motion: no-preference) {
+		.bloom { animation: drift 23s ease-in-out infinite alternate; }
+		.field.is-lit .tile {
+			animation: lit 0.9s ease-out;
+			animation-delay: calc(var(--i) * var(--stagger));
+		}
 
-	.field.is-lit .tile :global(svg) {
-		animation: glint 0.9s ease-out;
-		animation-delay: calc(var(--i) * var(--stagger));
+		.field.is-lit .tile :global(svg) {
+			animation: glint 0.9s ease-out;
+			animation-delay: calc(var(--i) * var(--stagger));
+		}
+
 	}
 
 	/* Quick in, slow out: the colour arrives as a flash and leaves as a fade,

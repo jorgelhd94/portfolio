@@ -160,11 +160,11 @@ belongs by the time the hero clears off it, with no overlap to arrange. */}
 			transparent var(--sweep)
 		);
 		rotate: 0deg;
-		animation: orbit var(--spin) linear infinite;
 	}
 
-	.ring-reverse {
-		animation-direction: reverse;
+	@media (prefers-reduced-motion: no-preference) {
+		.ring { animation: orbit var(--spin) linear infinite; }
+		.ring-reverse { animation-direction: reverse; }
 	}
 
 	.ring-clay {

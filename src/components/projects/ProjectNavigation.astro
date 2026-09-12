@@ -1,0 +1,154 @@
+---
+import { Image } from 'astro:assets';
+import { projects, type Project } from '../../data/projects';
+import { getProjectImage } from '../../data/projectImages';
+import { withBase } from '../../lib/base';
+
+interface Props { project: Project }
+
+const { project } = Astro.props;
+const index = projects.findIndex((item) => item.slug === project.slug);
+const neighbors = [
+	{ direction: 'prev', label: 'Previous', offset: -1 },
+	{ direction: 'next', label: 'Next', offset: 1 },
+].map(({ direction, label, offset }) => {
+	const neighbor = projects[(index + offset + projects.length) % projects.length];
+	return { direction, label, project: neighbor, image: getProjectImage(neighbor.slug) };
+});
+---
+
+<nav aria-label="More work">
+	<h2 class="rule">More work</h2>
+
+	<div class="hops flex flex-col gap-3 md:flex-row md:justify-between">
+		{
+			neighbors.map(({ direction, label, project: neighbor, image }) => (
+				<a class:list={['hop', `hop-${direction}`]} href={withBase(`/projects/${neighbor.slug}`)}>
+					<svg
+						viewBox="0 0 24 24"
+						class="hop-arrow size-4"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<path
+							d={
+								direction === 'prev'
+									? 'M19.5 12h-15m5.5 5.5L4.5 12 10 6.5'
+									: 'M4.5 12h15m-5.5-5.5L19.5 12 14 17.5'
+							}
+						/>
+					</svg>
+
+					{image && (
+						<Image
+							src={image}
+							alt=""
+							widths={[160, 320]}
+							sizes="5rem"
+							class="hop-shot h-12 w-20 shrink-0 rounded-[0.6rem] object-cover object-top"
+						/>
+					)}
+
+					<span class="hop-text flex min-w-0 flex-col gap-0.5">
+						<span class="hop-label">{label}</span>
+						<span class="hop-name">{neighbor.name}</span>
+					</span>
+				</a>
+			))
+		}
+	</div>
+</nav>
+
+<style>
+	.rule {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-top: 4rem;
+		margin-bottom: 1.25rem;
+		font-size: 0.78rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--color-mist-500);
+	}
+
+	.rule::after {
+		content: '';
+		flex: 1;
+		height: 1px;
+		background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
+	}
+
+	.hop {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		border-radius: 1.15rem;
+		background: rgba(255, 255, 255, 0.025);
+		padding: 0.85rem 1.15rem;
+		transition:
+			border-color 300ms,
+			background-color 300ms;
+	}
+
+	/* Same markup both ways, read backwards on one of them. */
+	.hop-next {
+		flex-direction: row-reverse;
+		text-align: right;
+	}
+
+	.hop:hover {
+		border-color: rgba(255, 255, 255, 0.18);
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.hop:focus-visible {
+		outline: 2px solid var(--color-clay-400);
+		outline-offset: 2px;
+	}
+
+	.hop-label {
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--color-mist-500);
+	}
+
+	.hop-name {
+		font-size: 1.15rem;
+		font-weight: 500;
+		color: var(--color-mist-100);
+	}
+
+	.hop-arrow {
+		flex: none;
+		color: var(--color-mist-500);
+		transition:
+			translate 300ms cubic-bezier(0.22, 1, 0.36, 1),
+			color 300ms;
+	}
+
+	.hop:hover .hop-arrow {
+		color: var(--color-mist-100);
+	}
+
+	.hop-prev:hover .hop-arrow {
+		translate: -3px 0;
+	}
+
+	.hop-next:hover .hop-arrow {
+		translate: 3px 0;
+	}
+
+
+	@media (prefers-reduced-motion: reduce) {
+		.hop:hover .hop-arrow { translate: none; }
+	}
+</style>

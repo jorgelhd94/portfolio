@@ -1,5 +1,9 @@
 ---
+import Grain from '../../components/visuals/Grain.astro';
 import { Image } from 'astro:assets';
+import type { InferGetStaticPropsType } from 'astro';
+import { getProjectImage } from '../../data/projectImages';
+import ProjectNavigation from '../../components/projects/ProjectNavigation.astro';
 
 import Layout from '../../layouts/Layout.astro';
 import TechIcon from '../../components/TechIcon.astro';
@@ -12,33 +16,18 @@ export function getStaticPaths() {
 	return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
 }
 
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
 const { project } = Astro.props;
 
-const shots = import.meta.glob<{ default: ImageMetadata }>(
-	'../../assets/projects/*.{avif,webp,png,jpg,jpeg}',
-	{ eager: true }
-);
-
-const shotFor = (slug: string) =>
-	Object.entries(shots).find(([path]) => path.split('/').pop()?.split('.')[0] === slug)?.[1]
-		.default;
-
-const shot = shotFor(project.slug);
-
-/* Both wrap, so the ends of the list lead round rather than to a dead end. */
-const at = projects.findIndex((item) => item.slug === project.slug);
-
-const hops = [
-	{ way: 'prev' as const, label: 'Previous', to: projects[(at - 1 + projects.length) % projects.length] },
-	{ way: 'next' as const, label: 'Next', to: projects[(at + 1) % projects.length] },
-];
+const shot = getProjectImage(project.slug);
 ---
 
 <Layout title={`${project.name} — Jorge Hernández`} description={project.blurb}>
 	<main class="page relative overflow-hidden px-6 pt-10 pb-24 md:pt-14">
 		<div class="decor" aria-hidden="true">
 			<span class="bloom"></span>
-			<span class="grain"></span>
+			<Grain opacity={0.06} />
 			<span class="fade"></span>
 		</div>
 
@@ -59,7 +48,6 @@ const hops = [
 				All projects
 			</a>
 
-			{/* Ahead of the words: */}
 			{
 				shot && (
 					<div class="frame">
@@ -139,51 +127,7 @@ const hops = [
 				</ul>
 			</section>
 
-			<nav aria-label="More work">
-				<h2 class="rule">More work</h2>
-
-				<div class="hops flex flex-col gap-3 md:flex-row md:justify-between">
-					{
-						hops.map(({ way, label, to }) => (
-							<a class:list={['hop', `hop-${way}`]} href={withBase(`/projects/${to.slug}`)}>
-								<svg
-									viewBox="0 0 24 24"
-									class="hop-arrow size-4"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="1.8"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									aria-hidden="true"
-								>
-									<path
-										d={
-											way === 'prev'
-												? 'M19.5 12h-15m5.5 5.5L4.5 12 10 6.5'
-												: 'M4.5 12h15m-5.5-5.5L19.5 12 14 17.5'
-										}
-									/>
-								</svg>
-
-								{shotFor(to.slug) && (
-									<Image
-										src={shotFor(to.slug)!}
-										alt=""
-										widths={[160, 320]}
-										sizes="5rem"
-										class="hop-shot h-12 w-20 shrink-0 rounded-[0.6rem] object-cover object-top"
-									/>
-								)}
-
-								<span class="hop-text flex min-w-0 flex-col gap-0.5">
-									<span class="hop-label">{label}</span>
-									<span class="hop-name">{to.name}</span>
-								</span>
-							</a>
-						))
-					}
-				</div>
-			</nav>
+			<ProjectNavigation project={project} />
 		</div>
 	</main>
 </Layout>
@@ -216,13 +160,7 @@ const hops = [
 		);
 	}
 
-	.grain {
-		position: absolute;
-		inset: 0;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-		background-size: 180px 180px;
-		opacity: 0.06;
-	}
+
 
 	.fade {
 		position: absolute;
@@ -419,75 +357,7 @@ const hops = [
 		color: var(--brand);
 	}
 
-	/* A way on rather than a dead end, in both directions; the ends of the list
-	   wrap round. The pair mirrors so each points the way it goes. */
-	.hop {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		border-radius: 1.15rem;
-		background: rgba(255, 255, 255, 0.025);
-		padding: 0.85rem 1.15rem;
-		transition:
-			border-color 300ms,
-			background-color 300ms;
-	}
-
-	/* Same markup both ways, read backwards on one of them. */
-	.hop-next {
-		flex-direction: row-reverse;
-		text-align: right;
-	}
-
-	.hop:hover {
-		border-color: rgba(255, 255, 255, 0.18);
-		background: rgba(255, 255, 255, 0.05);
-	}
-
-	.hop:focus-visible {
-		outline: 2px solid var(--color-clay-400);
-		outline-offset: 2px;
-	}
-
-	.hop-label {
-		font-size: 0.75rem;
-		font-weight: 500;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		color: var(--color-mist-500);
-	}
-
-	.hop-name {
-		font-size: 1.15rem;
-		font-weight: 500;
-		color: var(--color-mist-100);
-	}
-
-	.hop-arrow {
-		flex: none;
-		color: var(--color-mist-500);
-		transition:
-			translate 300ms cubic-bezier(0.22, 1, 0.36, 1),
-			color 300ms;
-	}
-
-	.hop:hover .hop-arrow {
-		color: var(--color-mist-100);
-	}
-
-	.hop-prev:hover .hop-arrow {
-		translate: -3px 0;
-	}
-
-	.hop-next:hover .hop-arrow {
-		translate: 3px 0;
-	}
-
 	@media (prefers-reduced-motion: reduce) {
-		.back:hover svg,
-		.hop:hover .hop-arrow {
-			translate: none;
-		}
+		.back:hover svg { translate: none; }
 	}
 </style>

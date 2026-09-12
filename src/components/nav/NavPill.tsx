@@ -1,28 +1,8 @@
 import { type MouseEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-/**
- * Pill navigation lit from a source above the current item.
- *
- * Where it opens the page it arrives as a greeting and widens into the
- * navigation. Width is driven from measured numbers for that stretch and handed
- * back to the content once the transition ends, so nothing stays frozen at a
- * stale size when a webfont lands.
- *
- * The lamp is three layers — a 1px core, a tight bloom, a wide haze — because a
- * single blurred colour reads as a smudge over the design rather than a light
- * behind it. None of them use `filter: blur`: gradients are already smooth and
- * blurring one turns it to mush.
- *
- * The links drive a scroll spy over a single page. Sections that do not exist
- * yet are not observed, and clicking one moves the indicator without stranding
- * a dead hash in the address bar.
- */
-
-interface NavLink {
-	label: string;
-	href: string;
-}
-
+import type { NavLink } from '../../data/site';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { preventMissingSection } from '../../lib/navigation';
 interface NavPillProps {
 	links: NavLink[];
 	greeting?: string;
@@ -47,6 +27,7 @@ const GREETING_HOLD = 1600;
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps) => {
+	const reducedMotion = useReducedMotion();
 	const [active, setActive] = useState(0);
 	const [preview, setPreview] = useState<number | null>(null);
 	const [indicator, setIndicator] = useState<Indicator>({ x: 0, width: 0 });
@@ -76,11 +57,13 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 
 		// No greeting element means no entrance: there is nothing to open out of,
 		// so the bar stands at its full width from the start.
-		if (!greetingEl || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		if (!greetingEl || !next.full || reducedMotion) {
 			setExpanded(true);
+			setPinnedWidth(null);
 			return;
 		}
 
+		setExpanded(false);
 		setPinnedWidth(next.greeting);
 
 		const timer = window.setTimeout(() => {
@@ -89,10 +72,12 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 		}, GREETING_HOLD);
 
 		return () => window.clearTimeout(timer);
-	}, [links, greeting, entrance]);
+	}, [links, greeting, entrance, reducedMotion]);
 
 	useLayoutEffect(() => {
+		let disposed = false;
 		const measure = () => {
+			if (disposed) return;
 			const clip = clipRef.current;
 			const item = itemRefs.current[target];
 			if (!clip || !item) return;
@@ -117,7 +102,7 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 		// Labels reflow when a webfont lands, which moves every item under it.
 		document.fonts?.ready.then(measure);
 
-		return () => observer.disconnect();
+		return () => { disposed = true; observer.disconnect(); };
 	}, [target, links]);
 
 	useEffect(() => {
@@ -154,9 +139,7 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 		setPreview(null);
 		spyLockedUntil.current = performance.now() + SPY_LOCK;
 
-		// The section is not built yet: keep the nav responsive, but don't navigate
-		// to an anchor that goes nowhere.
-		if (!document.getElementById(href.replace('#', ''))) event.preventDefault();
+		preventMissingSection(event, href);
 	};
 
 	const lit = preview !== null;
@@ -166,9 +149,9 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 		width: `${indicator.width}px`,
 		opacity: expanded ? 1 : 0,
 		transitionProperty: measured ? 'transform, width, opacity' : 'none',
-		transitionDuration: '480ms',
+		transitionDuration: reducedMotion ? '0ms' : '480ms',
 		transitionTimingFunction: EASE,
-		transitionDelay: expanded ? '220ms, 220ms, 260ms' : '0ms',
+		transitionDelay: !reducedMotion && expanded ? '220ms, 220ms, 260ms' : '0ms',
 	};
 
 	return (
@@ -179,10 +162,10 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 				// width, so the alternative is a frame of full-width greeting.
 				opacity: measured ? 1 : 0,
 				width: pinnedWidth === null ? undefined : `${pinnedWidth}px`,
-				transition: `width 620ms ${EASE}, opacity 200ms linear`,
+				transition: reducedMotion ? undefined : `width 620ms ${EASE}, opacity 200ms linear`,
 			}}
 			onTransitionEnd={(event) => {
-				if (event.propertyName === 'width' && expanded) setPinnedWidth(null);
+				if (event.target === event.currentTarget && event.propertyName === 'width' && expanded) setPinnedWidth(null);
 			}}
 		>
 			<div
@@ -209,7 +192,7 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 					ref={listRef}
 					style={{
 						opacity: expanded ? 1 : 0,
-						transition: `opacity 420ms linear ${expanded ? '200ms' : '0ms'}`,
+						transition: reducedMotion ? undefined : `opacity 420ms linear ${expanded ? '200ms' : '0ms'}`,
 					}}
 					className="flex w-max items-center p-1.5"
 				>
@@ -221,7 +204,7 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 								}}
 								href={link.href}
 								tabIndex={expanded ? undefined : -1}
-								aria-current={index === active ? 'page' : undefined}
+								aria-current={index === active ? 'location' : undefined}
 								onPointerEnter={() => setPreview(index)}
 								onFocus={() => setPreview(index)}
 								onClick={(event) => handleClick(event, index, link.href)}
@@ -240,7 +223,7 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 						aria-hidden="true"
 						style={{
 							opacity: expanded ? 0 : 1,
-							transition: `opacity 260ms linear`,
+							transition: reducedMotion ? undefined : `opacity 260ms linear`,
 						}}
 						className="pointer-events-none absolute inset-0 flex items-center justify-center"
 					>
@@ -250,7 +233,7 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 						>
 							{/* Its own element so the rotation is the hand's alone, pivoting where
 						    a wrist would be. */}
-							<span className="inline-block origin-[70%_80%] animate-wave motion-reduce:animate-none">
+							<span className="inline-block origin-[70%_80%] motion-safe:animate-wave">
 								👋
 							</span>
 							{greeting}

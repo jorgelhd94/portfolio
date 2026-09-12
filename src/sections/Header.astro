@@ -1,5 +1,6 @@
 ---
 import { github } from '../data/site';
+import SocialIcon from '../components/SocialIcon.astro';
 import ContributionText from '../components/visuals/ContributionText.tsx';
 import HeaderBackground from './HeaderBackground.astro';
 import Nav from '../components/nav/Nav.astro';
@@ -11,13 +12,13 @@ animation instead of the layout. */}
 <header id="top" class="hero-stage isolate flex h-lvh flex-col overflow-hidden">
 	<HeaderBackground />
 
-		<div class="nav-shell">
-			<Nav />
-		</div>
+	<div class="nav-shell">
+		<Nav />
+	</div>
 
-		<div
-			class="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-6 pb-32"
-		>
+	<div
+		class="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-6 pb-32"
+	>
 		<h1 class="sr-only">Software Engineer</h1>
 
 		<div class="reveal w-full" style="--delay: 0.2s" aria-hidden="true">
@@ -34,9 +35,7 @@ animation instead of the layout. */}
 			<WaveButton href="#projects" label="View projects" primary class="flex-1" />
 
 			<WaveButton href={github} label="GitHub" external class="flex-none">
-				<svg slot="icon" viewBox="0 0 24 24" class="size-[17px]" aria-hidden="true">
-					<path fill="currentColor" d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.62-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5Z"></path>
-				</svg>
+				<SocialIcon slot="icon" name="github" class="size-[17px]" />
 			</WaveButton>
 		</div>
 	</div>
@@ -106,8 +105,14 @@ animation instead of the layout. */}
 					// Cleared, it is still a pinned full-screen panel over the section
 					// below, and it would swallow every click meant for it.
 					panel.style.pointerEvents = exit >= 1 ? 'none' : '';
+					panel.inert = exit >= 1;
 				},
 			});
+			return () => {
+				for (const name of ['--cue', '--early', '--dissolve', '--exit']) panel.style.removeProperty(name);
+				panel.style.pointerEvents = '';
+				panel.inert = false;
+			};
 		});
 	}
 
@@ -121,7 +126,8 @@ animation instead of the layout. */}
 	 * the retracting bar's wordmark, two of them inside islands that mount later.
 	 */
 	document.addEventListener('click', (event) => {
-		const target = event.target as Element | null;
+		if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+		const target = event.target instanceof Element ? event.target : null;
 		if (!target?.closest('a[href="#top"]')) return;
 
 		event.preventDefault();
@@ -138,10 +144,6 @@ animation instead of the layout. */}
 	/* Staggered entrance: content rises into place. `backwards` holds the initial
 	   state during the delay so nothing flashes first. Each element sets its own
 	   `--delay`, which survives reordering the hero. */
-	.reveal {
-		animation: reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-		animation-delay: var(--delay, 0s);
-	}
 
 	@keyframes reveal {
 		from {
@@ -217,7 +219,6 @@ animation instead of the layout. */}
 		left: 0;
 		height: 45%;
 		background: linear-gradient(to bottom, transparent, rgba(255, 240, 226, 0.9), transparent);
-		animation: scroll-spark 2.6s cubic-bezier(0.55, 0, 0.45, 1) infinite;
 	}
 
 	@keyframes scroll-spark {
@@ -237,11 +238,15 @@ animation instead of the layout. */}
 		}
 	}
 
-	@media (prefers-reduced-motion: reduce) {
+	@media (prefers-reduced-motion: no-preference) {
 		.reveal {
-			animation: none;
+			animation: reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+			animation-delay: var(--delay, 0s);
 		}
+		.scroll-spark { animation: scroll-spark 2.6s cubic-bezier(0.55, 0, 0.45, 1) infinite; }
+	}
 
+	@media (prefers-reduced-motion: reduce) {
 		.scroll-spark {
 			animation: none;
 			opacity: 0.6;
