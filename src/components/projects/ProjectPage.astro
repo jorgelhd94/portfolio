@@ -31,21 +31,28 @@ const shot = getProjectImage(project.slug);
 		</div>
 
 		<div class="relative mx-auto w-full max-w-4xl">
-			<a href={localePath(locale, '#projects')} class="back">
-				<svg
-					viewBox="0 0 24 24"
-					class="size-4"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="1.8"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
-				>
-					<path d="M19.5 12h-15m5.5 5.5L4.5 12 10 6.5" />
-				</svg>
-				{t.allProjects}
-			</a>
+			<div class="flex items-center justify-between gap-3">
+				<a href={localePath(locale, '#projects')} class="back">
+					<svg
+						viewBox="0 0 24 24"
+						class="size-4"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<path d="M19.5 12h-15m5.5 5.5L4.5 12 10 6.5" />
+					</svg>
+					{t.allProjects}
+				</a>
+				<div class="shrink-0"><LanguageSwitcher /></div>
+			</div>
+
+			<p class="meta">{project.kind}</p>
+			<h1 class="title">{project.name}</h1>
+			<p class="lead">{project.blurb}</p>
 
 			{
 				shot && (
@@ -62,12 +69,6 @@ const shot = getProjectImage(project.slug);
 					</div>
 				)
 			}
-
-			<div class="mt-6 flex justify-end"><LanguageSwitcher /></div>
-
-			<p class="meta">{project.kind}</p>
-			<h1 class="title">{project.name}</h1>
-			<p class="lead">{project.blurb}</p>
 
 			<div class="cta">
 				<WaveButton href={project.href} label={project.linkLabel} primary external>

@@ -27,14 +27,9 @@ import QuickMenu from './QuickMenu.tsx';
 			</a>
 		</div>
 
-		{/* Both islands in this bar hydrate on a timeout rather than on idle alone:
-		    the hero drives a WebGL loop for as long as it is on screen, so the page
-		    has no idle period to offer and a bare `client:idle` waits on a callback
-		    that never fires. The bar would slide in as markup with nothing behind
-		    it — a pill that does not light and a button that does not open. */}
 
 		{/* No greeting: this bar is a return, not an arrival. */}
-		<NavPill greeting={t.welcome} client:idle={{ timeout: 500 }} links={navLinks} entrance={false} />
+		<NavPill greeting={t.welcome} client:media="(min-width: 1024px)" links={navLinks} entrance={false} />
 
 		<div class="flex flex-1 justify-end">
 			<QuickMenu locale={locale} languages={languages}

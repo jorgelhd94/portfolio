@@ -12,7 +12,7 @@ import LightRays from '../components/visuals/LightRays.tsx';
 	<div class="graphite"></div>
 	<div class="rays">
 		<LightRays
-			client:load
+			client:media="(min-width: 768px) and (prefers-reduced-motion: no-preference)"
 			raysOrigin="top-right"
 			raysColor="#edaa7a"
 			raysSpeed={0.9}
@@ -67,6 +67,12 @@ import LightRays from '../components/visuals/LightRays.tsx';
 	.rays {
 		position: absolute;
 		inset: 0;
+	}
+
+	@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+		.rays {
+			background: radial-gradient(ellipse at 85% 0%, rgba(237, 170, 122, 0.12), transparent 55%);
+		}
 	}
 
 	/* Grain: SVG fractal noise with luminance mapped onto the alpha channel, so it

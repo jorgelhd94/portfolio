@@ -90,6 +90,8 @@ const neighbors = [
 
 	.hop {
 		display: flex;
+		width: fit-content;
+		max-width: 100%;
 		align-items: center;
 		gap: 1rem;
 		border: 1px solid rgba(255, 255, 255, 0.14);
@@ -103,6 +105,7 @@ const neighbors = [
 
 	/* Same markup both ways, read backwards on one of them. */
 	.hop-next {
+		margin-left: auto;
 		flex-direction: row-reverse;
 		text-align: right;
 	}
