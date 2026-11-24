@@ -10,6 +10,9 @@ const languages = languageLinks(Astro.url.pathname);
 import { localePath } from '../../i18n/routes';
 import NavPill from './NavPill.tsx';
 import QuickMenu from './QuickMenu.tsx';
+import { cv } from '../../data/about';
+import { shareTarget } from '../../lib/share';
+const share = await shareTarget(locale, Astro.site);
 ---
 
 {/* Equal-width rails on both sides. `justify-between` centres the pill between
@@ -28,6 +31,6 @@ import QuickMenu from './QuickMenu.tsx';
 	<NavPill greeting={t.welcome} client:media="(min-width: 1024px)" links={navLinks} />
 
 	<div class="flex flex-1 justify-end">
-		<QuickMenu locale={locale} languages={languages} client:load links={navLinks} social={social} />
+		<QuickMenu locale={locale} languages={languages} cv={cv} share={share} client:load links={navLinks} social={social} />
 	</div>
 </nav>

@@ -2,6 +2,7 @@ import { ui, type Locale } from '../../i18n/ui';
 import { type MouseEvent, type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { NavLink, SocialLink } from '../../data/site';
+import type { ShareTarget } from '../../lib/share';
 import { PAGE_ICONS, SOCIAL_ICONS, STROKE } from './icons';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { preventMissingSection } from '../../lib/navigation';
@@ -13,6 +14,8 @@ interface QuickMenuProps {
 	languages: Record<Locale, string>;
 	links: NavLink[];
 	social: SocialLink[];
+	cv: string;
+	share: ShareTarget;
 	// Only one bar opens via the shortcut; either menu can close via it.
 	shortcut?: boolean;
 }
@@ -30,9 +33,15 @@ const SectionLabel = ({ children }: { children: ReactNode }) => (
 	</p>
 );
 
-const QuickMenu = ({ links, social, locale, languages, shortcut = true }: QuickMenuProps) => {
+const TILE =
+	'flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-[0.95rem] text-mist-300 transition-colors duration-200 hover:border-white/[0.12] hover:bg-white/[0.06] hover:text-mist-100 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-clay-400';
+
+const QuickMenu = ({ links, social, locale, languages, cv, share, shortcut = true }: QuickMenuProps) => {
 	const [open, setOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
+	const [view, setView] = useState<'menu' | 'share'>('menu');
+	const [copied, setCopied] = useState(false);
+	const [canShare, setCanShare] = useState(false);
 	const t = ui[locale];
 	const reduceMotion = useReducedMotion();
 	const current = useActiveSection(links);
@@ -41,7 +50,20 @@ const QuickMenu = ({ links, social, locale, languages, shortcut = true }: QuickM
 
 	useEffect(() => {
 		setMounted(true);
+		setCanShare(typeof navigator.share === 'function');
 	}, []);
+
+	// The control that switched views is unmounted by the switch, so focus would
+	// fall to the document.
+	useEffect(() => {
+		if (open) dialogRef.current?.querySelector<HTMLElement>('div button')?.focus();
+	}, [view]);
+
+	useEffect(() => {
+		if (open) return;
+		const reset = window.setTimeout(() => { setView('menu'); setCopied(false); }, 300);
+		return () => window.clearTimeout(reset);
+	}, [open]);
 
 	useEffect(() => {
 		const handleShortcut = (event: KeyboardEvent) => {
@@ -65,6 +87,19 @@ const QuickMenu = ({ links, social, locale, languages, shortcut = true }: QuickM
 	const handleNavigate = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
 		preventMissingSection(event, href);
 		setOpen(false);
+	};
+
+	const copyLink = async () => {
+		try {
+			await navigator.clipboard.writeText(share.url);
+			setCopied(true);
+		} catch {
+			setCopied(false);
+		}
+	};
+
+	const nativeShare = () => {
+		navigator.share?.({ title: 'Jorge Hernández', url: share.url }).catch(() => {});
 	};
 
 	/** Staggered entrance in reading order. Closing collapses the stagger to zero
@@ -101,7 +136,11 @@ const QuickMenu = ({ links, social, locale, languages, shortcut = true }: QuickM
 				createPortal(
 					<dialog
 						ref={dialogRef}
-						onCancel={(event) => { event.preventDefault(); setOpen(false); }}
+						onCancel={(event) => {
+							event.preventDefault();
+							if (view === 'share') setView('menu');
+							else setOpen(false);
+						}}
 						aria-label={t.quickMenu}
 						className={`m-0 h-full max-h-none w-full max-w-none border-0 bg-transparent p-0 text-inherit backdrop:bg-transparent fixed inset-0 z-50 transition-opacity duration-300 motion-reduce:transition-none ${
 							visible ? 'opacity-100' : 'pointer-events-none opacity-0'
@@ -122,6 +161,18 @@ const QuickMenu = ({ links, social, locale, languages, shortcut = true }: QuickM
 							}`}
 						>
 							<div style={rise(0)} className="flex items-center justify-between gap-3 px-1 pb-3">
+								{view === 'share' ? (
+									<button
+										type="button"
+										onClick={() => setView('menu')}
+										className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm text-mist-300 transition-colors duration-200 hover:bg-white/[0.06] hover:text-mist-100 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-clay-400"
+									>
+										<svg viewBox="0 0 24 24" className="size-[18px]" aria-hidden="true">
+											<path {...STROKE} d="M19 12H5m6-6-6 6 6 6" />
+										</svg>
+										{t.back}
+									</button>
+								) : (
 								<div
 									role="group"
 									aria-label={t.language}
@@ -143,6 +194,7 @@ const QuickMenu = ({ links, social, locale, languages, shortcut = true }: QuickM
 										</button>
 									))}
 								</div>
+								)}
 
 								<button
 									type="button"
@@ -158,6 +210,49 @@ const QuickMenu = ({ links, social, locale, languages, shortcut = true }: QuickM
 
 							<div className="mx-1 h-px bg-white/[0.07]" />
 
+							{view === 'share' ? (
+							<div className="flex flex-col items-center gap-5 pt-5 pb-2 text-center">
+								<div>
+									<p className="text-lg font-semibold text-mist-100">{t.sharePortfolio}</p>
+									<p className="mt-1 text-sm text-mist-500">{t.scanToOpen}</p>
+								</div>
+
+								<div
+									className="rounded-2xl bg-white p-4 [&_svg]:block [&_svg]:size-44"
+									role="img"
+									aria-label={`QR — ${share.url}`}
+									dangerouslySetInnerHTML={{ __html: share.qr }}
+								/>
+
+								<p className="max-w-full truncate text-xs text-mist-300">{share.url.replace(/^https?:\/\//, '')}</p>
+
+								<div className="flex w-full gap-2">
+									<button type="button" onClick={copyLink} className={`${TILE} flex-1 justify-center`} aria-live="polite">
+										<svg viewBox="0 0 24 24" className="size-[18px] shrink-0" aria-hidden="true">
+											{copied ? (
+												<path {...STROKE} d="m5 12.5 4.5 4.5L19 7.5" />
+											) : (
+												<>
+													<rect {...STROKE} x="8.5" y="8.5" width="11" height="11" rx="2" />
+													<path {...STROKE} d="M15.5 8.5V6.5a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2" />
+												</>
+											)}
+										</svg>
+										{copied ? t.copied : t.copyLink}
+									</button>
+
+									{canShare && (
+										<button type="button" onClick={nativeShare} className={`${TILE} flex-1 justify-center`}>
+											<svg viewBox="0 0 24 24" className="size-[18px] shrink-0" aria-hidden="true">
+												<path {...STROKE} d="M12 15V4m-4.5 4.5L12 4l4.5 4.5M6 12.5V18a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 18 18v-5.5" />
+											</svg>
+											{t.shareVia}
+										</button>
+									)}
+								</div>
+							</div>
+							) : (
+								<>
 							<nav aria-label={t.site} className="pt-4">
 								<div style={rise(1)}>
 									<SectionLabel>{t.pages}</SectionLabel>
@@ -192,12 +287,36 @@ const QuickMenu = ({ links, social, locale, languages, shortcut = true }: QuickM
 
 							<div className="pt-6">
 								<div style={rise(2 + links.length)}>
+									<SectionLabel>{t.files}</SectionLabel>
+								</div>
+
+								<div className="grid grid-cols-2 gap-2">
+									<a href={cv} download style={rise(3 + links.length)} className={`${TILE} min-w-0 whitespace-nowrap max-sm:gap-2.5 max-sm:px-3`}>
+										<svg viewBox="0 0 24 24" className="size-[18px] shrink-0" aria-hidden="true">
+											<path {...STROKE} d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 19.5h14" />
+										</svg>
+										{t.curriculum}
+										<span className="ml-auto hidden rounded bg-white/5 px-1.5 py-0.5 text-[0.6rem] tracking-wider text-mist-500 sm:inline">PDF</span>
+									</a>
+
+									<button type="button" onClick={() => setView('share')} style={rise(4 + links.length)} className={`${TILE} text-left max-sm:gap-2.5 max-sm:px-3`}>
+										<svg viewBox="0 0 24 24" className="size-[18px] shrink-0" aria-hidden="true">
+											<path {...STROKE} d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z" />
+											<path {...STROKE} d="M14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5zM14 20h.01M20 14h.01" />
+										</svg>
+										{t.share}
+									</button>
+								</div>
+							</div>
+
+							<div className="pt-6">
+								<div style={rise(5 + links.length)}>
 									<SectionLabel>{t.connect}</SectionLabel>
 								</div>
 
 								<ul className="flex flex-wrap gap-2">
 									{social.map((item, index) => (
-										<li key={item.label} style={rise(3 + links.length + index)}>
+										<li key={item.label} style={rise(6 + links.length + index)}>
 											<a
 												href={item.href}
 												target={item.href.startsWith('mailto:') ? undefined : '_blank'}
@@ -216,6 +335,8 @@ const QuickMenu = ({ links, social, locale, languages, shortcut = true }: QuickM
 									))}
 								</ul>
 							</div>
+								</>
+							)}
 						</div>
 					</dialog>,
 					document.body

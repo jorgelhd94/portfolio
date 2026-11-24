@@ -28,6 +28,15 @@ export default defineConfig({
       fallbacks: ['system-ui', 'sans-serif'],
     },
     {
+      // Mono labels along the hero's foot.
+      provider: fontProviders.google(),
+      name: 'JetBrains Mono',
+      cssVariable: '--font-code',
+      weights: ['400 500'],
+      styles: ['normal'],
+      fallbacks: ['ui-monospace', 'monospace'],
+    },
+    {
       // Wordmark only. Pen calligraphy: the thick-thin of a nib is what carries
       // the written quality. Bold, because the regular cut is too fine to hold
       // up against the graphite at header size.

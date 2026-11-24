@@ -19,6 +19,8 @@ const en = {
 	notFoundHint: 'It may have been renamed, or the link may have been wrong to begin with.',
 	backPortfolio: 'Back to the portfolio',
 	description: 'Backend systems for fintech, e-commerce and enterprise clients. Explore my projects, technical challenges and experience.',
+	share: 'Share', sharePortfolio: 'Share this portfolio', scanToOpen: 'Scan to open it on another device.',
+	copyLink: 'Copy link', copied: 'Copied', shareVia: 'Share via…', back: 'Back', files: 'Files', curriculum: 'Curriculum',
 };
 const es: typeof en = {
 	home: 'Inicio', projects: 'Proyectos', stack: 'Tecnologías', about: 'Sobre mí', mail: 'Correo',
@@ -38,5 +40,7 @@ const es: typeof en = {
 	notFoundHint: 'Puede que haya cambiado de nombre o que el enlace sea incorrecto.',
 	backPortfolio: 'Volver al portfolio',
 	description: 'Sistemas backend para fintech, comercio electrónico y empresas. Conoce mis proyectos, desafíos técnicos y experiencia.',
+	share: 'Compartir', sharePortfolio: 'Compartir este portfolio', scanToOpen: 'Escanéalo para abrirlo en otro dispositivo.',
+	copyLink: 'Copiar enlace', copied: 'Copiado', shareVia: 'Compartir con…', back: 'Volver', files: 'Archivos', curriculum: 'Currículum',
 };
 export const ui = { en, es };

@@ -9,6 +9,9 @@ const social = getSocialLinks(locale);
 const languages = languageLinks(Astro.url.pathname);
 import NavPill from './NavPill.tsx';
 import QuickMenu from './QuickMenu.tsx';
+import { cv } from '../../data/about';
+import { shareTarget } from '../../lib/share';
+const share = await shareTarget(locale, Astro.site);
 ---
 
 <div class="bar fixed inset-x-0 top-0 z-40" data-reveal-nav>
@@ -32,7 +35,7 @@ import QuickMenu from './QuickMenu.tsx';
 		<NavPill greeting={t.welcome} client:media="(min-width: 1024px)" links={navLinks} entrance={false} />
 
 		<div class="flex flex-1 justify-end">
-			<QuickMenu locale={locale} languages={languages}
+			<QuickMenu locale={locale} languages={languages} cv={cv} share={share}
 				client:idle={{ timeout: 500 }}
 				links={navLinks}
 				social={social}

@@ -3,6 +3,7 @@ import { getLocale, ui } from '../i18n/ui';
 const locale = getLocale(Astro.currentLocale);
 const t = ui[locale];
 import { github } from '../data/site';
+import { location } from '../data/about';
 import SocialIcon from '../components/SocialIcon.astro';
 import ContributionText from '../components/visuals/ContributionText.tsx';
 import HeaderBackground from './HeaderBackground.astro';
@@ -46,20 +47,19 @@ animation instead of the layout. */}
 	{/* The cue is the control: it says the page continues and it takes you there,
 	so the affordance and the signal are one object. */}
 	<div
-		class="reveal pointer-events-none absolute inset-x-0 bottom-12 flex justify-center"
+		class="reveal hint-row pointer-events-none absolute inset-x-0 bottom-0 mx-auto flex w-full max-w-6xl items-end justify-between px-6 pb-8 font-mono text-[0.7rem] tracking-[0.08em] text-mist-500 uppercase"
 		style="--delay: 1.2s"
 	>
+		<span class="hidden md:block">{location}</span>
 		<a
 			href="#learning"
 			aria-label={t.scrollNext}
-			class="hint pointer-events-auto flex flex-col items-center gap-4 rounded-lg px-5 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-400"
+			class="hint pointer-events-auto flex flex-col items-center gap-3 rounded-lg px-4 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-400 max-md:mx-auto"
 		>
-			<span
-				class="hint-label text-[0.7rem] font-medium tracking-[0.3em] text-mist-500 uppercase transition-colors duration-300"
-				>{t.scroll}</span
-			>
+			<span class="hint-label transition-colors duration-300">{t.scroll}</span>
 			<span class="scroll-track"><span class="scroll-spark"></span></span>
 		</a>
+		<span class="hidden md:block">{t.role}</span>
 	</div>
 
 </header>
@@ -173,16 +173,11 @@ animation instead of the layout. */}
 	}
 
 	.hint:hover .hint-label {
-		color: var(--color-mist-100);
+		color: #fff;
 	}
 
 	.hint:hover .scroll-track {
-		background: linear-gradient(
-			to bottom,
-			rgba(190, 175, 160, 0.75),
-			rgba(190, 175, 160, 0.75) 60%,
-			transparent
-		);
+		background: rgb(255 255 255 / 0.6);
 	}
 
 	/* Everything on the hero leaves on one of two beats, both read from the same
@@ -190,7 +185,7 @@ animation instead of the layout. */}
 	   by then it has said what it had to; the wordmark, the nav and the actions go
 	   with the words, so the screen is never a bare navigation bar over an empty
 	   panel waiting for the handoff. */
-	.hint {
+	.hint-row {
 		opacity: calc(1 - var(--cue, 0));
 	}
 
@@ -207,12 +202,7 @@ animation instead of the layout. */}
 		height: 3.25rem;
 		width: 1px;
 		overflow: hidden;
-		background: linear-gradient(
-			to bottom,
-			rgba(140, 140, 140, 0.55),
-			rgba(140, 140, 140, 0.55) 60%,
-			transparent
-		);
+		background: rgb(255 255 255 / 0.18);
 	}
 
 	.scroll-spark {
@@ -221,7 +211,7 @@ animation instead of the layout. */}
 		right: 0;
 		left: 0;
 		height: 45%;
-		background: linear-gradient(to bottom, transparent, rgba(255, 240, 226, 0.9), transparent);
+		background: #fff;
 	}
 
 	@keyframes scroll-spark {

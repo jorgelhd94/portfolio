@@ -10,8 +10,9 @@ copy. Astro with React islands and Tailwind CSS 4.
 | Framework | Astro 7 (static output) |
 | Islands | React 19 via `@astrojs/react` |
 | Styles | Tailwind CSS 4 through `@tailwindcss/vite` — no `tailwind.config`, the theme lives in `src/styles/global.css` |
-| Fonts | Astro Fonts API, self-hosted from Google — Archivo (body, `--font-body`), Tangerine (wordmark, `--font-display`) |
+| Fonts | Astro Fonts API, self-hosted from Google — Archivo (body, `--font-body`), Tangerine (wordmark, `--font-display`), JetBrains Mono (hero foot labels, `--font-code`) |
 | WebGL | `ogl`, used only by `LightRays` |
+| QR | `qrcode`, build-time SVG for the quick menu's share panel |
 | Package manager | pnpm. Node >= 22.12 |
 
 ## Commands
@@ -119,8 +120,9 @@ These are decisions, not defaults. Changing one is a design conversation, not a
 refactor.
 
 **Surfaces and text are neutral graphite. Clay is only ever light.** The accent
-(`--color-clay-*`, taken from the CV and the portrait) belongs to the rays, the
-lamp over the nav, lit edges and focus rings. Tinting a surface with it turns
+(`--color-clay-*`, taken from the CV and the portrait) belongs to the rays, lit
+edges and focus rings. The nav carries no lamp: a glow over the buttons read as
+noise. Tinting a surface with it turns
 graphite into terracotta. The rule is written at the top of `global.css`.
 
 **The headline stays white,** through to the glow it spills. It is the one
@@ -134,8 +136,10 @@ than fetching an API. Do not wire one up.
 
 ## Notes
 
-- The language control in the dock only writes to `localStorage`. There are no
-  translated routes; wiring Astro i18n is what would make it do something.
+- English lives at `/portfolio/` and Spanish at `/portfolio/es/`; UI strings are
+  in `src/i18n/ui.ts`, Spanish project copy in `src/data/projects.es.ts`.
+- The quick menu (⌘K) offers the CV download and a share panel with a QR of the
+  locale's home URL, rendered to SVG at build time by `src/lib/share.ts`.
 - `#projects`, `#stack` and `#about` all exist. Both navigations still guard
   against dead hashes, so a link added before its section does not strand one.
 - `Home` is intercepted in `Header.astro`: `#top` names the hero, and the pin

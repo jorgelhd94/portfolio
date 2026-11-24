@@ -2,7 +2,7 @@
 
 @theme {
 	/* The rule the palette runs on: surfaces and text are neutral graphite, and
-	   clay is only ever light — the rays, the lamp over the nav, the lit edges.
+	   clay is only ever light — the rays, the lit edges, the focus rings.
 	   Tinting the surface itself is what turns graphite into terracotta; letting
 	   a warm source fall across a neutral one is what makes it read as lit.
 
@@ -15,7 +15,7 @@
 	/* Clay, the site accent. Taken from the CV — the taupe of the wordmark and
 	   the blush of its sidebar — and from the brown of the portrait. The scale
 	   runs lighter than either, because this accent also has to be a light
-	   source: the rays, the lamp over the nav and the hero's spill all emit it,
+	   source: the rays and the hero's spill both emit it,
 	   and a mid-tone brown does not emit. The dark end is the shirt. */
 	--color-clay-100: #f7e8dd;
 	--color-clay-200: #edcfb9;
@@ -57,6 +57,7 @@
 	   a theme key to itself would be circular. Overriding --font-sans also moves
 	   the default body face, which Tailwind's preflight resolves through it. */
 	--font-sans: var(--font-body);
+	--font-mono: var(--font-code);
 	--font-wordmark: var(--font-display);
 }
 

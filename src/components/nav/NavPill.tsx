@@ -105,8 +105,6 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 		preventMissingSection(event, href);
 	};
 
-	const lit = preview !== null;
-
 	const rail = {
 		transform: `translateX(${indicator.x}px)`,
 		width: `${indicator.width}px`,
@@ -144,9 +142,9 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 					style={{
 						...rail,
 						background:
-							'linear-gradient(180deg, rgba(255, 214, 178, 0.11), rgba(255, 255, 255, 0.035))',
+							'linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035))',
 						boxShadow:
-							'inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 8px 22px -14px rgba(237, 170, 122, 0.7), 0 3px 10px -6px rgba(0, 0, 0, 0.7)',
+							'inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 3px 10px -6px rgba(0, 0, 0, 0.7)',
 					}}
 					className="pointer-events-none absolute inset-y-1.5 left-0 rounded-full"
 				/>
@@ -205,34 +203,6 @@ const NavPill = ({ links, greeting = 'Welcome', entrance = true }: NavPillProps)
 				)}
 			</div>
 
-			{/* Zero-height rail pinned to the top edge, outside the clip so every
-			    layer hangs above the bar without being cut off by it. */}
-			<span aria-hidden="true" style={rail} className="pointer-events-none absolute top-0 left-0 h-0">
-				<span
-					className="absolute right-[-22%] bottom-0 left-[-22%] h-14 transition-opacity duration-500"
-					style={{
-						background:
-							'radial-gradient(50% 100% at 50% 100%, rgba(237, 170, 122, 0.1), transparent 70%)',
-						opacity: lit ? 1 : 0.65,
-					}}
-				/>
-				<span
-					className="absolute right-[-4%] bottom-0 left-[-4%] h-6 transition-opacity duration-500"
-					style={{
-						background:
-							'radial-gradient(46% 100% at 50% 100%, rgba(240, 186, 142, 0.5), rgba(240, 186, 142, 0.13) 42%, transparent 72%)',
-						opacity: lit ? 1 : 0.7,
-					}}
-				/>
-				<span
-					className="absolute -top-px right-[26%] left-[26%] h-px transition-opacity duration-500"
-					style={{
-						background:
-							'linear-gradient(90deg, transparent, rgba(255, 240, 226, 0.95), transparent)',
-						opacity: lit ? 1 : 0.7,
-					}}
-				/>
-			</span>
 		</div>
 	);
 };
