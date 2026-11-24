@@ -1,0 +1,1 @@
+import{t as e}from"./react.B3l9tXpq.js";var t=e(),n=`(prefers-reduced-motion: reduce)`,r=e=>{let t=window.matchMedia(n);return t.addEventListener(`change`,e),()=>t.removeEventListener(`change`,e)},i=()=>window.matchMedia(n).matches,a=()=>!1,o=()=>(0,t.useSyncExternalStore)(r,i,a);export{o as t};
